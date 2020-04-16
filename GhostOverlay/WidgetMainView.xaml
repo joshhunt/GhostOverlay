@@ -1,0 +1,111 @@
+﻿<Page
+    x:Class="GhostOverlay.WidgetMainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:GhostOverlay"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <local:TemplatesResourceDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <CollectionViewSource x:Name="TrackedBountiesCollection" IsSourceGrouped="True" />
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <ProgressRing x:Name="LoadingRing" IsActive="True" />
+        <TextBlock x:Name="MessageText" />
+
+        <ListView
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            ItemsSource="{Binding Source={StaticResource TrackedBountiesCollection}}"
+            SelectionMode="None">
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="VerticalContentAlignment" Value="Top" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="0,0,0,24" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Stretch"
+                                    Text="{Binding Key.ClassName}" />
+                            </Grid>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ListView.GroupStyle>
+
+            <ListView.ItemTemplate>
+
+                <DataTemplate x:DataType="local:Bounty">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Width="48"
+                            Height="48"
+                            Margin="0,4,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+
+                            <Image.Source>
+                                <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                            </Image.Source>
+                        </Image>
+
+                        <StackPanel
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="12,0,0,0"
+                            HorizontalAlignment="Stretch">
+
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                HorizontalAlignment="Left"
+                                FontSize="15"
+                                FontWeight="Medium"
+                                Style="{ThemeResource BaseTextBlockStyle}"
+                                Text="{x:Bind ItemDefinition.DisplayProperties.Name}" />
+
+                            <ListView
+                                IsItemClickEnabled="False"
+                                ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                                ItemTemplate="{StaticResource ObjectiveTemplate}"
+                                ItemsSource="{x:Bind Objectives}"
+                                SelectionMode="None" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </Grid>
+</Page>

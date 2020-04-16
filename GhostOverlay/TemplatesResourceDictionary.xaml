@@ -1,0 +1,65 @@
+﻿<ResourceDictionary
+    x:Class="GhostOverlay.TemplatesResourceDictionary"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GhostOverlay">
+
+    <local:NumberFormatterConverter x:Key="NumberFormatterConverter" />
+    <local:DestinySymbolConverter x:Key="DestinySymbolConverter" />
+    <local:BooleanBrushConverter x:Key="BooleanBrushConverter" />
+    <local:BooleanNumberConverter x:Key="BooleanNumberConverter" />
+
+    <Style x:Key="ObjectiveListViewStyle" TargetType="ListViewItem">
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,6,0,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FocusVisualMargin" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+
+    <DataTemplate x:Key="ObjectiveTemplate" x:DataType="local:Objective">
+        <StackPanel Margin="0,0,0,0">
+            <Grid Opacity="{x:Bind Progress.Complete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Rectangle
+                    Grid.Column="0"
+                    Width="20"
+                    Height="20"
+                    Margin="0,0,6,0"
+                    Fill="{x:Bind Progress.Complete, Converter={StaticResource BooleanBrushConverter}, ConverterParameter=#FF589864|#FF2D2D2D}" />
+
+                <ProgressBar
+                    Grid.Column="1"
+                    Height="20"
+                    CornerRadius="0"
+                    Foreground="{x:Bind Progress.Complete, Converter={StaticResource BooleanBrushConverter}, ConverterParameter=#00589864|#FF5DA46A}"
+                    Opacity=".9"
+                    Value="{x:Bind CompletionPercent}" />
+
+                <Grid Grid.Column="1" Margin="6,0,6,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.ColumnSpan="2" Text="{x:Bind ObjectiveDefinition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}" />
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBlock Text="{x:Bind Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
+                        <TextBlock Text=" / " />
+                        <TextBlock Text="{x:Bind Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+
+        </StackPanel>
+    </DataTemplate>
+
+</ResourceDictionary>

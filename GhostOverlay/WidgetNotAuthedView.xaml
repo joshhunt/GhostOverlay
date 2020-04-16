@@ -1,0 +1,35 @@
+﻿<Page
+    x:Class="GhostOverlay.WidgetNotAuthedView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:GhostOverlay"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel
+            Margin="20"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <ProgressRing
+                x:Name="ProgressRing"
+                Width="40"
+                Height="40" />
+
+            <Button
+                x:Name="LoginButton"
+                HorizontalAlignment="Center"
+                Click="Button_Click"
+                Content="Login with Bungie" />
+
+            <TextBlock
+                x:Name="WaitingText"
+                Margin="0,24,0,0"
+                HorizontalAlignment="Center"
+                Text="Waiting to login..."
+                Visibility="Collapsed" />
+        </StackPanel>
+    </Grid>
+</Page>

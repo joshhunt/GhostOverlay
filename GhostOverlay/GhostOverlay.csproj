@@ -1,0 +1,1149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}</ProjectGuid>
+    <OutputType>AppContainerExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GhostOverlay</RootNamespace>
+    <AssemblyName>GhostOverlay</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <PackageCertificateThumbprint>A2984DCCC3230671B6EF74326A99486601289788</PackageCertificateThumbprint>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <OutputPath>bin\ARM64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AppAuthSuccessfulView.xaml.cs">
+      <DependentUpon>AppAuthSuccessfulView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AppState.cs" />
+    <Compile Include="MyEventAggregator.cs" />
+    <Compile Include="TemplatesResourceDictionary.xaml.cs">
+      <DependentUpon>TemplatesResourceDictionary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels.cs" />
+    <Compile Include="WidgetData.cs" />
+    <Compile Include="WidgetMainView.xaml.cs">
+      <DependentUpon>WidgetMainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WidgetNotAuthedView.xaml.cs">
+      <DependentUpon>WidgetNotAuthedView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BungieNetApi\Client\ApiClient.cs" />
+    <Compile Include="BungieNetApi\Client\ApiException.cs" />
+    <Compile Include="BungieNetApi\Client\ApiResponse.cs" />
+    <Compile Include="BungieNetApi\Client\ClientUtils.cs" />
+    <Compile Include="BungieNetApi\Client\Configuration.cs" />
+    <Compile Include="BungieNetApi\Client\ExceptionFactory.cs" />
+    <Compile Include="BungieNetApi\Client\GlobalConfiguration.cs" />
+    <Compile Include="BungieNetApi\Client\HttpMethod.cs" />
+    <Compile Include="BungieNetApi\Client\IApiAccessor.cs" />
+    <Compile Include="BungieNetApi\Client\IAsynchronousClient.cs" />
+    <Compile Include="BungieNetApi\Client\IReadableConfiguration.cs" />
+    <Compile Include="BungieNetApi\Client\ISynchronousClient.cs" />
+    <Compile Include="BungieNetApi\Client\Multimap.cs" />
+    <Compile Include="BungieNetApi\Client\OpenAPIDateConverter.cs" />
+    <Compile Include="BungieNetApi\Client\RequestOptions.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsApiUsage.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsApplication.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsApplicationDeveloper.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsApplicationScopes.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsApplicationStatus.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsDatapoint.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsDeveloperRole.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsOAuthApplicationType.cs" />
+    <Compile Include="BungieNetApi\Model\ApplicationsSeries.cs" />
+    <Compile Include="BungieNetApi\Model\BungieCredentialType.cs" />
+    <Compile Include="BungieNetApi\Model\BungieMembershipType.cs" />
+    <Compile Include="BungieNetApi\Model\CommonModelsCoreSetting.cs" />
+    <Compile Include="BungieNetApi\Model\CommonModelsCoreSettingsConfiguration.cs" />
+    <Compile Include="BungieNetApi\Model\CommonModelsCoreSystem.cs" />
+    <Compile Include="BungieNetApi\Model\CommonModelsDestiny2CoreSettings.cs" />
+    <Compile Include="BungieNetApi\Model\ComponentsComponentPrivacySetting.cs" />
+    <Compile Include="BungieNetApi\Model\ComponentsComponentResponse.cs" />
+    <Compile Include="BungieNetApi\Model\ConfigGroupTheme.cs" />
+    <Compile Include="BungieNetApi\Model\ConfigUserTheme.cs" />
+    <Compile Include="BungieNetApi\Model\ContentCommentSummary.cs" />
+    <Compile Include="BungieNetApi\Model\ContentContentItemPublicContract.cs" />
+    <Compile Include="BungieNetApi\Model\ContentContentRepresentation.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsContentPreview.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsContentPropertyDataTypeEnum.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsContentTypeDefaultValue.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsContentTypeDescription.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsContentTypeProperty.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsContentTypePropertySection.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsTagMetadataDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\ContentModelsTagMetadataItem.cs" />
+    <Compile Include="BungieNetApi\Model\DatesDateRange.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyActivitiesDestinyPublicActivityStatus.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyActivityGraphNodeHighlightType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyAdvancedAwaAuthorizationResult.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyAdvancedAwaInitializeResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyAdvancedAwaPermissionRequested.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyAdvancedAwaResponseReason.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyAdvancedAwaType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyAdvancedAwaUserResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyAdvancedAwaUserSelection.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyArtifactsDestinyArtifactCharacterScoped.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyArtifactsDestinyArtifactProfileScoped.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyArtifactsDestinyArtifactTier.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyArtifactsDestinyArtifactTierItem.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyBaseItemComponentSetOfint32.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyBaseItemComponentSetOfint64.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyBaseItemComponentSetOfuint32.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyBucketCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyBucketScope.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyChallengesDestinyChallengeStatus.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyCharacterDestinyCharacterCustomization.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyCharacterDestinyCharacterPeerView.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyCharacterDestinyItemPeerView.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsCollectiblesDestinyCollectibleComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsCollectiblesDestinyCollectiblesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsCollectiblesDestinyProfileCollectiblesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsInventoryDestinyCurrenciesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsInventoryDestinyPlatformSilverComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsItemsDestinyItemPlugComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsItemsDestinyItemPlugObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsItemsDestinyItemReusablePlugsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsKiosksDestinyKioskItem.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsKiosksDestinyKiosksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsMetricsDestinyMetricComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsMetricsDestinyMetricsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsPlugSetsDestinyPlugSetsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsPresentationDestinyPresentationNodeComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsPresentationDestinyPresentationNodesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsProfilesDestinyProfileProgressionComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsProfilesDestinyProfileTransitoryComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsProfilesDestinyProfileTransitoryCurrentActivity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsProfilesDestinyProfileTransitoryJoinability.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsProfilesDestinyProfileTransitoryPartyMember.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsProfilesDestinyProfileTransitoryTrackingEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsRecordsDestinyCharacterRecordsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsRecordsDestinyProfileRecordsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsRecordsDestinyRecordComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsRecordsDestinyRecordsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsVendorsDestinyPublicVendorComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsVendorsDestinyPublicVendorSaleItemComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsVendorsDestinyVendorBaseComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsVendorsDestinyVendorGroup.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsVendorsDestinyVendorGroupComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyComponentsVendorsDestinyVendorSaleItemBaseComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyConfigDestinyManifest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyConfigGearAssetDataBaseDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyConfigImagePyramidEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyConstantsDestinyEnvironmentLocationMapping.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDamageType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsActivityModifiersDestinyActivityModifierDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsAnimationsDestinyAnimationReference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsArtifactsDestinyArtifactDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsArtifactsDestinyArtifactTierDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsArtifactsDestinyArtifactTierItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsBreakerTypesDestinyBreakerTypeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsChecklistsDestinyChecklistDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsChecklistsDestinyChecklistEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsCollectiblesDestinyCollectibleAcquisitionBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsCollectiblesDestinyCollectibleDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsCollectiblesDestinyCollectibleStateBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsCommonDestinyDisplayPropertiesDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsCommonDestinyIconSequenceDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsCommonDestinyPositionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityChallengeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityGraphListEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityGuidedBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityInsertionPointDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityLoadoutRequirement.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityLoadoutRequirementSet.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityMatchmakingBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityModeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityModifierReferenceDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityPlaylistItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityRewardDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityTypeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyActivityUnlockStringDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyArtDyeReference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyBubbleDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyClassDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyDamageTypeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyDestinationBubbleSettingDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyDestinationDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyDisplayCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyEntitySearchResult.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyEntitySearchResultItem.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyEquipmentSlotDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyEquippingBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyFactionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyFactionVendorDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyGearArtArrangementReference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyGenderDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyInventoryBucketDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyInventoryItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyInventoryItemStatDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemActionBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemActionRequiredItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemCreationEntryLevelDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemGearsetBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemIntrinsicSocketEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemInventoryBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemInvestmentStatDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemMetricBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemObjectiveBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemPerkEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemPreviewBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemQualityBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSackBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSetBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSetBlockEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSocketBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSocketCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSocketEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSocketEntryPlugItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSocketEntryPlugItemRandomizedDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSourceBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemStatBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemSummaryBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemTalentGridBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemTooltipNotification.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemTranslationBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemValueBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyItemVendorSourceReference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyLocationDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyLocationReleaseDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyMaterialRequirement.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyMaterialRequirementSetDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyNodeActivationRequirement.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyNodeSocketReplaceResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyNodeStepDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyObjectiveDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyObjectiveDisplayProperties.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyObjectivePerkEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyObjectiveStatEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyPlaceDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyProgressionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyProgressionDisplayPropertiesDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyProgressionMappingDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyProgressionRewardDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyProgressionRewardItemQuantity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyProgressionStepDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyRaceDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyRewardSourceCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyRewardSourceDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinySandboxPerkDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyStatDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyStatDisplayDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyStatGroupDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyStatOverrideDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentExclusiveGroup.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentGridDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeExclusiveSetDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeStepDamageTypes.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeStepGroups.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeStepGuardianAttributes.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeStepImpactEffects.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeStepLightAbilities.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyTalentNodeStepWeaponPerformances.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyUnlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyUnlockExpressionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyUnlockValueDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorAcceptedItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorActionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorCategoryEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorCategoryOverlayDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorDisplayPropertiesDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorGroupDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorGroupReference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorInteractionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorInteractionReplyDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorInteractionSackEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorInventoryFlyoutBucketDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorInventoryFlyoutDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorItemQuantity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorItemSocketOverride.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorRequirementDisplayEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorSaleItemActionBlockDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDestinyVendorServiceDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphArtElementDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphConnectionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphDisplayObjectiveDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphDisplayProgressionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphNodeActivityDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphNodeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphNodeFeaturingStateDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyActivityGraphNodeStateEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyLinkedGraphDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsDirectorDestinyLinkedGraphEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsEnergyTypesDestinyEnergyTypeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyDerivedItemCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyDerivedItemDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyEnergyCapacityEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyEnergyCostEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyItemPlugDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyItemTierTypeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyItemTierTypeInfusionBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyParentItemOverride.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsItemsDestinyPlugRuleDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsLoreDestinyLoreDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMetricsDestinyMetricDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneActivityDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneActivityVariantDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneChallengeActivityDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneChallengeActivityGraphNodeEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneChallengeActivityPhase.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneChallengeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneDisplayPreference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneQuestDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneQuestRewardItem.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneQuestRewardsDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneRewardCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneRewardEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneValueDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsMilestonesDestinyMilestoneVendorDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationChildBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeBaseDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeChildEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeChildrenBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeCollectibleChildEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeMetricChildEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeRecordChildEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsPresentationDestinyPresentationNodeRequirementsBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsProgressionDestinyProgressionLevelRequirementDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsRecordsDestinyRecordCompletionBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsRecordsDestinyRecordDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsRecordsDestinyRecordExpirationBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsRecordsDestinyRecordIntervalBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsRecordsDestinyRecordIntervalObjective.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsRecordsDestinyRecordTitleBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsRecordsSchemaRecordStateBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsReportingDestinyReportReasonCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsReportingDestinyReportReasonDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSeasonsDestinySeasonDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSeasonsDestinySeasonPassDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSocketsDestinyInsertPlugActionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSocketsDestinyPlugSetDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSocketsDestinyPlugWhitelistEntryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSocketsDestinySocketCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSocketsDestinySocketTypeDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSocketsDestinySocketTypeScalarMaterialRequirementEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsSourcesDestinyItemSourceDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsTraitsDestinyTraitCategoryDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsTraitsDestinyTraitDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDefinitionsVendorsDestinyVendorLocationDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyActivity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyActivityDifficultyTier.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyActivityModeCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyActivityNavPointType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyAmmunitionType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyBreakerType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyClass.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyCollectibleState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyComponentType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyEnergyType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyEquipItemResult.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyEquipItemResults.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyGamePrivacySetting.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyGameVersions.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyGatingScope.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyGender.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyGraphNodeState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyItemQuantity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyItemSortType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyItemSubType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyItemType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyJoinClosedReasons.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyObjectiveGrantStyle.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyPartyMemberStates.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyPresentationDisplayStyle.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyPresentationNodeState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyPresentationNodeType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyPresentationScreenStyle.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyProgression.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyProgressionResetEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyProgressionRewardItemAcquisitionBehavior.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyProgressionRewardItemState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyProgressionScope.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyProgressionStepDisplayEffect.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyRace.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyRecordState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyRecordToastStyle.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyRecordValueStyle.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyScope.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinySocketCategoryStyle.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinySocketVisibility.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyStat.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyStatAggregationType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyStatCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyTalentNode.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyTalentNodeStatBlock.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyTalentNodeState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyUnlockStatus.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyUnlockValueUIStyle.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyVendorInteractionRewardSelection.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyVendorItemRefundPolicy.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyVendorItemState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDestinyVendorReplyType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyDyeReference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesCharactersDestinyCharacterActivitiesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesCharactersDestinyCharacterComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesCharactersDestinyCharacterProgressionComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesCharactersDestinyCharacterRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesInventoryDestinyInventoryComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemInstanceComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemInstanceEnergy.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemPerksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemSocketsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemSocketState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemStatsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesItemsDestinyItemTalentGridComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesProfilesDestinyProfileComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesProfilesDestinyVendorReceiptsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesVendorsDestinyVendorCategoriesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesVendorsDestinyVendorCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesVendorsDestinyVendorComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEntitiesVendorsDestinyVendorSaleItemComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEquipFailureReason.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyEquippingItemBlockAttributes.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDefinitionsDestinyActivityModeType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDefinitionsDestinyHistoricalStatsDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDefinitionsDestinyStatsCategoryType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDefinitionsDestinyStatsGroupType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDefinitionsDestinyStatsMergeMethod.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDefinitionsPeriodType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDefinitionsUnitType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyActivityHistoryResults.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyAggregateActivityResults.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyAggregateActivityStats.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyClanAggregateStat.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsAccountResult.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsActivity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsByPeriod.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsPerCharacter.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsPeriodGroup.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsValue.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsValuePair.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalStatsWithMerged.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalWeaponStats.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyHistoricalWeaponStatsData.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyLeaderboard.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyLeaderboardEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyLeaderboardResults.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyPlayer.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyPostGameCarnageReportData.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyPostGameCarnageReportEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyPostGameCarnageReportExtendedData.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyHistoricalStatsDestinyPostGameCarnageReportTeamEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyItemBindStatus.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyItemComponentSetOfint32.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyItemComponentSetOfint64.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyItemComponentSetOfuint32.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyItemLocation.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyItemPerkVisibility.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyItemState.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestone.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneActivity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneActivityCompletionStatus.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneActivityPhase.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneActivityVariant.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneChallengeActivity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneContent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneContentItemCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneQuest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneRewardCategory.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneRewardEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyMilestoneVendor.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyPublicMilestone.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyPublicMilestoneActivity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyPublicMilestoneActivityVariant.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyPublicMilestoneChallenge.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyPublicMilestoneChallengeActivity.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyPublicMilestoneQuest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMilestonesDestinyPublicMilestoneVendor.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyMiscDestinyColor.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyPerksDestinyPerkReference.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyPlugAvailabilityMode.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyPlugUiStyles.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyProgressionDestinyFactionProgression.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyQuestsDestinyObjectiveProgress.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyQuestsDestinyQuestStatus.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyReportingRequestsDestinyReportOffensePgcrRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyActionRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyCharacterActionRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyInsertPlugsActionRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyInsertPlugsRequestEntry.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyItemActionRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyItemSetActionRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyItemStateRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinyPostmasterTransferRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsActionsDestinySocketArrayType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyRequestsDestinyItemTransferRequest.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyCharacterResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyCollectibleNodeDetailResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyErrorProfile.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyItemChangeResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyItemResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyLinkedProfilesResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyProfileResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyProfileUserInfoCard.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyPublicVendorsResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyVendorResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesDestinyVendorsResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesInventoryChangedResponse.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesPersonalDestinyVendorSaleItemSetComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyResponsesPublicDestinyVendorSaleItemSetComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinySocketPlugSources.cs" />
+    <Compile Include="BungieNetApi\Model\DestinySocketsDestinyItemPlug.cs" />
+    <Compile Include="BungieNetApi\Model\DestinySocketsDestinyItemPlugBase.cs" />
+    <Compile Include="BungieNetApi\Model\DestinySocketTypeActionType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinySpecialItemType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyTierType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyTransferStatuses.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyVendorDisplayCategorySortOrder.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyVendorInteractionType.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyVendorItemStatus.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyVendorSaleItemSetComponentOfDestinyPublicVendorSaleItemComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyVendorSaleItemSetComponentOfDestinyVendorSaleItemComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DestinyVendorsDestinyVendorReceipt.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemInstanceComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemPerksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemPlugObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemReusablePlugsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemSocketsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemStatsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyItemTalentGridComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint32AndDestinyVendorSaleItemComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyCharacterActivitiesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyCharacterComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyCharacterProgressionComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyCharacterRecordsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyCharacterRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyCollectiblesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyCurrenciesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyInventoryComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemInstanceComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemPerksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemPlugComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemPlugObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemReusablePlugsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemSocketsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemStatsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyItemTalentGridComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyKiosksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyPlugSetsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyPresentationNodesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyPublicVendorComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyVendorCategoriesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndDestinyVendorComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndPersonalDestinyVendorSaleItemSetComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfint64AndPublicDestinyVendorSaleItemSetComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemInstanceComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemPerksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemPlugComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemPlugObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemReusablePlugsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemSocketsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemStatsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyItemTalentGridComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyPublicVendorComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyVendorCategoriesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndDestinyVendorComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndPersonalDestinyVendorSaleItemSetComponent.cs" />
+    <Compile Include="BungieNetApi\Model\DictionaryComponentResponseOfuint32AndPublicDestinyVendorSaleItemSetComponent.cs" />
+    <Compile Include="BungieNetApi\Model\EntitiesEntityActionResult.cs" />
+    <Compile Include="BungieNetApi\Model\ExceptionsPlatformErrorCodes.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamDateRange.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamMember.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamPlatform.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamPlatformInviteResult.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamPublicSearchOption.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamResponse.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamSlotSearch.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamSummary.cs" />
+    <Compile Include="BungieNetApi\Model\FireteamFireteamUserInfoCard.cs" />
+    <Compile Include="BungieNetApi\Model\ForumCommunityContentSortMode.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumMediaType.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumPostPopularity.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumPostSortEnum.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumRecruitmentDetail.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumRecruitmentIntensityLabel.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumRecruitmentToneLabel.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumTopicsCategoryFiltersEnum.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumTopicsQuickDateEnum.cs" />
+    <Compile Include="BungieNetApi\Model\ForumForumTopicsSortEnum.cs" />
+    <Compile Include="BungieNetApi\Model\ForumPollResponse.cs" />
+    <Compile Include="BungieNetApi\Model\ForumPollResult.cs" />
+    <Compile Include="BungieNetApi\Model\ForumPostResponse.cs" />
+    <Compile Include="BungieNetApi\Model\ForumPostSearchResponse.cs" />
+    <Compile Include="BungieNetApi\Model\ForumsForumFlagsEnum.cs" />
+    <Compile Include="BungieNetApi\Model\ForumsForumPostCategoryEnums.cs" />
+    <Compile Include="BungieNetApi\Model\GlobalAlert.cs" />
+    <Compile Include="BungieNetApi\Model\GlobalAlertLevel.cs" />
+    <Compile Include="BungieNetApi\Model\GlobalAlertType.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2Capabilities.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2ChatSecuritySetting.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2ClanBanner.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GetGroupsForMemberResponse.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupAllianceStatus.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupApplicationListRequest.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupApplicationRequest.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupApplicationResolveState.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupApplicationResponse.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupBan.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupBanRequest.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupDateRange.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupEditAction.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupFeatures.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupHomepage.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupMember.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupMemberApplication.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupMemberCountFilter.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupMemberLeaveResult.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupMembership.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupMembershipBase.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupMembershipSearchResponse.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupNameSearchRequest.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupOptionalConversation.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupOptionalConversationAddRequest.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupOptionalConversationEditRequest.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupOptionsEditAction.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupPostPublicity.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupPotentialMember.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupPotentialMembership.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupPotentialMembershipSearchResponse.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupPotentialMemberStatus.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupQuery.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupResponse.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupSearchResponse.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupsForMemberFilter.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupSortBy.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupType.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupUserBase.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupUserInfoCard.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupV2.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupV2Card.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupV2ClanInfo.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2GroupV2ClanInfoAndInvestment.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2HostGuidedGamesPermissionLevel.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2MembershipOption.cs" />
+    <Compile Include="BungieNetApi\Model\GroupsV2RuntimeGroupMemberType.cs" />
+    <Compile Include="BungieNetApi\Model\IgnoresIgnoreLength.cs" />
+    <Compile Include="BungieNetApi\Model\IgnoresIgnoreResponse.cs" />
+    <Compile Include="BungieNetApi\Model\IgnoresIgnoreStatus.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse200.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2001.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20010.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20011.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20012.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20013.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20014.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20015.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20016.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20017.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20018.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20019.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2002.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20020.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20021.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20022.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20023.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20024.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20025.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20026.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20027.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20028.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20029.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2003.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20030.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20031.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20032.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20033.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20034.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20035.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20036.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20037.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20038.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20039.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2004.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20040.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20041.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20042.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20043.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20044.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20045.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20046.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20047.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20048.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20049.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2005.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20050.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20051.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20052.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20053.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20054.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20055.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20056.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20057.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20058.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20059.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2006.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20060.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20061.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20062.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20063.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20064.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20065.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20066.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20067.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse20068.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2007.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2008.cs" />
+    <Compile Include="BungieNetApi\Model\InlineResponse2009.cs" />
+    <Compile Include="BungieNetApi\Model\InterpolationInterpolationPoint.cs" />
+    <Compile Include="BungieNetApi\Model\InterpolationInterpolationPointFloat.cs" />
+    <Compile Include="BungieNetApi\Model\LinksHyperlinkReference.cs" />
+    <Compile Include="BungieNetApi\Model\QueriesPagedQuery.cs" />
+    <Compile Include="BungieNetApi\Model\QueriesSearchResult.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfContentItemPublicContract.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfDestinyEntitySearchResultItem.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfFireteamResponse.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfFireteamSummary.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfGroupBan.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfGroupMember.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfGroupMemberApplication.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfGroupMembership.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfGroupPotentialMembership.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfGroupV2Card.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfPostResponse.cs" />
+    <Compile Include="BungieNetApi\Model\SearchResultOfTrendingEntry.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyCharacterActivitiesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyCharacterComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyCharacterProgressionComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyCharacterRecordsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyCharacterRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyCollectiblesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyCurrenciesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyInventoryComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemInstanceComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemPerksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemPlugObjectivesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemRenderComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemReusablePlugsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemSocketsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemStatsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyItemTalentGridComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyKiosksComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyMetricsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyPlatformSilverComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyPlugSetsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyPresentationNodesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyProfileCollectiblesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyProfileComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyProfileProgressionComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyProfileRecordsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyProfileTransitoryComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyVendorCategoriesComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyVendorComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyVendorGroupComponent.cs" />
+    <Compile Include="BungieNetApi\Model\SingleComponentResponseOfDestinyVendorReceiptsComponent.cs" />
+    <Compile Include="BungieNetApi\Model\StreamInfo.cs" />
+    <Compile Include="BungieNetApi\Model\TagsModelsContractsTagResponse.cs" />
+    <Compile Include="BungieNetApi\Model\TokensPartnerOfferClaimRequest.cs" />
+    <Compile Include="BungieNetApi\Model\TokensPartnerOfferHistoryResponse.cs" />
+    <Compile Include="BungieNetApi\Model\TokensPartnerOfferSkuHistoryResponse.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingCategories.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingCategory.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingDetail.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntry.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntryCommunityCreation.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntryDestinyActivity.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntryDestinyItem.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntryDestinyRitual.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntryNews.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntrySupportArticle.cs" />
+    <Compile Include="BungieNetApi\Model\TrendingTrendingEntryType.cs" />
+    <Compile Include="BungieNetApi\Model\UserCrossSaveUserMembership.cs" />
+    <Compile Include="BungieNetApi\Model\UserEmailOptInDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\UserEMailSettingLocalization.cs" />
+    <Compile Include="BungieNetApi\Model\UserEmailSettings.cs" />
+    <Compile Include="BungieNetApi\Model\UserEMailSettingSubscriptionLocalization.cs" />
+    <Compile Include="BungieNetApi\Model\UserEmailSubscriptionDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\UserEmailViewDefinition.cs" />
+    <Compile Include="BungieNetApi\Model\UserEmailViewDefinitionSetting.cs" />
+    <Compile Include="BungieNetApi\Model\UserGeneralUser.cs" />
+    <Compile Include="BungieNetApi\Model\UserHardLinkedUserMembership.cs" />
+    <Compile Include="BungieNetApi\Model\UserOptInFlags.cs" />
+    <Compile Include="BungieNetApi\Model\UserUserInfoCard.cs" />
+    <Compile Include="BungieNetApi\Model\UserUserMembership.cs" />
+    <Compile Include="BungieNetApi\Model\UserUserMembershipData.cs" />
+    <Compile Include="BungieNetApi\Model\UserUserToUserContext.cs" />
+    <Compile Include="AutoFitGrid.cs" />
+    <Compile Include="WidgetSettingsBountiesView.xaml.cs">
+      <DependentUpon>WidgetSettingsBountiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WidgetSettingsTriumphsView.xaml.cs">
+      <DependentUpon>WidgetSettingsTriumphsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WidgetSettingsView.xaml.cs">
+      <DependentUpon>WidgetSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="XamlUtils.cs" />
+    <Compile Include="OAuthToken.cs" />
+    <Compile Include="BungieApi.cs" />
+    <Compile Include="DestinyProfile.cs" />
+    <Compile Include="MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Definitions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\7fd6ce74e2a52ea15ea89b9da031e555.png" />
+    <Content Include="Assets\BadgeLogo.scale-100.png" />
+    <Content Include="Assets\BadgeLogo.scale-125.png" />
+    <Content Include="Assets\BadgeLogo.scale-150.png" />
+    <Content Include="Assets\BadgeLogo.scale-200.png" />
+    <Content Include="Assets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\LargeTile.scale-100.png" />
+    <Content Include="Assets\LargeTile.scale-125.png" />
+    <Content Include="Assets\LargeTile.scale-150.png" />
+    <Content Include="Assets\LargeTile.scale-200.png" />
+    <Content Include="Assets\LargeTile.scale-400.png" />
+    <Content Include="Assets\SmallTile.scale-100.png" />
+    <Content Include="Assets\SmallTile.scale-125.png" />
+    <Content Include="Assets\SmallTile.scale-150.png" />
+    <Content Include="Assets\SmallTile.scale-200.png" />
+    <Content Include="Assets\SmallTile.scale-400.png" />
+    <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\SplashScreen.scale-125.png" />
+    <Content Include="Assets\SplashScreen.scale-150.png" />
+    <Content Include="Assets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\Square150x150Logo.scale-100.png" />
+    <Content Include="Assets\Square150x150Logo.scale-125.png" />
+    <Content Include="Assets\Square150x150Logo.scale-150.png" />
+    <Content Include="Assets\Square150x150Logo.scale-400.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-256.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-32.png" />
+    <Content Include="Assets\Square44x44Logo.altform-lightunplated_targetsize-48.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-16.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-256.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-32.png" />
+    <Content Include="Assets\Square44x44Logo.altform-unplated_targetsize-48.png" />
+    <Content Include="Assets\Square44x44Logo.scale-100.png" />
+    <Content Include="Assets\Square44x44Logo.scale-125.png" />
+    <Content Include="Assets\Square44x44Logo.scale-150.png" />
+    <Content Include="Assets\Square44x44Logo.scale-400.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-16.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-256.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-32.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-48.png" />
+    <Content Include="Assets\StoreLogo.scale-100.png" />
+    <Content Include="Assets\StoreLogo.scale-125.png" />
+    <Content Include="Assets\StoreLogo.scale-150.png" />
+    <Content Include="Assets\StoreLogo.scale-200.png" />
+    <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-100.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-125.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-150.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <Content Include="Properties\Default.rd.xml" />
+    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-200.png" />
+    <Content Include="Assets\Square150x150Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.scale-200.png" />
+    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="AppAuthSuccessfulView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TemplatesResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WidgetMainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WidgetNotAuthedView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WidgetSettingsBountiesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WidgetSettingsTriumphsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WidgetSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\definitions.sqlite">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Assets\NHaasGroteskTXPro-55Rg.ttf" />
+    <Content Include="Assets\DestinyKeys.ttf" />
+    <None Include="GhostOverlay_TemporaryKey.pfx" />
+    <PRIResource Include="Configuration.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite.Core">
+      <Version>3.1.3</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Gaming.XboxGameBar">
+      <Version>5.1.200402003</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>6.2.10</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp">
+      <Version>6.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
+      <Version>6.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.UI.Xaml">
+      <Version>2.3.200213001</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="RestSharp">
+      <Version>106.10.1</Version>
+    </PackageReference>
+    <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3">
+      <Version>2.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <XboxGameBar-Platform Condition="'$(Platform)' == 'x86'">win32</XboxGameBar-Platform>
+    <XboxGameBar-Platform Condition="'$(Platform)' != 'x86'">$(Platform)</XboxGameBar-Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWithVars|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\DebugWithVars\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWithVars|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\DebugWithVars\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWithVars|ARM64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM64\DebugWithVars\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugWithVars|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\DebugWithVars\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
