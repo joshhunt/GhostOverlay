@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
+using Microsoft.Gaming.XboxGameBar.Authentication;
 
 namespace GhostOverlay
 {
@@ -14,6 +16,7 @@ namespace GhostOverlay
     public sealed partial class WidgetNotAuthedView : Page
     {
         private XboxGameBarWidget widget = null;
+        private XboxGameBarWebAuthenticationBroker gameBarWebAuth;
 
         public WidgetNotAuthedView()
         {
@@ -23,18 +26,29 @@ namespace GhostOverlay
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             widget = e.Parameter as XboxGameBarWidget;
+            gameBarWebAuth = new XboxGameBarWebAuthenticationBroker(widget);
+
+            if (widget == null)
+            {
+                Debug.WriteLine("Widget parameter is null");
+                return;
+            }
+
+            Debug.WriteLine("WidgetMainView OnNavigatedTo setting widget settings");
+            widget.MaxWindowSize = new Size(1500, 1500);
+            widget.MinWindowSize = new Size(200, 100);
+            widget.HorizontalResizeSupported = true;
+            widget.VerticalResizeSupported = true;
         }
 
-        public async void Button_Click(object sender, RoutedEventArgs e)
+        public async void LoginWithDesktopBrowser_OnClick(object sender, RoutedEventArgs e)
         {
             var urlBungieAuth = new Uri(AppState.bungieApi.GetAuthorisationUrl());
             var success = await Windows.System.Launcher.LaunchUriAsync(urlBungieAuth);
 
             if (success)
             {
-                ProgressRing.IsActive = true;
-                LoginButton.Visibility = Visibility.Collapsed;
-                WaitingText.Visibility = Visibility.Visible;
+                AuthWaiting.Visibility = Visibility.Visible;
                 WaitForAuth();
             }
             else
@@ -43,15 +57,17 @@ namespace GhostOverlay
             } 
         }
 
+        // public async void LoginWithXboxBroker_OnClick(object sender, RoutedEventArgs e)
+        // {
+        //     AuthWaiting.Visibility = Visibility.Visible;
+        // }
+
         private async void WaitForAuth()
         {
             while (!AppState.TokenData.IsValid())
             {
-                await Task.Delay(1000);
+                await Task.Delay(500);
             }
-
-            ProgressRing.IsActive = false;
-            WaitingText.Text = "User logged in!!!";
 
             this.Frame.Navigate(typeof(WidgetMainView), widget);
         }

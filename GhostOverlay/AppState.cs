@@ -42,16 +42,28 @@ namespace GhostOverlay
         }
     }
 
-    public struct SettingsKey
-    {
-        public static string SelectedBounties = "SelectedBounties";
-        public static string AccessToken = "AccessToken";
-        public static string RefreshToken = "RefreshToken";
-        public static string AccessTokenExpiration = "AccessTokenExpiration";
-        public static string RefreshTokenExpiration = "RefreshTokenExpiration";
+    // public struct SettingsKey
+    // {
+    //     public static string SelectedBounties = "SelectedBounties";
+    //     public static string AccessToken = "AccessToken";
+    //     public static string RefreshToken = "RefreshToken";
+    //     public static string AccessTokenExpiration = "AccessTokenExpiration";
+    //     public static string RefreshTokenExpiration = "RefreshTokenExpiration";
+    //     public static string Language = "Language";
+    //
+    //     public static string SelectedBountiesItemHash = "ItemHash";
+    //     public static string SelectedBountiesItemInstanceId = "ItemInstanceId";
+    // }
 
-        public static string SelectedBountiesItemHash = "ItemHash";
-        public static string SelectedBountiesItemInstanceId = "ItemInstanceId";
+    public enum SettingsKey
+    {
+        SelectedBounties,
+        AccessToken,
+        RefreshToken,
+        AccessTokenExpiration,
+        RefreshTokenExpiration,
+        Language,
+        DefinitionsPath,
     }
 
     public static class AppState
@@ -63,21 +75,23 @@ namespace GhostOverlay
         // TODO: I don't think we need to use this here any more?
         public static DestinyResponsesDestinyProfileResponse Profile { get; set; }
 
-        public static T ReadSetting<T>(string key, T defaultValue)
+        public static T ReadSetting<T>(SettingsKey key, T defaultValue)
         {
+            var keyString = key.ToString();
+            Debug.WriteLine($"keyString: {keyString}");
             var localSettings = ApplicationData.Current.LocalSettings;
 
-            if (localSettings.Values.ContainsKey(key)) return (T) localSettings.Values[key];
+            if (localSettings.Values.ContainsKey(keyString)) return (T) localSettings.Values[keyString];
 
             if (null != defaultValue) return defaultValue;
 
             return default;
         }
 
-        public static void SaveSetting<T>(string key, T value)
+        public static void SaveSetting<T>(SettingsKey key, T value)
         {
             var localSettings = ApplicationData.Current.LocalSettings;
-            localSettings.Values[key] = value;
+            localSettings.Values[key.ToString()] = value;
         }
 
         internal static void SaveTrackedBounties(List<TrackedBounty> trackedBounties)
@@ -98,7 +112,7 @@ namespace GhostOverlay
 
         public static List<TrackedBounty> RestoreTrackedBounties()
         {
-            Debug.WriteLine("\n\nRestoring saved bounties");
+            Debug.WriteLine("Restoring saved bounties");
             var selectedBountiesSettings =
                 ReadSetting(SettingsKey.SelectedBounties, new ApplicationDataCompositeValue());
 
@@ -112,7 +126,7 @@ namespace GhostOverlay
                 trackedBounties.Insert(Convert.ToInt32(settingsPair.Key), parsed);
             }
 
-            Debug.WriteLine($"Got {trackedBounties.Count} from settings\n\n");
+            Debug.WriteLine($"Got {trackedBounties.Count} from settings");
 
             return trackedBounties;
         }

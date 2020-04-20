@@ -85,26 +85,30 @@ namespace GhostOverlay
             return await GetProfile(user.MembershipType, user.MembershipId, components, requireAuth: true);
         }
 
+        public async Task<DestinyConfigDestinyManifest> GetManifest()
+        {
+            return await GetBungie<DestinyConfigDestinyManifest>("/Platform/Destiny2/Manifest");
+        }
+
         public async Task<T> GetBungie<T>(string path, bool requireAuth = false)
         {   
             Debug.WriteLine($"GetBungie request for {path}");
             var request = new RestRequest(path);
 
-            if (AppState.TokenData.RefreshTokenIsValid())
+            if (AppState.TokenData != null && AppState.TokenData.RefreshTokenIsValid())
             {
-                Debug.WriteLine("  Refresh token is valid, so EnsureTokenDataIsValid");
                 await EnsureTokenDataIsValid();
             }
             
-            if (requireAuth && !AppState.TokenData.AccessTokenIsValid())
+            if (requireAuth && (AppState.TokenData == null || !AppState.TokenData.AccessTokenIsValid()))
             {
                 throw new BungieApiException("Auth was required but the access token was not valid");
             }
 
-            if (AppState.TokenData.AccessTokenIsValid())
+            if (AppState.TokenData != null && AppState.TokenData.AccessTokenIsValid())
             {
                 var headerValue = $"Bearer {AppState.TokenData.AccessToken}";
-                Debug.WriteLine($"  Adding access token {headerValue}");
+                Debug.WriteLine("  Adding access token");
                 
                 request.AddHeader("authorization", headerValue);
             }

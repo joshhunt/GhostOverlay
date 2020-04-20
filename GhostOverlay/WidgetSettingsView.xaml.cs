@@ -43,6 +43,8 @@ namespace GhostOverlay
                 widget.HorizontalResizeSupported = true;
                 widget.VerticalResizeSupported = true;
                 widget.SettingsSupported = false;
+
+                _ = widget.TryResizeWindowAsync(new Size(1170, 790));
             }
 
             navView.SelectedItem = navView.MenuItems[0];

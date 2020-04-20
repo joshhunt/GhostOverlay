@@ -16,7 +16,7 @@ using BungieNetApi.Model;
 
 namespace GhostOverlay
 {
-    public sealed partial class WidgetSettingsBountiesView : Page, ISubscriber<string>
+    public sealed partial class WidgetSettingsBountiesView : Page, ISubscriber<PropertyChanged>
     {
         private RangeObservableCollection<Bounty> Bounties = new RangeObservableCollection<Bounty>();
         private bool isSettingSelectedBounties = false;
@@ -34,15 +34,22 @@ namespace GhostOverlay
             UpdateViewModel();
         }
 
-        public void HandleMessage(string message)
+        public void HandleMessage(PropertyChanged message)
         {
-            if (message == "Profile") UpdateViewModel();
+            switch (message)
+            {
+                case PropertyChanged.Profile:
+                case PropertyChanged.DefinitionsPath:
+                    UpdateViewModel();
+                    break;
+            }
         }
 
         private void UpdateViewModel()
         {
             var profile = AppState.WidgetData.Profile;
             if (profile?.CharacterInventories?.Data == null) return;
+            if (!AppState.WidgetData.DefinitionsLoaded) return;
 
             Bounties.Clear();
             Bounties.AddRange(Bounty.BountiesFromProfile(profile, addCompletedBounties: true));

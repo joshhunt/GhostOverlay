@@ -64,7 +64,7 @@ namespace GhostOverlay
         [Obsolete("OwnerCharacterId is deprecated, use OwnerCharacter instead.")]
         public string OwnerCharacterId;
 
-        public Uri ImageUri => new Uri($"https://www.bungie.net{ItemDefinition.DisplayProperties.Icon}");
+        public Uri ImageUri => new Uri($"https://www.bungie.net{ItemDefinition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
 
         public async void PopulateDefinition()
         {

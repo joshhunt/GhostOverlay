@@ -8,10 +8,19 @@ using BungieNetApi.Model;
 
 namespace GhostOverlay
 {
+    public enum PropertyChanged
+    {
+        Profile,
+        TrackedBounties,
+        DefinitionsPath,
+    }
+
     public class WidgetData
     {
         public bool ProfileUpdateScheduled = false;
         public static int ProfileUpdateInterval = 10 * 1000;
+
+        public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
 
@@ -25,7 +34,7 @@ namespace GhostOverlay
                 if (value.Equals(_profile)) return;
 
                 _profile = value;
-                eventAggregator.Publish("Profile");
+                eventAggregator.Publish(PropertyChanged.Profile);
             }
         }
 
@@ -39,7 +48,19 @@ namespace GhostOverlay
 
                 _trackedBounties = value;
                 AppState.SaveTrackedBounties(_trackedBounties);
-                eventAggregator.Publish("TrackedBounties");
+                eventAggregator.Publish(PropertyChanged.TrackedBounties);
+            }
+        }
+
+        private string _definitionsPath;
+        public string DefinitionsPath
+        {
+            get => _definitionsPath;
+            set
+            {
+                if (value.Equals(_definitionsPath)) return;
+                _definitionsPath = value;
+                eventAggregator.Publish(PropertyChanged.DefinitionsPath);
             }
         }
 

@@ -9,6 +9,7 @@ using System.Threading;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.UI.Core;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -19,7 +20,7 @@ using SQLitePCL;
 
 namespace GhostOverlay
 {
-    public sealed partial class WidgetMainView : Page, ISubscriber<string>
+    public sealed partial class WidgetMainView : Page, ISubscriber<PropertyChanged>
     {
         public List<Bounty> AllBounties = new List<Bounty>();
         public ObservableCollection<Bounty> TrackedBounties = new ObservableCollection<Bounty>();
@@ -30,7 +31,8 @@ namespace GhostOverlay
             None,
             Empty,
             InitialProfileLoad,
-            ProfileError
+            ProfileError,
+            DefinitionsLoading,
         }
 
         public WidgetMainView()
@@ -72,17 +74,18 @@ namespace GhostOverlay
             AppState.WidgetData.ProfileUpdateScheduled = false;
         }
 
-        public void HandleMessage(string message)
+        public void HandleMessage(PropertyChanged message)
         {
-            Debug.WriteLine($"property {message} changed!");
+            Debug.WriteLine($"WidgetMainView: property {message} changed!");
 
             switch (message)
             {
-                case "Profile":
+                case PropertyChanged.Profile:
+                case PropertyChanged.DefinitionsPath:
                     UpdateFromProfile();
                     break;
 
-                case "TrackedBounties":
+                case PropertyChanged.TrackedBounties:
                     UpdateTrackedBounties();
                     break;
             }
@@ -93,6 +96,7 @@ namespace GhostOverlay
             EmptyState.Visibility = Visibility.Collapsed;
             InitialProfileLoadState.Visibility = Visibility.Collapsed;
             ProfileErrorState.Visibility = Visibility.Collapsed;
+            DefinitionsLoadingState.Visibility = Visibility.Collapsed;
 
             switch (state)
             {
@@ -109,6 +113,10 @@ namespace GhostOverlay
 
                 case VisualState.ProfileError:
                     ProfileErrorState.Visibility = Visibility.Visible;
+                    break;
+
+                case VisualState.DefinitionsLoading:
+                    DefinitionsLoadingState.Visibility = Visibility.Visible;
                     break;
             }
         }
@@ -130,9 +138,13 @@ namespace GhostOverlay
                 return;
             }
 
-            LoadingRing.IsActive = false;
-            LoadingRing.Visibility = Visibility.Collapsed;
-            MessageText.Visibility = Visibility.Collapsed;
+            if (!AppState.WidgetData.DefinitionsLoaded)
+            {
+                SetVisualState(VisualState.DefinitionsLoading);
+                return;
+            }
+
+            SetVisualState(VisualState.None);
 
             AllBounties = Bounty.BountiesFromProfile(profile, addCompletedBounties: false);
             UpdateTrackedBounties();
@@ -155,7 +167,6 @@ namespace GhostOverlay
                 group t by t.OwnerCharacter
                 into g
                 select g;
-
 
             SetVisualState(TrackedBounties.Count == 0 ? VisualState.Empty : VisualState.None);
 

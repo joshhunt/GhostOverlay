@@ -8,28 +8,59 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
-    <Grid>
-        <StackPanel
-            Margin="20"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <ProgressRing
-                x:Name="ProgressRing"
-                Width="40"
-                Height="40" />
 
-            <Button
-                x:Name="LoginButton"
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock
+            HorizontalAlignment="Center"
+            Style="{ThemeResource BaseTextBlockStyle}"
+            Text="You'll need to log in with your Bungie account to continue."
+            TextAlignment="Center"
+            TextWrapping="WrapWholeWords" />
+
+        <!--  <TextBlock  -->
+        <!--  MaxWidth="360"  -->
+        <!--  Margin="0,12,0,0"  -->
+        <!--  HorizontalAlignment="Center"  -->
+        <!--  Text="If the first button doesn't work, try the 'Login with Desktop browser' method. I know this is jank!!!"  -->
+        <!--  TextWrapping="WrapWholeWords" />  -->
+
+        <!--  <Button  -->
+        <!--  Margin="0,12,0,0"  -->
+        <!--  HorizontalAlignment="Center"  -->
+        <!--  Click="LoginWithXboxBroker_OnClick"  -->
+        <!--  Content="Login with Bungie" />  -->
+
+        <!--  <Button  -->
+        <!--  Margin="0,12,0,0"  -->
+        <!--  HorizontalAlignment="Center"  -->
+        <!--  Click="LoginWithDesktopBrowser_OnClick"  -->
+        <!--  Content="Login with Bungie (desktop browser)" />  -->
+
+        <Button
+            Margin="0,12,0,0"
+            HorizontalAlignment="Center"
+            Click="LoginWithDesktopBrowser_OnClick"
+            Content="Login with Bungie" />
+
+        <StackPanel
+            x:Name="AuthWaiting"
+            Margin="0,24,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Visibility="Collapsed">
+
+            <ProgressRing
                 HorizontalAlignment="Center"
-                Click="Button_Click"
-                Content="Login with Bungie" />
+                VerticalAlignment="Center"
+                IsActive="True" />
 
             <TextBlock
-                x:Name="WaitingText"
-                Margin="0,24,0,0"
+                Margin="12,0,0,0"
                 HorizontalAlignment="Center"
-                Text="Waiting to login..."
-                Visibility="Collapsed" />
+                VerticalAlignment="Center"
+                Text="Waiting to login..." />
         </StackPanel>
-    </Grid>
+    </StackPanel>
+
 </Page>

@@ -28,35 +28,48 @@ namespace GhostOverlay
         /// </summary>
         public App()
         {
+            Debug.WriteLine("App constructor");
+
             Definitions.InitializeDatabase();
             AppState.RestoreBungieTokenDataFromSettings();
             AppState.WidgetData.RestoreTrackedBountiesFromSettings();
 
-            InitializeComponent();
+            // InitializeComponent();
 
             Suspending += OnSuspending;
         }
 
+
         protected override void OnActivated(IActivatedEventArgs args)
         {
+            Debug.WriteLine("OnActivated");
             if (args.Kind != ActivationKind.Protocol) return;
-
+        
             var protocolArgs = args as IProtocolActivatedEventArgs;
             var scheme = protocolArgs.Uri.Scheme;
             Debug.WriteLine($"app was activated with scheme {scheme}");
-
-            if (scheme.Equals("ms-gamebarwidget")) HandleGameBarWidgetActivation(args);
-
-            if (scheme.Equals("ghost-overlay"))
+        
+            switch (scheme)
             {
-                var path = protocolArgs.Uri.AbsolutePath;
+                case "ms-gamebarwidget":
+                    HandleGameBarWidgetActivation(args);
+                    break;
+        
+                case "ghost-overlay":
+                    var path = protocolArgs.Uri.AbsolutePath;
+                    LaunchMainApp();
 
-                if (path.Equals("/oauth-return"))
-                {
-                    var parsed = HttpUtility.ParseQueryString(protocolArgs.Uri.Query);
-                    var authCode = parsed["code"];
-                    HandleAuthCode(authCode);
-                }
+                    if (path.Equals("/oauth-return"))
+                    {
+                        var parsed = HttpUtility.ParseQueryString(protocolArgs.Uri.Query);
+                        var authCode = parsed["code"];
+                        HandleAuthCode(authCode);
+                    }
+                    break;
+        
+                default:
+                    Debug.WriteLine("App was activated with unknown scheme");
+                    break;
             }
         }
 
@@ -128,40 +141,44 @@ namespace GhostOverlay
             Window.Current.Closed -= WidgetMainSettingsWindow_Closed;
         }
 
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        private void LaunchMainApp()
         {
             appRootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
-
             if (appRootFrame == null)
             {
+                Debug.WriteLine("App root frame is null, making a new one");
+
                 // Create a Frame to act as the navigation context and navigate to the first page
                 appRootFrame = new Frame();
                 appRootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
                 // Place the frame in the current Window
                 Window.Current.Content = appRootFrame;
             }
-            // just ensure that the window is active
 
-            if (e.PrelaunchActivated == false)
+            if (appRootFrame.Content == null)
             {
-                if (appRootFrame.Content == null)
-                {
-                    if (AppState.TokenData.IsValid())
-                        appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
-                    else
-                        appRootFrame.Navigate(typeof(MainPage));
-                }
+                if (AppState.TokenData.IsValid())
+                    appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
+                else
+                    appRootFrame.Navigate(typeof(MainPage));
+            }
 
-                // Ensure the current window is active
-                Window.Current.Activate();
+            // Ensure the current window is active
+            Window.Current.Activate();
+        }
+
+        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        {
+            Debug.WriteLine("OnLaunched");
+
+            LaunchMainApp();
+            
+            if (e.PrelaunchActivated)
+            {
+                Debug.WriteLine("PrelaunchActivated was true, i wonder if we needed to do something different here?");
             }
         }
 
@@ -172,7 +189,12 @@ namespace GhostOverlay
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
+            Debug.WriteLine("OnSuspending");
             var deferral = e.SuspendingOperation.GetDeferral();
+
+            widgetMainSettings = null;
+            widgetMain = null;
+
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
