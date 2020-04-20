@@ -19,8 +19,34 @@
     </Page.Resources>
 
     <Grid>
-        <ProgressRing x:Name="LoadingRing" IsActive="True" />
         <TextBlock x:Name="MessageText" />
+
+        <StackPanel
+            x:Name="EmptyState"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center" Text="No tracked bounties yet!" />
+            <Button
+                Margin="0,12,0,0"
+                HorizontalAlignment="Center"
+                Click="SettingsButton_OnClick"
+                Content="Open Settings" />
+        </StackPanel>
+
+        <StackPanel
+            x:Name="InitialProfileLoadState"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <ProgressRing x:Name="LoadingRing" IsActive="True" />
+            <TextBlock Margin="0,12,0,0" Text="Loading Profile..." />
+        </StackPanel>
+
+        <StackPanel
+            x:Name="ProfileErrorState"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <TextBlock Text="">There was an error loading your Profile.</TextBlock>
+        </StackPanel>
 
         <ListView
             HorizontalAlignment="Stretch"

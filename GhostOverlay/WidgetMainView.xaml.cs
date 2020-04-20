@@ -13,6 +13,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
+using SQLitePCL;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -24,6 +25,14 @@ namespace GhostOverlay
         public ObservableCollection<Bounty> TrackedBounties = new ObservableCollection<Bounty>();
         private XboxGameBarWidget widget;
 
+        private enum VisualState
+        {
+            None,
+            Empty,
+            InitialProfileLoad,
+            ProfileError
+        }
+
         public WidgetMainView()
         {
             InitializeComponent();
@@ -33,8 +42,6 @@ namespace GhostOverlay
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Debug.WriteLine("WidgetMainView OnNavigatedTo");
-
             widget = e.Parameter as XboxGameBarWidget;
 
             if (widget == null)
@@ -42,6 +49,8 @@ namespace GhostOverlay
                 Debug.WriteLine("Widget parameter is null");
                 return;
             }
+
+            SetVisualState(VisualState.InitialProfileLoad);
 
             Debug.WriteLine("WidgetMainView OnNavigatedTo setting widget settings");
             widget.MaxWindowSize = new Size(1500, 1500);
@@ -79,6 +88,31 @@ namespace GhostOverlay
             }
         }
 
+        private void SetVisualState(VisualState state)
+        {
+            EmptyState.Visibility = Visibility.Collapsed;
+            InitialProfileLoadState.Visibility = Visibility.Collapsed;
+            ProfileErrorState.Visibility = Visibility.Collapsed;
+
+            switch (state)
+            {
+                case VisualState.None:
+                    break;
+
+                case VisualState.Empty:
+                    EmptyState.Visibility = Visibility.Visible;
+                    break;
+
+                case VisualState.InitialProfileLoad:
+                    InitialProfileLoadState.Visibility = Visibility.Visible;
+                    break;
+
+                case VisualState.ProfileError:
+                    ProfileErrorState.Visibility = Visibility.Visible;
+                    break;
+            }
+        }
+
         private void UpdateFromProfile()
         {
             Debug.WriteLine("UpdateFromProfile");
@@ -89,9 +123,8 @@ namespace GhostOverlay
             {
                 if (profile?.Profile?.Data?.UserInfo?.MembershipId != null)
                 {
-                    MessageText.Visibility = Visibility.Visible;
-                    MessageText.Text = "Inventory data is missing in profile. This is an error. Maybe auth has failed or expired?";
                     Debug.WriteLine("no inventory data in profile, returning");
+                    SetVisualState(VisualState.ProfileError);
                 }
                 
                 return;
@@ -123,20 +156,18 @@ namespace GhostOverlay
                 into g
                 select g;
 
-            if (TrackedBounties.Count == 0)
-            {
-                MessageText.Visibility = Visibility.Visible;
-                MessageText.Text = "Track bounties from settings to see them here";
-            }
-            else
-            {
-                MessageText.Visibility = Visibility.Collapsed;
-            }
+
+            SetVisualState(TrackedBounties.Count == 0 ? VisualState.Empty : VisualState.None);
 
             TrackedBountiesCollection.Source = groupedBounties;
         }
 
         private async void Widget_SettingsClicked(XboxGameBarWidget sender, object args)
+        {
+            await widget.ActivateSettingsAsync();
+        }
+
+        private async void SettingsButton_OnClick(object sender, RoutedEventArgs e)
         {
             await widget.ActivateSettingsAsync();
         }
