@@ -28,13 +28,23 @@ namespace GhostOverlay
         /// </summary>
         public App()
         {
+            this.UnhandledException += (sender, e) =>
+            {
+                System.Diagnostics.Debug.WriteLine("my handled exception handler");
+                e.Handled = true;
+                System.Diagnostics.Debug.WriteLine(e.Exception);
+                System.Diagnostics.Debug.WriteLine(e.Exception.StackTrace);
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+                System.Diagnostics.Debug.WriteLine(sender.ToString());
+            };
+
             Debug.WriteLine("App constructor");
 
             Definitions.InitializeDatabase();
             AppState.RestoreBungieTokenDataFromSettings();
             AppState.WidgetData.RestoreTrackedBountiesFromSettings();
 
-            // InitializeComponent();
+            InitializeComponent();
 
             Suspending += OnSuspending;
         }
@@ -44,17 +54,17 @@ namespace GhostOverlay
         {
             Debug.WriteLine("OnActivated");
             if (args.Kind != ActivationKind.Protocol) return;
-        
+
             var protocolArgs = args as IProtocolActivatedEventArgs;
             var scheme = protocolArgs.Uri.Scheme;
             Debug.WriteLine($"app was activated with scheme {scheme}");
-        
+
             switch (scheme)
             {
                 case "ms-gamebarwidget":
                     HandleGameBarWidgetActivation(args);
                     break;
-        
+
                 case "ghost-overlay":
                     var path = protocolArgs.Uri.AbsolutePath;
                     LaunchMainApp();
@@ -66,7 +76,7 @@ namespace GhostOverlay
                         HandleAuthCode(authCode);
                     }
                     break;
-        
+
                 default:
                     Debug.WriteLine("App was activated with unknown scheme");
                     break;
@@ -100,7 +110,8 @@ namespace GhostOverlay
                 else
                     widgetRootFrame.Navigate(typeof(WidgetNotAuthedView), widgetMain);
 
-            } else if (widgetArgs.AppExtensionId == "WidgetMainSettings")
+            }
+            else if (widgetArgs.AppExtensionId == "WidgetMainSettings")
             {
                 widgetMainSettings = new XboxGameBarWidget(
                     widgetArgs,
@@ -110,9 +121,9 @@ namespace GhostOverlay
 
                 Window.Current.Closed += WidgetMainSettingsWindow_Closed;
 
-                widgetRootFrame.Navigate(typeof(WidgetSettingsView), widgetMainSettings);
+                widgetRootFrame.Navigate(typeof(WidgetSettingsBountiesView), widgetMainSettings);
             }
-            
+
             Window.Current.Activate();
         }
 
@@ -125,10 +136,10 @@ namespace GhostOverlay
 
             if (AppState.TokenData.IsValid() != true)
                 throw new Exception("Exchanged code for token, but the TokenData is not valid??");
-            
+
             appRootFrame?.Navigate(typeof(AppAuthSuccessfulView));
         }
-        
+
         private void WidgetMainWindow_Closed(object sender, CoreWindowEventArgs e)
         {
             widgetMain = null;
@@ -175,7 +186,7 @@ namespace GhostOverlay
             Debug.WriteLine("OnLaunched");
 
             LaunchMainApp();
-            
+
             if (e.PrelaunchActivated)
             {
                 Debug.WriteLine("PrelaunchActivated was true, i wonder if we needed to do something different here?");

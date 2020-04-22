@@ -16,6 +16,17 @@
         </ResourceDictionary>
     </Page.Resources>
 
+    <ScrollViewer>
+
+    <StackPanel>
+
+            <StackPanel Margin="6">
+                <Button>gaaaahh</Button>
+            </StackPanel>
+
+        
+        
+    
     <Grid Margin="6,0">
         <Grid.Resources>
             <CollectionViewSource x:Name="BountiesCollection" IsSourceGrouped="True" />
@@ -105,4 +116,8 @@
             </GridView.ItemTemplate>
         </GridView>
     </Grid>
+
+    </StackPanel>
+
+    </ScrollViewer>
 </Page>

@@ -48,7 +48,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
-    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <UseDotNetNativeToolchain>false</UseDotNetNativeToolchain>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -137,10 +138,10 @@
     </Compile>
     <Compile Include="ViewModels.cs" />
     <Compile Include="WidgetData.cs" />
-    <Compile Include="WidgetMainView.xaml.cs">
+    <Compile Include="Views\WidgetMainView.xaml.cs">
       <DependentUpon>WidgetMainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WidgetNotAuthedView.xaml.cs">
+    <Compile Include="Views\WidgetNotAuthedView.xaml.cs">
       <DependentUpon>WidgetNotAuthedView.xaml</DependentUpon>
     </Compile>
     <Compile Include="BungieNetApi\Client\OpenAPIDateConverter.cs" />
@@ -827,13 +828,13 @@
     <Compile Include="BungieNetApi\Model\UserUserMembershipData.cs" />
     <Compile Include="BungieNetApi\Model\UserUserToUserContext.cs" />
     <Compile Include="AutoFitGrid.cs" />
-    <Compile Include="WidgetSettingsBountiesView.xaml.cs">
+    <Compile Include="Views\WidgetSettingsBountiesView.xaml.cs">
       <DependentUpon>WidgetSettingsBountiesView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WidgetSettingsTriumphsView.xaml.cs">
+    <Compile Include="Views\WidgetSettingsTriumphsView.xaml.cs">
       <DependentUpon>WidgetSettingsTriumphsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WidgetSettingsView.xaml.cs">
+    <Compile Include="Views\WidgetSettingsView.xaml.cs">
       <DependentUpon>WidgetSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="XamlUtils.cs" />
@@ -903,6 +904,9 @@
     <Content Include="Assets\Wide310x150Logo.scale-125.png" />
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <PRIResource Include="Configuration.sample.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -925,11 +929,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WidgetMainView.xaml">
+    <Page Include="Views\WidgetMainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WidgetNotAuthedView.xaml">
+    <Page Include="Views\WidgetNotAuthedView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -937,15 +941,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="WidgetSettingsBountiesView.xaml">
+    <Page Include="Views\WidgetSettingsBountiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WidgetSettingsTriumphsView.xaml">
+    <Page Include="Views\WidgetSettingsTriumphsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WidgetSettingsView.xaml">
+    <Page Include="Views\WidgetSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -975,7 +979,7 @@
       <Version>6.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.3.200213001</Version>
+      <Version>2.4.0-prerelease.200322001</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>

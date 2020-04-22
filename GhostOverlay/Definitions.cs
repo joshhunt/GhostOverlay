@@ -24,14 +24,18 @@ namespace GhostOverlay
 
         public static async void InitializeDatabase()
         {
+            Debug.WriteLine("top InitializeDatabase");
             Ready = ActuallyInitializeDatabase();
+            Debug.WriteLine("post ActuallyInitializeDatabase");
             await Ready;
         }
 
         public static async Task<string> ActuallyInitializeDatabase()
         {
+            Debug.WriteLine("top ActuallyInitializeDatabase");
             var definitionsPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, "@@NotDownloaded");
             var definitionsExist = !definitionsPath.Equals("@@NotDownloaded") && File.Exists(definitionsPath);
+            Debug.WriteLine("after ActuallyInitializeDatabase checks");
 
             if (!definitionsExist)
             {
@@ -50,8 +54,6 @@ namespace GhostOverlay
 
             return definitionsPath;
         }
-
-
 
         public static async Task<string> DownloadDefinitionsDatabase()
         {
@@ -125,12 +127,15 @@ namespace GhostOverlay
 
             SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
 
+            if (!query.HasRows)
+            {
+                return default(T);
+            }
+
             query.Read();
             var json = query.GetString(0);
 
-            var data = JsonConvert.DeserializeObject<T>(json);
-
-            return data;
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetItemDefinition(uint hash)

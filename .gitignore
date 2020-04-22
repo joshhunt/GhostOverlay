@@ -12,7 +12,6 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-Configuration.resw
 
 # Build results
 [Dd]ebug/
@@ -27,6 +26,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+
+Configuration.resw
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/

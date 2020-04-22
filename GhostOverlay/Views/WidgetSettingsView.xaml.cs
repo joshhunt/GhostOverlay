@@ -73,5 +73,15 @@ namespace GhostOverlay
                     break;
             }
         }
+
+        private void GoToBounties_Click(object sender, RoutedEventArgs e)
+        {
+            contentFrame.Navigate(typeof(WidgetSettingsBountiesView));
+        }
+
+        private void GoToTriumphs_Click(object sender, RoutedEventArgs e)
+        {
+            contentFrame.Navigate(typeof(WidgetSettingsTriumphsView));
+        }
     }
 }
