@@ -28,6 +28,10 @@ Global
 		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		testing|ARM = testing|ARM
+		testing|ARM64 = testing|ARM64
+		testing|x64 = testing|x64
+		testing|x86 = testing|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.Debug|ARM.ActiveCfg = Debug|ARM
@@ -78,6 +82,18 @@ Global
 		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.Release|x86.ActiveCfg = Release|x86
 		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.Release|x86.Build.0 = Release|x86
 		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.Release|x86.Deploy.0 = Release|x86
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|ARM.ActiveCfg = testing|ARM
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|ARM.Build.0 = testing|ARM
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|ARM.Deploy.0 = testing|ARM
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|ARM64.ActiveCfg = testing|ARM64
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|ARM64.Build.0 = testing|ARM64
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|ARM64.Deploy.0 = testing|ARM64
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|x64.ActiveCfg = testing|x64
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|x64.Build.0 = testing|x64
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|x64.Deploy.0 = testing|x64
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|x86.ActiveCfg = testing|x86
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|x86.Build.0 = testing|x86
+		{AAB993D1-A48D-4E32-9F6D-B9A94DB4A538}.testing|x86.Deploy.0 = testing|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
