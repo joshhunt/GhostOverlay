@@ -18,106 +18,130 @@
 
     <ScrollViewer>
 
-    <StackPanel>
+        <StackPanel>
+            <Grid Margin="6,0">
+                <Grid.Resources>
+                    <CollectionViewSource x:Name="BountiesCollection" IsSourceGrouped="True" />
+                </Grid.Resources>
 
-            <StackPanel Margin="6">
-                <Button>gaaaahh</Button>
+                <GridView
+                    x:Name="BountiesGridView"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top"
+                    ItemsSource="{Binding Source={StaticResource BountiesCollection}}"
+                    SelectionChanged="SelectedBountiesChanged"
+                    SelectionMode="Multiple">
+
+                    <GridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="VerticalContentAlignment" Value="Top" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Margin" Value="6" />
+                        </Style>
+                    </GridView.ItemContainerStyle>
+
+                    <GridView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Key.ClassName}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </GridView.GroupStyle>
+
+                    <GridView.ItemTemplate>
+
+                        <DataTemplate x:DataType="local:Bounty">
+
+                            <Grid MaxWidth="400" Opacity="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <ContentControl 
+                                    Grid.Row="0" Grid.Column="0"
+                                    ContentTemplate="{StaticResource BountyIcon}" />
+
+                                <StackPanel
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Margin="12,0,0,0"
+                                    HorizontalAlignment="Stretch">
+
+                                    <TextBlock
+                                        HorizontalAlignment="Left"
+                                        FontSize="15"
+                                        FontWeight="Medium"
+                                        Style="{ThemeResource BaseTextBlockStyle}"
+                                        Text="{x:Bind ItemDefinition.DisplayProperties.Name}" />
+
+                                    <TextBlock
+                                        Margin="0,6,0,6"
+                                        HorizontalAlignment="Left"
+                                        MaxLines="2"
+                                        Style="{ThemeResource BodyTextBlockStyle}"
+                                        Text="{x:Bind ItemDefinition.DisplayProperties.Description}"
+                                        TextTrimming="WordEllipsis"
+                                        TextWrapping="WrapWholeWords" />
+
+                                    <ListView
+                                        Visibility="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
+                                        IsItemClickEnabled="False"
+                                        ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                                        ItemTemplate="{StaticResource ObjectiveTemplate}"
+                                        ItemsSource="{x:Bind Objectives}"
+                                        SelectionMode="None" />
+
+                                    <StackPanel Margin="0,0,0,0" Visibility="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanVisibilityConverter}}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Rectangle
+                                                Grid.Column="0"
+                                                Width="20"
+                                                Height="20"
+                                                Margin="0,0,6,0"
+                                                Fill="#FF589864" />
+
+                                            <ProgressBar
+                                                Grid.Column="1"
+                                                Height="20"
+                                                CornerRadius="0"
+                                                Foreground="Transparent"
+                                                Background="Transparent"
+                                                Opacity=".9"
+                                                Value="0" />
+
+                                            <Grid Grid.Column="1" Margin="6,2,6,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Grid.ColumnSpan="2" Text="Complete" />
+                                            </Grid>
+                                        </Grid>
+                                    </StackPanel>
+
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </Grid>
+
+            <StackPanel Margin="6" Orientation="Horizontal">
+                <Button Click="UpdateDefinitionsButton_OnClick">Update items database</Button>
+                <TextBlock Text="{x:Bind definitionsDbName}" Margin="12,0" />
+                <ProgressRing x:Name="DefinitionsProgressRing" IsActive="False"></ProgressRing>
             </StackPanel>
 
-        
-        
-    
-    <Grid Margin="6,0">
-        <Grid.Resources>
-            <CollectionViewSource x:Name="BountiesCollection" IsSourceGrouped="True" />
-        </Grid.Resources>
-
-        <GridView
-            x:Name="BountiesGridView"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Top"
-            ItemsSource="{Binding Source={StaticResource BountiesCollection}}"
-            SelectionChanged="SelectedBountiesChanged"
-            SelectionMode="Multiple">
-
-            <GridView.ItemContainerStyle>
-                <Style TargetType="GridViewItem">
-                    <Setter Property="VerticalContentAlignment" Value="Top" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Margin" Value="6" />
-                </Style>
-            </GridView.ItemContainerStyle>
-
-            <GridView.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Key.ClassName}" />
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </GridView.GroupStyle>
-
-            <GridView.ItemTemplate>
-
-                <DataTemplate x:DataType="local:Bounty">
-
-                    <Grid MaxWidth="400">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Image
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Width="48"
-                            Height="48"
-                            Margin="0,4,0,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top">
-
-                            <Image.Source>
-                                <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
-                            </Image.Source>
-                        </Image>
-
-                        <StackPanel
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="12,0,0,0"
-                            HorizontalAlignment="Stretch">
-
-                            <TextBlock
-                                HorizontalAlignment="Left"
-                                FontSize="15"
-                                FontWeight="Medium"
-                                Style="{ThemeResource BaseTextBlockStyle}"
-                                Text="{x:Bind ItemDefinition.DisplayProperties.Name}" />
-
-                            <TextBlock
-                                Margin="0,6,0,6"
-                                HorizontalAlignment="Left"
-                                MaxLines="2"
-                                Style="{ThemeResource BodyTextBlockStyle}"
-                                Text="{x:Bind ItemDefinition.DisplayProperties.Description}"
-                                TextTrimming="WordEllipsis"
-                                TextWrapping="WrapWholeWords" />
-
-                            <ListView
-                                IsItemClickEnabled="False"
-                                ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
-                                ItemTemplate="{StaticResource ObjectiveTemplate}"
-                                ItemsSource="{x:Bind Objectives}"
-                                SelectionMode="None" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
-    </Grid>
-
-    </StackPanel>
+        </StackPanel>
 
     </ScrollViewer>
 </Page>

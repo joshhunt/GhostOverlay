@@ -93,25 +93,15 @@
 
                 <DataTemplate x:DataType="local:Bounty">
 
-                    <Grid>
+                    <Grid Opacity="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Image
+                        <ContentControl 
                             Grid.Row="0"
-                            Grid.Column="0"
-                            Width="48"
-                            Height="48"
-                            Margin="0,4,0,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Top">
-
-                            <Image.Source>
-                                <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
-                            </Image.Source>
-                        </Image>
+                            Grid.Column="0" ContentTemplate="{StaticResource BountyIcon}" />
 
                         <StackPanel
                             Grid.Row="0"

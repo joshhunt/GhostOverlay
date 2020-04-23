@@ -1,20 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.ServiceModel.Channels;
-using System.Threading;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.UI.Core;
-using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
-using SQLitePCL;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -22,24 +16,41 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetMainView : Page, ISubscriber<PropertyChanged>
     {
-        public List<Bounty> AllBounties = new List<Bounty>();
-        public ObservableCollection<Bounty> TrackedBounties = new ObservableCollection<Bounty>();
-        private XboxGameBarWidget widget;
-
         private enum VisualState
         {
             None,
             Empty,
             InitialProfileLoad,
             ProfileError,
-            DefinitionsLoading,
+            DefinitionsLoading
         }
+
+        public List<Bounty> AllBounties = new List<Bounty>();
+        public ObservableCollection<Bounty> TrackedBounties = new ObservableCollection<Bounty>();
+        private XboxGameBarWidget widget;
 
         public WidgetMainView()
         {
             InitializeComponent();
             var eventAggregator = new MyEventAggregator();
             eventAggregator.Subscribe(this);
+        }
+
+        public void HandleMessage(PropertyChanged message)
+        {
+            Debug.WriteLine($"WidgetMainView: property {message} changed!");
+
+            switch (message)
+            {
+                case PropertyChanged.Profile:
+                case PropertyChanged.DefinitionsPath:
+                    UpdateFromProfile();
+                    break;
+
+                case PropertyChanged.TrackedBounties:
+                    UpdateTrackedBounties();
+                    break;
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -61,6 +72,9 @@ namespace GhostOverlay
             widget.VerticalResizeSupported = true;
             widget.SettingsSupported = true;
             widget.SettingsClicked += Widget_SettingsClicked;
+            widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
+
+            Widget_RequestedThemeChanged(widget, null);
 
             Debug.WriteLine("WidgetMainView OnNavigatedTo scheduling stuff");
             AppState.WidgetData.ScheduleProfileUpdates();
@@ -72,23 +86,6 @@ namespace GhostOverlay
         {
             base.OnNavigatingFrom(e);
             AppState.WidgetData.ProfileUpdateScheduled = false;
-        }
-
-        public void HandleMessage(PropertyChanged message)
-        {
-            Debug.WriteLine($"WidgetMainView: property {message} changed!");
-
-            switch (message)
-            {
-                case PropertyChanged.Profile:
-                case PropertyChanged.DefinitionsPath:
-                    UpdateFromProfile();
-                    break;
-
-                case PropertyChanged.TrackedBounties:
-                    UpdateTrackedBounties();
-                    break;
-            }
         }
 
         private void SetVisualState(VisualState state)
@@ -134,7 +131,7 @@ namespace GhostOverlay
                     Debug.WriteLine("no inventory data in profile, returning");
                     SetVisualState(VisualState.ProfileError);
                 }
-                
+
                 return;
             }
 
@@ -146,7 +143,7 @@ namespace GhostOverlay
 
             SetVisualState(VisualState.None);
 
-            AllBounties = Bounty.BountiesFromProfile(profile, addCompletedBounties: false);
+            AllBounties = Bounty.BountiesFromProfile(profile, true);
             UpdateTrackedBounties();
         }
 
@@ -181,6 +178,17 @@ namespace GhostOverlay
         private async void SettingsButton_OnClick(object sender, RoutedEventArgs e)
         {
             await widget.ActivateSettingsAsync();
+        }
+
+        private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    Background = widget.RequestedTheme == ElementTheme.Dark
+                        ? WidgetBrushes.DarkBrush
+                        : WidgetBrushes.LightBrush;
+                });
         }
     }
 }

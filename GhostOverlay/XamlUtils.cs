@@ -2,12 +2,18 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Markup;
 
 namespace GhostOverlay
 {
+    public static class WidgetBrushes {
+        public static SolidColorBrush DarkBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+        public static SolidColorBrush LightBrush = new SolidColorBrush(Color.FromArgb(255, 76, 76, 76));
+    }
+
     public class BooleanNumberConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -18,12 +24,34 @@ namespace GhostOverlay
 
             if (!string.IsNullOrEmpty(paramString))
             {
-                numbers = paramString.Split(new char[] {'|'}).Select(System.Convert.ToDouble).ToArray();
+                numbers = paramString.Split(new [] {'|'}).Select(System.Convert.ToDouble).ToArray();
             }
 
             var result = input ? numbers[0] : numbers[1];
 
             return result;
+        }
+
+        public object ConvertBack(object value, Type targetType,
+            object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class BooleanVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            var input = System.Convert.ToBoolean(value);
+            var paramString = parameter as string;
+
+            if (paramString?.Equals("CollapsedWhenTrue") ?? false)
+            {
+                return input ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            return input ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType,
@@ -65,21 +93,6 @@ namespace GhostOverlay
         {
             var incomingNumber = (int)value;
             return $"{incomingNumber,0:n0}";
-        }
-
-        public object ConvertBack(object value, Type targetType,
-            object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class UpperCaseConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            var incomming = (string)value;
-            return incomming.ToUpper();
         }
 
         public object ConvertBack(object value, Type targetType,

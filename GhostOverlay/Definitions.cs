@@ -1,6 +1,4 @@
 using System;
-using Microsoft.Data.Sqlite;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -8,34 +6,35 @@ using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using BungieNetApi.Model;
+using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 
 namespace GhostOverlay
 {
     public static class Definitions
     {
+        private static readonly string defaultDefinitionsPath = "@@NotDownloaded";
         private static SqliteConnection db;
         public static Task<string> Ready;
 
         public static int HashToDbHash(uint hash)
         {
-            return unchecked((int)hash);
+            return unchecked((int) hash);
         }
 
         public static async void InitializeDatabase()
         {
-            Debug.WriteLine("top InitializeDatabase");
             Ready = ActuallyInitializeDatabase();
-            Debug.WriteLine("post ActuallyInitializeDatabase");
+
+            _ = IsDefinitionsLatest();
+
             await Ready;
         }
 
         public static async Task<string> ActuallyInitializeDatabase()
         {
-            Debug.WriteLine("top ActuallyInitializeDatabase");
-            var definitionsPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, "@@NotDownloaded");
+            var definitionsPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
             var definitionsExist = !definitionsPath.Equals("@@NotDownloaded") && File.Exists(definitionsPath);
-            Debug.WriteLine("after ActuallyInitializeDatabase checks");
 
             if (!definitionsExist)
             {
@@ -48,22 +47,36 @@ namespace GhostOverlay
             db = new SqliteConnection($"Filename={definitionsPath}");
             await db.OpenAsync();
 
-            Debug.WriteLine("Opened database!");
-
             AppState.WidgetData.DefinitionsPath = definitionsPath;
 
             return definitionsPath;
         }
 
-        public static async Task<string> DownloadDefinitionsDatabase()
+        public static async Task CheckForLatestDefinitions()
         {
-            var appData = ApplicationData.Current;
+            if (await IsDefinitionsLatest())
+            {
+                return;
+            }
+
+            await DownloadDefinitionsDatabase();
+            await ActuallyInitializeDatabase();
+        }
+
+        public static async Task<string> FetchLatestDefinitionsPath()
+        {
             var language = AppState.ReadSetting(SettingsKey.Language, "en");
             var manifest = await AppState.bungieApi.GetManifest();
             var remotePath = manifest.MobileWorldContentPaths[language];
-            var urlString = $"https://www.bungie.net{remotePath}";
 
-            Debug.WriteLine($"remotePath: {remotePath}");
+            return $"https://www.bungie.net{remotePath}";
+        }
+
+        public static async Task<string> DownloadDefinitionsDatabase()
+        {
+            var appData = ApplicationData.Current;
+            var urlString = await FetchLatestDefinitionsPath();
+
             Debug.WriteLine($"urlString: {urlString}");
 
             // TODO: check to see if it's already downloaded?
@@ -71,17 +84,15 @@ namespace GhostOverlay
             var source = new Uri(urlString);
             Debug.WriteLine($"source {source}");
 
-            var baseName = Path.GetFileNameWithoutExtension(remotePath);
+            var baseName = Path.GetFileNameWithoutExtension(urlString);
             var destFileName = $"{baseName}.zip";
-            var destinationFile = await appData.LocalCacheFolder.CreateFileAsync(destFileName, CreationCollisionOption.ReplaceExisting);
+            var destinationFile =
+                await appData.LocalCacheFolder.CreateFileAsync(destFileName, CreationCollisionOption.ReplaceExisting);
 
             Debug.WriteLine($"Downloading {source} to {destinationFile.Path}");
 
-            BackgroundDownloader downloader = new BackgroundDownloader();
-            DownloadOperation download = downloader.CreateDownload(source, destinationFile);
-
-            // Attach progress and completion handlers.
-            HandleDownloadAsync(download, true);
+            var downloader = new BackgroundDownloader();
+            var download = downloader.CreateDownload(source, destinationFile);
 
             await download.StartAsync();
 
@@ -101,36 +112,45 @@ namespace GhostOverlay
             var definitionsDbFile = Path.Combine(appData.LocalCacheFolder.Path, $"{baseName}.content");
             Debug.WriteLine($"maybe finished unzipping? {definitionsDbFile}");
 
-            if (!File.Exists(definitionsDbFile))
-            {
-                Debug.WriteLine("Handle the definitions not existing?");
-            }
+            if (!File.Exists(definitionsDbFile)) Debug.WriteLine("Handle the definitions not existing?");
 
             AppState.SaveSetting(SettingsKey.DefinitionsPath, definitionsDbFile);
-            
+
             Debug.WriteLine($"All finished, definitions at {definitionsDbFile}");
 
             return definitionsDbFile;
         }
 
-        private static void HandleDownloadAsync(DownloadOperation download, bool v)
+        private static async Task<bool> IsDefinitionsLatest()
         {
-            Debug.WriteLine($"HandleDownloadAsync stats:{download.Progress.Status}, progress: {download.Progress.BytesReceived} / {download.Progress.TotalBytesToReceive}");
+            var currentPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
+
+            if (currentPath.Equals("@@NotDownloaded")) return false;
+
+            var latestRemotePath = await FetchLatestDefinitionsPath();
+
+            var currentBathPath = Path.GetFileNameWithoutExtension(currentPath);
+            var latestBasePath = Path.GetFileNameWithoutExtension(latestRemotePath);
+
+            Debug.WriteLine($"currentBathPath: {currentBathPath}");
+            Debug.WriteLine($"latestBasePath: {latestBasePath}");
+
+            var answer = currentBathPath == latestBasePath;
+            Debug.WriteLine($"answer: {answer}");
+
+            return answer;
         }
 
         public static async Task<T> GetDefinition<T>(string command, uint hash)
         {
             await Ready;
 
-            SqliteCommand selectCommand = new SqliteCommand(command, db);
+            var selectCommand = new SqliteCommand(command, db);
             selectCommand.Parameters.AddWithValue("@Hash", HashToDbHash(hash));
 
-            SqliteDataReader query = await selectCommand.ExecuteReaderAsync();
+            var query = await selectCommand.ExecuteReaderAsync();
 
-            if (!query.HasRows)
-            {
-                return default(T);
-            }
+            if (!query.HasRows) return default;
 
             query.Read();
             var json = query.GetString(0);
@@ -140,17 +160,20 @@ namespace GhostOverlay
 
         public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetItemDefinition(uint hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyInventoryItemDefinition>("SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
+            return await GetDefinition<DestinyDefinitionsDestinyInventoryItemDefinition>(
+                "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
         }
 
         public static async Task<DestinyDefinitionsDestinyObjectiveDefinition> GetObjectiveDefinition(uint hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyObjectiveDefinition>("SELECT json FROM DestinyObjectiveDefinition WHERE id = @Hash;", hash);
+            return await GetDefinition<DestinyDefinitionsDestinyObjectiveDefinition>(
+                "SELECT json FROM DestinyObjectiveDefinition WHERE id = @Hash;", hash);
         }
 
         public static async Task<DestinyDefinitionsDestinyClassDefinition> GetClassDefinition(uint hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>("SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", hash);
+            return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
+                "SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", hash);
         }
     }
 }

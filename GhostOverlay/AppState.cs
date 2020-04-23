@@ -78,7 +78,6 @@ namespace GhostOverlay
         public static T ReadSetting<T>(SettingsKey key, T defaultValue)
         {
             var keyString = key.ToString();
-            Debug.WriteLine($"keyString: {keyString}");
             var localSettings = ApplicationData.Current.LocalSettings;
 
             if (localSettings.Values.ContainsKey(keyString)) return (T) localSettings.Values[keyString];

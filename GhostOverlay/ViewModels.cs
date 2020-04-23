@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Networking;
 
@@ -59,7 +60,7 @@ namespace GhostOverlay
 
         public List<Objective> Objectives = new List<Objective>();
         public Character OwnerCharacter;
-        public bool AllObjectivesComplete;
+        public bool AllObjectivesComplete => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
 
         [Obsolete("OwnerCharacterId is deprecated, use OwnerCharacter instead.")]
         public string OwnerCharacterId;
@@ -92,8 +93,8 @@ namespace GhostOverlay
             var bounty = new Bounty()
             {
                 Item = item,
-                OwnerCharacter = ownerCharacter,
-                AllObjectivesComplete = objectives.TrueForAll(v => v.Complete)
+                OwnerCharacter = ownerCharacter
+                //AllObjectivesComplete = objectives.TrueForAll(v => v.Complete)
             };
             bounty.PopulateDefinition();
 
@@ -132,6 +133,8 @@ namespace GhostOverlay
                     }
                 }
             }
+
+            //bounties.Sort((a, b) => a.AllObjectivesComplete != b.AllObjectivesComplete ? ( a.AllObjectivesComplete ? 100 : 1 ) : 0);
 
             return bounties;
         }

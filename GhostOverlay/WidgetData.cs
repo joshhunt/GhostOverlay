@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -89,7 +90,7 @@ namespace GhostOverlay
 
             while (ProfileUpdateScheduled)
             {
-                await UpdateProfile();
+                _ = UpdateProfile();
                 await Task.Delay(ProfileUpdateInterval);
             }
         }
