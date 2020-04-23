@@ -10,7 +10,7 @@
 	<Identity
 		Name="WorldClassDevelopmentLtd.GhostOverlay"
 		Publisher="CN=F78EA302-9D46-44EB-A662-246312A8DD23"
-		Version="0.3.18.0" />
+		Version="0.3.30.0" />
 
 	<mp:PhoneIdentity PhoneProductId="5418b76d-6c5b-4248-80e8-ce7760dffff9"
 					  PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
@@ -45,7 +45,7 @@
 				<uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png">
 				</uap:DefaultTile >
 				<uap:SplashScreen Image="Assets\SplashScreen.png"  BackgroundColor="#13161b"/>
-				<uap:LockScreen BadgeLogo="Assets\BadgeLogo.png" Notification="badge"/>
+				<uap:LockScreen BadgeLogo="Assets\BadgeLogo.png"  Notification="badge"/>
 			</uap:VisualElements>
 
 			<Extensions>
