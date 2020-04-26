@@ -9,11 +9,6 @@ using Windows.UI.Xaml.Markup;
 
 namespace GhostOverlay
 {
-    public static class WidgetBrushes {
-        public static SolidColorBrush DarkBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-        public static SolidColorBrush LightBrush = new SolidColorBrush(Color.FromArgb(255, 76, 76, 76));
-    }
-
     public class BooleanNumberConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)

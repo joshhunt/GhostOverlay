@@ -30,7 +30,7 @@ namespace GhostOverlay
         {
             this.UnhandledException += (sender, e) =>
             {
-                System.Diagnostics.Debug.WriteLine("my handled exception handler");
+                System.Diagnostics.Debug.WriteLine("my unhandled exception handler");
                 e.Handled = true;
                 System.Diagnostics.Debug.WriteLine(e.Exception);
                 System.Diagnostics.Debug.WriteLine(e.Exception.StackTrace);
@@ -56,7 +56,7 @@ namespace GhostOverlay
             if (args.Kind != ActivationKind.Protocol) return;
 
             var protocolArgs = args as IProtocolActivatedEventArgs;
-            var scheme = protocolArgs.Uri.Scheme;
+            var scheme = protocolArgs?.Uri?.Scheme ?? "";
             Debug.WriteLine($"app was activated with scheme {scheme}");
 
             switch (scheme)
@@ -66,7 +66,7 @@ namespace GhostOverlay
                     break;
 
                 case "ghost-overlay":
-                    var path = protocolArgs.Uri.AbsolutePath;
+                    var path = protocolArgs?.Uri?.AbsolutePath ?? "";
                     LaunchMainApp();
 
                     if (path.Equals("/oauth-return"))
@@ -172,7 +172,8 @@ namespace GhostOverlay
             if (appRootFrame.Content == null)
             {
                 if (AppState.TokenData.IsValid())
-                    appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
+                    appRootFrame.Navigate(typeof(WidgetMainView));
+                    //appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
                 else
                     appRootFrame.Navigate(typeof(MainPage));
             }

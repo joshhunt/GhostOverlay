@@ -19,6 +19,11 @@ namespace GhostOverlay
             subscribers.Add(new Tuple<CoreDispatcher, object>(Window.Current.Dispatcher, subscriber));
         }
 
+        public void Unsubscribe<TMessage>(ISubscriber<TMessage> subscriber)
+        {
+            subscribers.Remove(new Tuple<CoreDispatcher, object>(Window.Current.Dispatcher, subscriber));
+        }
+
         public void Publish<TMessage>(TMessage message)
         {
             var messageType = GetEventType(message);

@@ -18,7 +18,8 @@ namespace GhostOverlay
 
     public class WidgetData
     {
-        public bool ProfileUpdateScheduled = false;
+        // number of requests to schedule profile updates. 
+        public int ProfileScheduleRequesters = 0;
         public static int ProfileUpdateInterval = 10 * 1000;
 
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
@@ -81,18 +82,31 @@ namespace GhostOverlay
 
         public async void ScheduleProfileUpdates()
         {   
-            if (ProfileUpdateScheduled)
+            ProfileScheduleRequesters += 1;
+            Debug.WriteLine($"ScheduleProfileUpdates, incrementing to {ProfileScheduleRequesters}");
+
+            if (ProfileScheduleRequesters >= 2)
             {
+                // Someone else has already started the schedule, so can just return
+                Debug.WriteLine("Updates area already happening, so we can return");
                 return;
             }
 
-            ProfileUpdateScheduled = true;
-
-            while (ProfileUpdateScheduled)
+            while (ProfileScheduleRequesters > 0)
             {
                 _ = UpdateProfile();
                 await Task.Delay(ProfileUpdateInterval);
             }
+        }
+
+        public void UnscheduleProfileUpdates()
+        {
+            if (ProfileScheduleRequesters < 1)
+            {
+                return;
+            }
+
+            ProfileScheduleRequesters -= 1;
         }
 
         public bool ItemIsTracked(DestinyEntitiesItemsDestinyItemComponent item)

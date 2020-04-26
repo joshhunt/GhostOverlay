@@ -75,6 +75,7 @@
                                         FontSize="15"
                                         FontWeight="Medium"
                                         Style="{ThemeResource BaseTextBlockStyle}"
+                                        TextWrapping="WrapWholeWords" 
                                         Text="{x:Bind ItemDefinition.DisplayProperties.Name}" />
 
                                     <TextBlock
@@ -94,40 +95,7 @@
                                         ItemsSource="{x:Bind Objectives}"
                                         SelectionMode="None" />
 
-                                    <StackPanel Margin="0,0,0,0" Visibility="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanVisibilityConverter}}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <Rectangle
-                                                Grid.Column="0"
-                                                Width="20"
-                                                Height="20"
-                                                Margin="0,0,6,0"
-                                                Fill="#FF589864" />
-
-                                            <ProgressBar
-                                                Grid.Column="1"
-                                                Height="20"
-                                                CornerRadius="0"
-                                                Foreground="Transparent"
-                                                Background="Transparent"
-                                                Opacity=".9"
-                                                Value="0" />
-
-                                            <Grid Grid.Column="1" Margin="6,2,6,0">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Grid.ColumnSpan="2" Text="Complete" />
-                                            </Grid>
-                                        </Grid>
-                                    </StackPanel>
-
+                                    <ContentControl ContentTemplate="{StaticResource BountyCompletedObjectives}" />
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>

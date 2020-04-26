@@ -4,11 +4,15 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -25,21 +29,50 @@ namespace GhostOverlay
             DefinitionsLoading
         }
 
+        public TimerViewModel updateTimer;
         public List<Bounty> AllBounties = new List<Bounty>();
         public ObservableCollection<Bounty> TrackedBounties = new ObservableCollection<Bounty>();
         private XboxGameBarWidget widget;
+        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
 
         public WidgetMainView()
         {
             InitializeComponent();
-            var eventAggregator = new MyEventAggregator();
             eventAggregator.Subscribe(this);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            widget = e.Parameter as XboxGameBarWidget;
+            updateTimer = new TimerViewModel();
+
+            if (widget != null)
+            {
+                widget.MaxWindowSize = new Size(1500, 1500);
+                widget.MinWindowSize = new Size(200, 100);
+                widget.HorizontalResizeSupported = true;
+                widget.VerticalResizeSupported = true;
+                widget.SettingsSupported = true;
+                widget.SettingsClicked += Widget_SettingsClicked;
+                widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
+                Widget_RequestedThemeChanged(widget, null);
+            }
+
+            SetVisualState(VisualState.InitialProfileLoad);
+
+            AppState.WidgetData.ScheduleProfileUpdates();
+            UpdateFromProfile();
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnNavigatingFrom(e);
+            eventAggregator.Subscribe(this);
+            AppState.WidgetData.UnscheduleProfileUpdates();
         }
 
         public void HandleMessage(PropertyChanged message)
         {
-            Debug.WriteLine($"WidgetMainView: property {message} changed!");
-
             switch (message)
             {
                 case PropertyChanged.Profile:
@@ -51,41 +84,6 @@ namespace GhostOverlay
                     UpdateTrackedBounties();
                     break;
             }
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            widget = e.Parameter as XboxGameBarWidget;
-
-            if (widget == null)
-            {
-                Debug.WriteLine("Widget parameter is null");
-                return;
-            }
-
-            SetVisualState(VisualState.InitialProfileLoad);
-
-            Debug.WriteLine("WidgetMainView OnNavigatedTo setting widget settings");
-            widget.MaxWindowSize = new Size(1500, 1500);
-            widget.MinWindowSize = new Size(200, 100);
-            widget.HorizontalResizeSupported = true;
-            widget.VerticalResizeSupported = true;
-            widget.SettingsSupported = true;
-            widget.SettingsClicked += Widget_SettingsClicked;
-            widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
-
-            Widget_RequestedThemeChanged(widget, null);
-
-            Debug.WriteLine("WidgetMainView OnNavigatedTo scheduling stuff");
-            AppState.WidgetData.ScheduleProfileUpdates();
-
-            UpdateFromProfile();
-        }
-
-        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            base.OnNavigatingFrom(e);
-            AppState.WidgetData.ProfileUpdateScheduled = false;
         }
 
         private void SetVisualState(VisualState state)
@@ -120,15 +118,12 @@ namespace GhostOverlay
 
         private void UpdateFromProfile()
         {
-            Debug.WriteLine("UpdateFromProfile");
-
             var profile = AppState.WidgetData.Profile;
 
             if (profile?.CharacterInventories?.Data == null)
             {
                 if (profile?.Profile?.Data?.UserInfo?.MembershipId != null)
                 {
-                    Debug.WriteLine("no inventory data in profile, returning");
                     SetVisualState(VisualState.ProfileError);
                 }
 
@@ -149,8 +144,6 @@ namespace GhostOverlay
 
         private void UpdateTrackedBounties()
         {
-            Debug.WriteLine("UpdateTrackedBounties");
-
             // TODO: Rather than completely clearing, only add/remove where needed
             TrackedBounties.Clear();
             foreach (var bounty in AllBounties)
@@ -186,8 +179,8 @@ namespace GhostOverlay
                 () =>
                 {
                     Background = widget.RequestedTheme == ElementTheme.Dark
-                        ? WidgetBrushes.DarkBrush
-                        : WidgetBrushes.LightBrush;
+                        ? new SolidColorBrush(Color.FromArgb(255, 0, 0, 0))
+                        : new SolidColorBrush(Color.FromArgb(255, 76, 76, 76));
                 });
         }
     }
