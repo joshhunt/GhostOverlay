@@ -910,6 +910,9 @@
     <PRIResource Include="Configuration.sample.resw">
       <SubType>Designer</SubType>
     </PRIResource>
+    <None Include="Assets\profileApiResponse.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
@@ -961,9 +964,6 @@
     <Content Include="Assets\NHaasGroteskTXPro-55Rg.ttf" />
     <Content Include="Assets\DestinyKeys.ttf" />
     <None Include="GhostOverlay_TemporaryKey.pfx" />
-    <PRIResource Include="Configuration.resw">
-      <SubType>Designer</SubType>
-    </PRIResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite.Core">

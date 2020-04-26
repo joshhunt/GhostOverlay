@@ -143,10 +143,9 @@ namespace GhostOverlay
                 });
         }
 
-        private async void UpdateDefinitionsButton_OnClick(object sender, RoutedEventArgs e)
+        private void UpdateDefinitionsButton_OnClick(object sender, RoutedEventArgs e)
         {
             DefinitionsProgressRing.IsActive = true;
-            await Definitions.CheckForLatestDefinitions();
             DefinitionsProgressRing.IsActive = false;
         }
     }

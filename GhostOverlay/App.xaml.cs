@@ -66,15 +66,7 @@ namespace GhostOverlay
                     break;
 
                 case "ghost-overlay":
-                    var path = protocolArgs?.Uri?.AbsolutePath ?? "";
                     LaunchMainApp();
-
-                    if (path.Equals("/oauth-return"))
-                    {
-                        var parsed = HttpUtility.ParseQueryString(protocolArgs.Uri.Query);
-                        var authCode = parsed["code"];
-                        HandleAuthCode(authCode);
-                    }
                     break;
 
                 default:
@@ -104,11 +96,7 @@ namespace GhostOverlay
                 );
 
                 Window.Current.Closed += WidgetMainWindow_Closed;
-
-                if (AppState.TokenData.IsValid())
-                    widgetRootFrame.Navigate(typeof(WidgetMainView), widgetMain);
-                else
-                    widgetRootFrame.Navigate(typeof(WidgetNotAuthedView), widgetMain);
+                widgetRootFrame.Navigate(typeof(WidgetMainView), widgetMain);
 
             }
             else if (widgetArgs.AppExtensionId == "WidgetMainSettings")
@@ -121,24 +109,12 @@ namespace GhostOverlay
 
                 Window.Current.Closed += WidgetMainSettingsWindow_Closed;
 
-                widgetRootFrame.Navigate(typeof(WidgetSettingsBountiesView), widgetMainSettings);
+                widgetRootFrame.Navigate(typeof(WidgetSettingsView), widgetMainSettings);
             }
 
             Window.Current.Activate();
         }
 
-        private async void HandleAuthCode(string authCode)
-        {
-            Debug.WriteLine($"handling auth code {authCode}");
-            await AppState.bungieApi.GetOAuthAccessToken(authCode);
-
-            Debug.WriteLine($"saved access token?: {AppState.TokenData}");
-
-            if (AppState.TokenData.IsValid() != true)
-                throw new Exception("Exchanged code for token, but the TokenData is not valid??");
-
-            appRootFrame?.Navigate(typeof(AppAuthSuccessfulView));
-        }
 
         private void WidgetMainWindow_Closed(object sender, CoreWindowEventArgs e)
         {
@@ -171,11 +147,7 @@ namespace GhostOverlay
 
             if (appRootFrame.Content == null)
             {
-                if (AppState.TokenData.IsValid())
-                    appRootFrame.Navigate(typeof(WidgetMainView));
-                    //appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
-                else
-                    appRootFrame.Navigate(typeof(MainPage));
+                appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
             }
 
             // Ensure the current window is active

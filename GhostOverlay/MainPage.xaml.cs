@@ -23,15 +23,8 @@ namespace GhostOverlay
             Debug.WriteLine("MainPage OnNavigatedTo");
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var urlBungieAuth = new Uri(AppState.bungieApi.GetAuthorisationUrl());
-            var success = await Windows.System.Launcher.LaunchUriAsync(urlBungieAuth);
-
-            if (!success)
-            {
-                Debug.WriteLine("TODO: Failed to launch Bungie auth page");
-            }
         }
     }
 

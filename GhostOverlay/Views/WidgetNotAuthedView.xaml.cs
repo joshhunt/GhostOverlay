@@ -41,35 +41,8 @@ namespace GhostOverlay
             widget.VerticalResizeSupported = true;
         }
 
-        public async void LoginWithDesktopBrowser_OnClick(object sender, RoutedEventArgs e)
+        public void LoginWithDesktopBrowser_OnClick(object sender, RoutedEventArgs e)
         {
-            var urlBungieAuth = new Uri(AppState.bungieApi.GetAuthorisationUrl());
-            var success = await Windows.System.Launcher.LaunchUriAsync(urlBungieAuth);
-
-            if (success)
-            {
-                AuthWaiting.Visibility = Visibility.Visible;
-                WaitForAuth();
-            }
-            else
-            {
-                Debug.WriteLine("TODO: Failed to launch Bungie auth page");
-            } 
-        }
-
-        // public async void LoginWithXboxBroker_OnClick(object sender, RoutedEventArgs e)
-        // {
-        //     AuthWaiting.Visibility = Visibility.Visible;
-        // }
-
-        private async void WaitForAuth()
-        {
-            while (!AppState.TokenData.IsValid())
-            {
-                await Task.Delay(500);
-            }
-
-            this.Frame.Navigate(typeof(WidgetMainView), widget);
         }
     }
 }

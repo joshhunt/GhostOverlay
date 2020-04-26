@@ -49,15 +49,6 @@ namespace GhostOverlay
             return tokenData;
         }
 
-        public void SaveToSettings()
-        {
-            var localSettings = ApplicationData.Current.LocalSettings;
-            AppState.SaveSetting(SettingsKey.AccessToken, AccessToken);
-            AppState.SaveSetting(SettingsKey.RefreshToken, RefreshToken);
-            AppState.SaveSetting(SettingsKey.AccessTokenExpiration, AccessTokenExpiration);
-            AppState.SaveSetting(SettingsKey.RefreshTokenExpiration, RefreshTokenExpiration);
-        }
-
         public void SetAccessTokenExpiration(int expiresInSeconds)
         {
             var date = DateTimeOffset.Now;
@@ -70,27 +61,6 @@ namespace GhostOverlay
             var date = DateTimeOffset.Now;
             date = date.AddSeconds(expiresInSeconds);
             RefreshTokenExpiration = date;
-        }
-
-
-        public bool IsValid()
-        {
-            var accessTokenValidity = AccessTokenIsValid();
-            var refreshTokenValidity = RefreshTokenIsValid();
-
-            return accessTokenValidity || refreshTokenValidity;
-        }
-
-        public bool AccessTokenIsValid()
-        {
-            var timeValid = AccessTokenExpiration.CompareTo(DateTimeOffset.Now) > 0;
-            return !string.IsNullOrEmpty(AccessToken) && timeValid;
-        }
-
-        public bool RefreshTokenIsValid()
-        {
-            var timeValid = RefreshTokenExpiration.CompareTo(DateTimeOffset.Now) > 0;
-            return !string.IsNullOrEmpty(RefreshToken) && timeValid;
         }
 
         public override string ToString()

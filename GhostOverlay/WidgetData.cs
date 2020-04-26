@@ -20,7 +20,7 @@ namespace GhostOverlay
     {
         // number of requests to schedule profile updates. 
         public int ProfileScheduleRequesters = 0;
-        public static int ProfileUpdateInterval = 10 * 1000;
+        public static int ProfileUpdateInterval = 9999 * 10 * 1000;
 
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
