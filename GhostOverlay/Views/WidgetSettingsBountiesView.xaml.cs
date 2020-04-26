@@ -19,7 +19,6 @@ namespace GhostOverlay
     {
         private readonly RangeObservableCollection<Bounty> Bounties = new RangeObservableCollection<Bounty>();
         private string definitionsDbName = "<not loaded>";
-        private bool isSettingSelectedBounties;
         private XboxGameBarWidget widget;
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
 
@@ -43,21 +42,6 @@ namespace GhostOverlay
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             widget = e.Parameter as XboxGameBarWidget;
-
-            if (widget != null)
-            {
-                widget.MaxWindowSize = new Size(1940, 2000);
-                widget.MinWindowSize = new Size(200, 100);
-                widget.HorizontalResizeSupported = true;
-                widget.VerticalResizeSupported = true;
-                widget.SettingsSupported = false;
-
-                widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
-                Widget_RequestedThemeChanged(widget, null);
-
-                _ = widget.TryResizeWindowAsync(new Size(1170, 790));
-            }
-
             AppState.WidgetData.ScheduleProfileUpdates();
             UpdateViewModel();
         }
@@ -71,7 +55,6 @@ namespace GhostOverlay
 
         private void UpdateViewModel()
         {
-            isSettingSelectedBounties = true;
             definitionsDbName = Path.GetFileNameWithoutExtension(AppState.WidgetData.DefinitionsPath ?? "");
 
             var profile = AppState.WidgetData.Profile;
@@ -86,67 +69,7 @@ namespace GhostOverlay
                     group t by t.OwnerCharacter
                     into g
                     select g;
-
-                UpdateBountySelection();
             }
-
-            isSettingSelectedBounties = false;
-        }
-
-        private void UpdateBountySelection()
-        {
-            foreach (var bounty in Bounties)
-            {
-                var isTracked = AppState.WidgetData.ItemIsTracked(bounty.Item);
-                if (isTracked)
-                {
-                    this.BountiesGridView.SelectedItems.Add(bounty);
-                }
-                
-            }
-        }
-
-        private void SelectedBountiesChanged(object sender, RoutedEventArgs e)
-        {
-            var senderGridView = sender as GridView;
-            if (isSettingSelectedBounties || senderGridView == null) return;
-
-            var seen = new List<long>();
-            var newTrackedItems = new List<TrackedBounty>();
-
-            foreach (var entry in senderGridView.SelectedItems)
-            {
-                var item = (entry as Bounty)?.Item;
-                if (item == null) continue;
-
-                var id = item.ItemInstanceId != 0 ? item.ItemInstanceId : item.ItemHash;
-                if (seen.Contains(id)) continue;
-
-                newTrackedItems.Add(new TrackedBounty
-                    {ItemHash = item.ItemHash, ItemInstanceId = item.ItemInstanceId});
-                seen.Add(id);
-            }
-
-            Debug.WriteLine($"Setting {newTrackedItems.Count} selected bounties");
-            AppState.WidgetData.TrackedBounties = newTrackedItems;
-        }
-
-
-        private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () =>
-                {
-                    Background = widget.RequestedTheme == ElementTheme.Dark
-                        ? new SolidColorBrush(Color.FromArgb(255, 0, 0, 0))
-                        : new SolidColorBrush(Color.FromArgb(255, 76, 76, 76));
-                });
-        }
-
-        private void UpdateDefinitionsButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            DefinitionsProgressRing.IsActive = true;
-            DefinitionsProgressRing.IsActive = false;
         }
     }
 }
