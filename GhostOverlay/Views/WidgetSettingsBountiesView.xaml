@@ -76,7 +76,7 @@
                                         FontWeight="Medium"
                                         Style="{ThemeResource BaseTextBlockStyle}"
                                         TextWrapping="WrapWholeWords" 
-                                        Text="{x:Bind ItemDefinition.DisplayProperties.Name}" />
+                                        Text="{x:Bind Title}" />
 
                                     <TextBlock
                                         Margin="0,6,0,6"

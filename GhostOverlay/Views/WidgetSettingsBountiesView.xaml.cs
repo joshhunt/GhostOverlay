@@ -82,6 +82,7 @@ namespace GhostOverlay
 
                 BountiesCollection.Source =
                     from t in Bounties
+                    orderby t.AllObjectivesComplete
                     group t by t.OwnerCharacter
                     into g
                     select g;
@@ -94,17 +95,14 @@ namespace GhostOverlay
 
         private void UpdateBountySelection()
         {
-            BountiesGridView.SelectedItem = null;
-            BountiesGridView.SelectedIndex = -1;
-
-            for (var count = 0; count < Bounties.Count; count++)
+            foreach (var bounty in Bounties)
             {
-                var item = Bounties[count].Item;
-                var isTracked = AppState.WidgetData.ItemIsTracked(item);
+                var isTracked = AppState.WidgetData.ItemIsTracked(bounty.Item);
                 if (isTracked)
                 {
-                    BountiesGridView.SelectRange(new ItemIndexRange(count, 1));
+                    this.BountiesGridView.SelectedItems.Add(bounty);
                 }
+                
             }
         }
 

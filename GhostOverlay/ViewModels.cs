@@ -94,6 +94,9 @@ namespace GhostOverlay
         public Character OwnerCharacter;
         public bool AllObjectivesComplete => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
 
+        public string Title =>
+            ItemDefinition?.SetData?.QuestLineName ?? ItemDefinition?.DisplayProperties?.Name ?? "No name";
+
         [Obsolete("OwnerCharacterId is deprecated, use OwnerCharacter instead.")]
         public string OwnerCharacterId;
 

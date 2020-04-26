@@ -67,12 +67,6 @@
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="Margin" Value="0,0,0,24" />
                 </Style>
-
-                <!--<Style TargetType="ListViewItem">
-                    <Setter Property="VerticalContentAlignment" Value="Top" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Margin" Value="0,0,0,24" />
-                </Style>-->
             </ListView.ItemContainerStyle>
 
             <ListView.GroupStyle>
@@ -132,7 +126,7 @@
                                 FontSize="15"
                                 FontWeight="Medium"
                                 Style="{ThemeResource BaseTextBlockStyle}"
-                                Text="{x:Bind ItemDefinition.DisplayProperties.Name}" />
+                                Text="{x:Bind Title}" />
 
                             <TextBlock
                                 x:Name="BountyDescriptionLabel"
