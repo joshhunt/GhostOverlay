@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
+using GhostOverlay.Models;
 
 namespace GhostOverlay
 {
@@ -20,7 +21,7 @@ namespace GhostOverlay
     {
         // number of requests to schedule profile updates. 
         public int ProfileScheduleRequesters = 0;
-        public static int ProfileUpdateInterval = 10 * 1000;
+        public static int ProfileUpdateInterval = 15 * 1000;
 
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
@@ -40,16 +41,17 @@ namespace GhostOverlay
             }
         }
 
-        private List<TrackedBounty> _trackedBounties = new List<TrackedBounty>();
-        public List<TrackedBounty> TrackedBounties
+        private List<TrackedEntry> _trackedEntries = new List<TrackedEntry>();
+        public List<TrackedEntry> TrackedEntries
         {
-            get => _trackedBounties;
+            get => _trackedEntries;
             set
             {
-                if (value.Equals(_trackedBounties)) return;
+                if (value.Equals(_trackedEntries)) return;
 
-                _trackedBounties = value;
-                AppState.SaveTrackedBounties(_trackedBounties);
+                _trackedEntries = value;
+                Debug.WriteLine("Setting new TrackedEntries");
+                AppState.SaveTrackedEntries(_trackedEntries);
                 eventAggregator.Publish(PropertyChanged.TrackedBounties);
             }
         }
@@ -109,16 +111,23 @@ namespace GhostOverlay
             ProfileScheduleRequesters -= 1;
         }
 
-        public bool ItemIsTracked(DestinyEntitiesItemsDestinyItemComponent item)
+        public bool IsTracked(Item item)
         {
-            return item.ItemInstanceId == 0
-                ? TrackedBounties.Any(vv => vv.ItemHash == item.ItemHash)
-                : TrackedBounties.Any(vv => vv.ItemInstanceId == item.ItemInstanceId);
+            return TrackedEntries.Any(v => v.Matches(item));
+        }
+
+        public bool IsTracked(Triumph triumph)
+        {
+            return TrackedEntries.Any(v => v.Matches(triumph));
         }
 
         public void RestoreTrackedBountiesFromSettings()
         {
-            TrackedBounties = AppState.RestoreTrackedBounties();
+            TrackedEntries = AppState.GetTrackedEntriesFromSettings();
+            TrackedEntries.RemoveAll(v => v.Hash == 0 && v.InstanceId == 0);
+
+            foreach (var trackedEntry in TrackedEntries)
+                Debug.WriteLine($"  Restored {trackedEntry}");
         }
     }
 }

@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
 using System.ComponentModel;
+using Windows.UI;
+using Windows.UI.Core;
 using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
 using NavigationViewSelectionChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs;
 using muxc = Microsoft.UI.Xaml.Controls;
@@ -44,12 +46,19 @@ namespace GhostOverlay
                 widget.VerticalResizeSupported = true;
                 widget.SettingsSupported = false;
 
-                _ = widget.TryResizeWindowAsync(new Size(1170, 790));
+                widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
+                Widget_RequestedThemeChanged(widget, null);
             }
 
             navView.SelectedItem = navView.MenuItems[0];
 
             AppState.WidgetData.ScheduleProfileUpdates();
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnNavigatingFrom(e);
+            AppState.WidgetData.UnscheduleProfileUpdates();
         }
 
         private void NavView_OnSelectionChanged(NavigationView sender, muxc.NavigationViewSelectionChangedEventArgs args)
@@ -58,6 +67,8 @@ namespace GhostOverlay
             {
                 throw new NotImplementedException();
             }
+
+            Debug.WriteLine($"Before Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
 
             var item = args.SelectedItem as muxc.NavigationViewItem;
             var selectedView = item?.Tag.ToString();
@@ -72,16 +83,44 @@ namespace GhostOverlay
                     contentFrame.Navigate(typeof(WidgetSettingsTriumphsView), null, args.RecommendedNavigationTransitionInfo);
                     break;
             }
+
+            contentFrame.BackStack.Clear();
+            Debug.WriteLine($"After Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
         }
 
         private void GoToBounties_Click(object sender, RoutedEventArgs e)
         {
             contentFrame.Navigate(typeof(WidgetSettingsBountiesView));
+            Debug.WriteLine($"After Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
         }
 
         private void GoToTriumphs_Click(object sender, RoutedEventArgs e)
         {
             contentFrame.Navigate(typeof(WidgetSettingsTriumphsView));
+            Debug.WriteLine($"After Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
+        }
+
+        private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                () =>
+                {
+                    Background = widget.RequestedTheme == ElementTheme.Dark
+                        ? new SolidColorBrush(Color.FromArgb(255, 0, 0, 0))
+                        : new SolidColorBrush(Color.FromArgb(255, 76, 76, 76));
+                });
+        }
+
+        private void NavView_OnBackRequested(NavigationView sender, muxc.NavigationViewBackRequestedEventArgs args)
+        {
+            Debug.WriteLine($"Back requested! contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
+            if (contentFrame.CanGoBack)
+            {
+                contentFrame.GoBack();
+                return;
+            }
+
+            return;
         }
     }
 }

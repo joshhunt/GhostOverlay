@@ -121,7 +121,7 @@ namespace GhostOverlay
 
                 Window.Current.Closed += WidgetMainSettingsWindow_Closed;
 
-                widgetRootFrame.Navigate(typeof(WidgetSettingsBountiesView), widgetMainSettings);
+                widgetRootFrame.Navigate(typeof(WidgetSettingsView), widgetMainSettings);
             }
 
             Window.Current.Activate();
@@ -172,7 +172,7 @@ namespace GhostOverlay
             if (appRootFrame.Content == null)
             {
                 if (AppState.TokenData.IsValid())
-                    appRootFrame.Navigate(typeof(WidgetMainView));
+                    appRootFrame.Navigate(typeof(WidgetSettingsView));
                     //appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
                 else
                     appRootFrame.Navigate(typeof(MainPage));

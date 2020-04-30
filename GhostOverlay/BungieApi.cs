@@ -36,7 +36,7 @@ namespace GhostOverlay
 
     public class BungieApi
     {
-        public readonly int[] DefaultProfileComponents = new[] { 100, 102, 200, 201, 300, 301, 900, 800 };
+        public readonly int[] DefaultProfileComponents = new[] { 100, 102, 200, 201, 300, 301, 900 };
 
         // Loaded from Configuration.resw by the constructor
         private readonly string apiKey; 
@@ -114,6 +114,8 @@ namespace GhostOverlay
             }
 
             var response = await client.ExecuteAsync(request);
+
+            // TODO: handle errors when there's just no response at all
 
             if (response.ContentType.Contains("application/json") != true)
             {

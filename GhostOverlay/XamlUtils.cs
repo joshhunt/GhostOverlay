@@ -103,41 +103,49 @@ namespace GhostOverlay
         {
             var icons = new[]
             {
-                new [] {"[Arc]", ""},
-                new [] {"[Void]", ""},
-                new [] {"[Solar]", ""},
-                new [] {"[Kill]", ""},
-                new [] {"[Headshot]", ""},
-                new [] {"[Melee]", ""},
-                new [] {"[Grenade]", ""},
-                new [] {"[Auto Rifle]", ""},
-                new [] {"[Pulse Rifle]", ""},
-                new [] {"[Scout Rifle]", ""},
-                new [] {"[Sniper Rifle]", ""},
-                new [] {"[Fusion Rifle]", ""},
-                new [] {"[Trace Rifle]", ""},
-                new [] {"[Linear Fusion Rifle]", ""},
-                new [] {"[Hand Cannon]", ""},
-                new [] {"[Shotgun]", ""},
-                new [] {"[SMG]", ""},
-                new [] {"[Bow]", ""},
-                new [] {"[Sidearm]", ""},
-                new [] {"[Linear Fusion Rifle]", ""},
-                new [] {"[Grenade Launcher]", ""},
-                new [] {"[Rocket Launcher]", ""},
-                new [] {"[Machine Gun]", ""},
-                new [] {"[Sword]", ""},
-                new [] {"", ""},
-                new [] {"[Small Blocker]", ""},
-                new [] {"[Medium Blocker]", ""},
-                new [] {"[Large Blocker]", ""},
-                new [] {"[Quest]", ""}
+                ("[Grenade Launcher]", "", 5924951L),
+                ("[Sniper Rifle]", "", 27869698L),
+                ("[Grenade]", "", 45245118L),
+                ("[Hand Cannon]", "", 53304862L),
+                ("[Void]", "", 54906502L),
+                ("[Auto Rifle]", "", 60057218L),
+                ("[Fusion Rifle]", "", 120861495L),
+                ("[Kill]", "", 130479533L),
+                ("[SMG]", "", 218704521L),
+                ("[Arc]", "", 232832120L),
+                ("[Headshot]", "", 234754498L),
+                ("[Scout Rifle]", "", 236969823L),
+                ("[Rocket Launcher]", "", 238063032L),
+                ("[Shotgun]", "", 258599004L),
+                ("[Hunter: Arcstrider Super]", "", 269520342L),
+                ("[Small Blocker]", "", 276438067L),
+                ("[Sidearm]", "", 299893109L),
+                ("[Solar]", "", 312507792L),
+                ("[Melee]", "", 314405660L),
+                ("[Pulse Rifle]", "", 420092262L),
+                ("[Sword]", "", 989767424L),
+                ("[Titan: Sentinel Super]", "", 1043633269L),
+                ("[Bow]", "", 1093443739L),
+                ("[Warlock: Dawnblade Super]", "", 1363382181L),
+                ("[Trace Rifle]", "", 1375652735L),
+                ("[Linear Fusion Rifle]", "", 1448686440L),
+                ("[Machine Gun]", "", 1452824294L),
+                ("[Hunter: Gunslinger Super]", "", 1633845729L),
+                ("[Warlock: Voidwalker Super]", "", 1733112051L),
+                ("[Large Blocker]", "", 2031240843L),
+                ("", "", 2258101260L),
+                ("[Hunter: Nightstalker Super]", "", 2904388000L),
+                ("[Titan: Sunbreaker Super]", "", 2905697046L),
+                ("[Titan: Striker Super]", "", 2975056954L),
+                ("[Medium Blocker]", "", 3792840449L),
+                ("[Quest]", "", 3915460773L),
+                ("", "", 4231452845L)
             };
 
             var incomming = (string)value;
             foreach (var icon in icons)
             {
-                incomming = incomming.Replace(icon[0], icon[1]);
+                incomming = incomming.Replace(icon.Item1, icon.Item2);
             }
 
 

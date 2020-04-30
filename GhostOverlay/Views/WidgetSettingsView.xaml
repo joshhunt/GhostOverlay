@@ -12,8 +12,10 @@
 
     <muxc:NavigationView
         x:Name="navView"
-        IsBackButtonVisible="Collapsed"
         IsSettingsVisible="False"
+        IsBackButtonVisible="Visible"
+        BackRequested="NavView_OnBackRequested"
+        IsBackEnabled="True"
         PaneDisplayMode="Top"
         SelectionChanged="NavView_OnSelectionChanged">
 

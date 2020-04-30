@@ -135,6 +135,12 @@
       <DependentUpon>AppAuthSuccessfulView.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppState.cs" />
+    <Compile Include="BlankPage1.xaml.cs">
+      <DependentUpon>BlankPage1.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Item.cs" />
+    <Compile Include="Models\ITrackable.cs" />
+    <Compile Include="Models\Triumph.cs" />
     <Compile Include="MyEventAggregator.cs" />
     <Compile Include="TemplatesResourceDictionary.xaml.cs">
       <DependentUpon>TemplatesResourceDictionary.xaml</DependentUpon>
@@ -928,6 +934,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="BlankPage1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="TemplatesResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -994,6 +1004,7 @@
       <Version>2.0.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <XboxGameBar-Platform Condition="'$(Platform)' == 'x86'">win32</XboxGameBar-Platform>
     <XboxGameBar-Platform Condition="'$(Platform)' != 'x86'">$(Platform)</XboxGameBar-Platform>

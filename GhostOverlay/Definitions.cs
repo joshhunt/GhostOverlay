@@ -158,22 +158,34 @@ namespace GhostOverlay
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetItemDefinition(uint hash)
+        public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetInventoryItem(uint hash)
         {
             return await GetDefinition<DestinyDefinitionsDestinyInventoryItemDefinition>(
                 "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyObjectiveDefinition> GetObjectiveDefinition(uint hash)
+        public static async Task<DestinyDefinitionsDestinyObjectiveDefinition> GetObjective(uint hash)
         {
             return await GetDefinition<DestinyDefinitionsDestinyObjectiveDefinition>(
                 "SELECT json FROM DestinyObjectiveDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetClassDefinition(uint hash)
+        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetClass(uint hash)
         {
             return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
                 "SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsPresentationDestinyPresentationNodeDefinition> GetPresentationNode(uint hash)
+        {
+            return await GetDefinition<DestinyDefinitionsPresentationDestinyPresentationNodeDefinition>(
+                "SELECT json FROM DestinyPresentationNodeDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsRecordsDestinyRecordDefinition> GetRecord(uint hash)
+        {
+            return await GetDefinition<DestinyDefinitionsRecordsDestinyRecordDefinition>(
+                "SELECT json FROM DestinyRecordDefinition WHERE id = @Hash;", hash);
         }
     }
 }

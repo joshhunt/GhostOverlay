@@ -1,32 +1,84 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.Serialization;
 using Windows.Storage;
 using BungieNetApi.Model;
+using GhostOverlay.Models;
 using Newtonsoft.Json;
 
 namespace GhostOverlay
 {
-    public class TrackedBounty
+    public enum TrackedEntryType
     {
-        [DataMember(Name = "h")] public long ItemHash;
+        Item = 0,
+        Record = 1,
+    }
 
-        [DataMember(Name = "i")] public long ItemInstanceId;
+    public class TrackedEntry
+    {
+        [JsonProperty("h")] public long Hash;
+        [JsonProperty("i")] public long InstanceId;
+        [JsonProperty("o")] public long OwnerId;
+        [JsonProperty("t")] public TrackedEntryType Type;
+
+        public static TrackedEntry FromItem(Item item)
+        {
+            return new TrackedEntry
+            {
+                Type = TrackedEntryType.Item,
+                Hash = item.ItemHash,
+                InstanceId = item.ItemInstanceId,
+                OwnerId = item.OwnerCharacter.CharacterComponent.CharacterId
+            };
+        }
+
+        public static TrackedEntry FromTriumph(Triumph triumph)
+        {
+            return new TrackedEntry
+            {
+                Type = TrackedEntryType.Record,
+                Hash = triumph.Hash
+            };
+        }
+
+        public bool Matches(Item item)
+        {
+            return Type == TrackedEntryType.Item && Hash == item.ItemHash &&
+                   InstanceId == item.ItemInstanceId &&
+                   OwnerId == item.OwnerCharacter.CharacterComponent.CharacterId;
+        }
+
+        public bool Matches(Triumph triumph)
+        {
+            return Type == TrackedEntryType.Record && Hash == triumph.Hash;
+        }
+
+        public override string ToString()
+        {
+            return $"TrackedEntry(Type: {Type}, Hash: {Hash}, InstanceId: {InstanceId}, OwnerId: {OwnerId})";
+        }
 
         public override bool Equals(object obj)
         {
-            var input = obj as TrackedBounty;
+            var input = obj as TrackedEntry;
 
             return
                 (
-                    ItemInstanceId == input?.ItemInstanceId ||
-                    ItemInstanceId.Equals(input?.ItemInstanceId)
+                    Type == input?.Type ||
+                    Type.Equals(input?.Type)
                 ) &&
                 (
-                    ItemHash == input?.ItemHash ||
-                    ItemHash.Equals(input?.ItemHash)
+                    Hash == input?.Hash ||
+                    Hash.Equals(input?.Hash)
+                ) &&
+                (
+                    InstanceId == input?.InstanceId ||
+                    InstanceId.Equals(input?.InstanceId)
+                ) &&
+                (
+                    OwnerId == input?.OwnerId ||
+                    OwnerId.Equals(input?.OwnerId)
                 );
         }
 
@@ -34,36 +86,27 @@ namespace GhostOverlay
         {
             unchecked
             {
-                int hashCode = 41;
-                hashCode = hashCode + 59 + ItemInstanceId.GetHashCode();
-                hashCode = hashCode + 59 + ItemHash.GetHashCode();
+                var hashCode = 41;
+                hashCode = hashCode + 59 + Type.GetHashCode();
+                hashCode = hashCode + 59 + Hash.GetHashCode();
+                hashCode = hashCode + 59 + InstanceId.GetHashCode();
+                hashCode = hashCode + 59 + OwnerId.GetHashCode();
                 return hashCode;
             }
         }
     }
 
-    // public struct SettingsKey
-    // {
-    //     public static string SelectedBounties = "SelectedBounties";
-    //     public static string AccessToken = "AccessToken";
-    //     public static string RefreshToken = "RefreshToken";
-    //     public static string AccessTokenExpiration = "AccessTokenExpiration";
-    //     public static string RefreshTokenExpiration = "RefreshTokenExpiration";
-    //     public static string Language = "Language";
-    //
-    //     public static string SelectedBountiesItemHash = "ItemHash";
-    //     public static string SelectedBountiesItemInstanceId = "ItemInstanceId";
-    // }
-
     public enum SettingsKey
     {
-        SelectedBounties,
+        [Obsolete("Use TrackedEntries")]
+        SelectedBounties, // TODO: Clean SelectedBounties from settings, its not used anymore
         AccessToken,
         RefreshToken,
         AccessTokenExpiration,
         RefreshTokenExpiration,
         Language,
         DefinitionsPath,
+        TrackedEntries
     }
 
     public static class AppState
@@ -72,7 +115,7 @@ namespace GhostOverlay
         public static WidgetData WidgetData = new WidgetData();
         public static OAuthToken TokenData { get; set; }
 
-        // TODO: I don't think we need to use this here any more?
+        [Obsolete("Use AppState.Widgetdata.Profile instead.")]
         public static DestinyResponsesDestinyProfileResponse Profile { get; set; }
 
         public static T ReadSetting<T>(SettingsKey key, T defaultValue)
@@ -93,41 +136,18 @@ namespace GhostOverlay
             localSettings.Values[key.ToString()] = value;
         }
 
-        internal static void SaveTrackedBounties(List<TrackedBounty> trackedBounties)
+        internal static void SaveTrackedEntries(List<TrackedEntry> trackedEntries)
         {
-            var selectedBountiesSettings = new ApplicationDataCompositeValue();
-            var counter = 0;
-
-            foreach (var item in trackedBounties)
-            {
-                selectedBountiesSettings[counter.ToString()] = JsonConvert.SerializeObject(item);
-                counter += 1;
-            }
-
-            Debug.WriteLine($"Actually saving setting {selectedBountiesSettings.Count} bounties");
-
-            SaveSetting(SettingsKey.SelectedBounties, selectedBountiesSettings);
+            var json = JsonConvert.SerializeObject(trackedEntries);
+            Debug.WriteLine($"Actually saving setting {trackedEntries.Count} entries");
+            SaveSetting(SettingsKey.TrackedEntries, json);
         }
 
-        public static List<TrackedBounty> RestoreTrackedBounties()
+        public static List<TrackedEntry> GetTrackedEntriesFromSettings()
         {
-            Debug.WriteLine("Restoring saved bounties");
-            var selectedBountiesSettings =
-                ReadSetting(SettingsKey.SelectedBounties, new ApplicationDataCompositeValue());
-
-            var trackedBounties = new List<TrackedBounty>();
-            foreach (var settingsPair in selectedBountiesSettings)
-            {
-                var value = settingsPair.Value as string;
-                var parsed = JsonConvert.DeserializeObject<TrackedBounty>(value);
-                Debug.WriteLine(
-                    $"Index {Convert.ToInt32(settingsPair.Key)}, got JSON from settings {value}. Parsed as ItemInstanceId: {parsed.ItemInstanceId}, ItemHash: {parsed.ItemHash}");
-                trackedBounties.Insert(Convert.ToInt32(settingsPair.Key), parsed);
-            }
-
-            Debug.WriteLine($"Got {trackedBounties.Count} from settings");
-
-            return trackedBounties;
+            var json = ReadSetting(SettingsKey.TrackedEntries, "[]");
+            Debug.WriteLine($"Restored {json}");
+            return JsonConvert.DeserializeObject<List<TrackedEntry>>(json);
         }
 
         public static void RestoreBungieTokenDataFromSettings()

@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:GhostOverlay"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:GhostOverlay.Models"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
@@ -44,17 +46,15 @@
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Key.ClassName}" />
+                                    <TextBlock Text="{Binding Key.ClassName}"  />
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
                     </GridView.GroupStyle>
 
                     <GridView.ItemTemplate>
-
-                        <DataTemplate x:DataType="local:Bounty">
-
-                            <Grid MaxWidth="400" Opacity="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}" >
+                        <DataTemplate x:DataType="models:Item">
+                            <Grid Width="400" Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}" >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
@@ -88,7 +88,7 @@
                                         TextWrapping="WrapWholeWords" />
 
                                     <ListView
-                                        Visibility="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
+                                        Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
                                         IsItemClickEnabled="False"
                                         ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
                                         ItemTemplate="{StaticResource ObjectiveTemplate}"
@@ -110,6 +110,6 @@
             </StackPanel>
 
         </StackPanel>
+        </ScrollViewer>
 
-    </ScrollViewer>
 </Page>

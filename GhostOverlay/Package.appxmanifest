@@ -10,7 +10,7 @@
 	<Identity
 		Name="WorldClassDevelopmentLtd.GhostOverlay"
 		Publisher="CN=F78EA302-9D46-44EB-A662-246312A8DD23"
-		Version="0.4.34.0" />
+		Version="0.5.36.0" />
 
 	<mp:PhoneIdentity PhoneProductId="5418b76d-6c5b-4248-80e8-ce7760dffff9"
 					  PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
@@ -36,11 +36,10 @@
 					 Executable="$targetnametoken$.exe"
 					 EntryPoint="GhostOverlay.App">
 			<uap:VisualElements
-				AppListEntry="none"
-				DisplayName="GhostOverlay"
+				DisplayName="Ghost Overlay"
 				Square150x150Logo="Assets\Square150x150Logo.png"
 				Square44x44Logo="Assets\Square44x44Logo.png"
-				Description="GhostOverlay"
+				Description="Ghost Overlay"
 				BackgroundColor="transparent">
 				<uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png">
 				</uap:DefaultTile >

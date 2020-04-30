@@ -8,9 +8,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
+using GhostOverlay.Models;
 
 namespace GhostOverlay
 {
+    [Flags]
+    public enum RecordState
+    {
+        None = 0b_0000_0000,  // 0
+        RecordRedeemed = 0b_0000_0001,  // 1
+        RewardUnavailable = 0b_0000_0010,  // 2
+        ObjectiveNotCompleted = 0b_0000_0100,  // 4
+        Obscured = 0b_0000_1000,  // 8
+        Invisible = 0b_0001_0000,  // 16
+        EntitlementUnowned = 0b_0010_0000,  // 32
+        CanEquipTitle = 0b_0100_0000  // 64
+    }
+
     public class TimerViewModel : INotifyPropertyChanged
     {
         public TimerViewModel()
@@ -76,102 +91,10 @@ namespace GhostOverlay
         public string ClassName =>
             ClassDefinition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
 
-        public async Task PopulateDefinition()
-        {
-            var classHash = Convert.ToUInt32(CharacterComponent.ClassHash);
-            ClassDefinition = await Definitions.GetClassDefinition(classHash);
-        }
-    }
-
-    public class Bounty
-    {
-        public DestinyEntitiesItemsDestinyItemComponent Item;
-
-        public DestinyDefinitionsDestinyInventoryItemDefinition ItemDefinition =
-            new DestinyDefinitionsDestinyInventoryItemDefinition();
-
-        public List<Objective> Objectives = new List<Objective>();
-        public Character OwnerCharacter;
-        public bool AllObjectivesComplete => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
-
-        public string Title =>
-            ItemDefinition?.SetData?.QuestLineName ?? ItemDefinition?.DisplayProperties?.Name ?? "No name";
-
-        [Obsolete("OwnerCharacterId is deprecated, use OwnerCharacter instead.")]
-        public string OwnerCharacterId;
-
-        public Uri ImageUri => new Uri($"https://www.bungie.net{ItemDefinition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
-
         public async void PopulateDefinition()
         {
-            var hash = Convert.ToUInt32(Item.ItemHash);
-            ItemDefinition = await Definitions.GetItemDefinition(hash);
-        }
-
-        public static Bounty BountyFromItemComponent(DestinyEntitiesItemsDestinyItemComponent item, DestinyResponsesDestinyProfileResponse profile, Character ownerCharacter)
-        {
-            var uninstancedObjectivesData = profile.CharacterUninstancedItemComponents[ownerCharacter.CharacterComponent.CharacterId.ToString()].Objectives.Data;
-            var objectives = new List<DestinyQuestsDestinyObjectiveProgress>();
-            var itemInstanceId = item.ItemInstanceId.ToString();
-            var itemHash = item.ItemHash.ToString();
-
-            if (profile.ItemComponents.Objectives.Data.ContainsKey(itemInstanceId))
-            {
-                objectives.AddRange(profile.ItemComponents.Objectives.Data[itemInstanceId]?.Objectives);
-            }
-
-            if (item.ItemInstanceId.Equals(0) && uninstancedObjectivesData.ContainsKey(itemHash))
-            {
-                objectives.AddRange(uninstancedObjectivesData[itemHash].Objectives);
-            }
-
-            var bounty = new Bounty()
-            {
-                Item = item,
-                OwnerCharacter = ownerCharacter
-                //AllObjectivesComplete = objectives.TrueForAll(v => v.Complete)
-            };
-            bounty.PopulateDefinition();
-
-            foreach (var objectiveProgress in objectives)
-            {
-                var objective = new Objective { Progress = objectiveProgress };
-                objective.PopulateDefinition();
-                bounty.Objectives.Add(objective);
-            }
-
-            return bounty;
-        }
-
-        public static List<Bounty> BountiesFromProfile(DestinyResponsesDestinyProfileResponse profile, bool addCompletedBounties = true)
-        {
-            var bounties = new List<Bounty>();
-        
-            foreach (var inventoryKv in profile.CharacterInventories.Data)
-            {
-                var characterId = inventoryKv.Key;
-                var inventory = inventoryKv.Value;
-
-                var character = new Character { CharacterComponent = profile.Characters.Data[characterId] };
-                _ = character.PopulateDefinition();
-
-                foreach (var inventoryItem in inventory.Items)
-                {
-                    // Only from the Persuits bucket
-                    if (inventoryItem.BucketHash != 1345459588) continue;
-
-                    var bounty = BountyFromItemComponent(inventoryItem, profile, character);
-
-                    if (addCompletedBounties || !bounty.AllObjectivesComplete)
-                    {
-                        bounties.Add(bounty);
-                    }
-                }
-            }
-
-            //bounties.Sort((a, b) => a.AllObjectivesComplete != b.AllObjectivesComplete ? ( a.AllObjectivesComplete ? 100 : 1 ) : 0);
-
-            return bounties;
+            var classHash = Convert.ToUInt32(CharacterComponent.ClassHash);
+            ClassDefinition = await Definitions.GetClass(classHash);
         }
     }
 
@@ -188,7 +111,16 @@ namespace GhostOverlay
         public async void PopulateDefinition()
         {
             var hash = Convert.ToUInt32(Progress.ObjectiveHash);
-            ObjectiveDefinition = await Definitions.GetObjectiveDefinition(hash);
+            ObjectiveDefinition = await Definitions.GetObjective(hash);
         }
+    }
+
+    public interface ITriumphsViewChildren { }
+
+    public class PresentationNode : ITriumphsViewChildren
+    {
+        public long PresentationNodeHash;
+        public DestinyDefinitionsPresentationDestinyPresentationNodeDefinition Definition;
+        public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
     }
 }

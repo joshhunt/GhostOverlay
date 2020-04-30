@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Windows.Foundation;
@@ -10,7 +11,6 @@ namespace GhostOverlay
     internal class AutoFitGrid : Panel
     {
         private double cellWidth, cellHeight, maxcellheight;
-
         private double rowCount, colCount;
 
         private Size LimitUnboundedSize(Size input)
@@ -26,7 +26,7 @@ namespace GhostOverlay
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            double minimumWidth = 250; // does not take into account margins!
+            double minimumWidth = 300; // does not take into account margins!
 
             colCount = Math.Floor(availableSize.Width / minimumWidth);
             rowCount = Math.Ceiling(Children.Count / colCount);
@@ -34,10 +34,16 @@ namespace GhostOverlay
             cellWidth = availableSize.Width / colCount;
             cellHeight = double.IsInfinity(availableSize.Height) ? double.PositiveInfinity : availableSize.Height;
 
+            var childrenList = Children[0];
+            Debug.WriteLine(childrenList);
+
+            var cellIndex = 0;
             foreach (var child in Children)
             {
+                var row = Math.Floor(cellIndex / colCount);
                 child.Measure(new Size(cellWidth, cellHeight));
                 maxcellheight = child.DesiredSize.Height > maxcellheight ? child.DesiredSize.Height : maxcellheight;
+                cellIndex++;
             }
 
             return LimitUnboundedSize(availableSize);
@@ -45,26 +51,22 @@ namespace GhostOverlay
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var count = 0;
+            var cellIndex = 0;
 
             double x, y;
             double col, row;
 
-            Debug.WriteLine("ArrangeOverride");
-
             foreach (var child in Children)
             {
-                row = Math.Floor(count / colCount);
-                col = count % colCount;
+                row = Math.Floor(cellIndex / colCount);
+                col = cellIndex % colCount;
 
                 x = col * cellWidth;
                 y = row * cellHeight;
 
-                Debug.WriteLine($"child {count} row: {row}, col: {col}, x: {x}, y: {y}");
-
                 var anchorPoint = new Point(x, y);
                 child.Arrange(new Rect(anchorPoint, child.DesiredSize));
-                count++;
+                cellIndex++;
             }
 
             return finalSize;

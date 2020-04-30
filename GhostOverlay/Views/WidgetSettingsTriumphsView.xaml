@@ -5,19 +5,165 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:GhostOverlay"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:models="using:GhostOverlay.Models"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock
-            Margin="6"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Text="Triumphs coming soon." />
-        <TextBlock
-            Margin="6"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Text="Hopefully." />
-    </StackPanel>
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <local:TemplatesResourceDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <local:TriumphsViewTemplateSelector x:Key="TriumphsViewTemplateSelector"
+                                                PresentationNode="{StaticResource PresentationNodeTemplate}"
+                                                Triumph="{StaticResource TriumphTemplate}" />
+
+            <local:TriumphViewGridItemStyleSelector x:Key="TriumphViewGridItemStyleSelector"
+                                                    PresentationNode="{StaticResource PresentationNodeGridItemStyle}"
+                                                    Triumph="{StaticResource TriumphGridItemStyle}" />
+
+            <Style x:Key="PresentationNodeGridItemStyle" TargetType="GridViewItem">
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="6" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="GridViewItem">
+                            <ListViewItemPresenter />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="TriumphGridItemStyle" TargetType="GridViewItem">
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="6" />
+            </Style>
+
+            <DataTemplate x:Key="PresentationNodeTemplate" x:DataType="local:PresentationNode">
+                <Grid Width="400" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Padding="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Grid.Row="0" Grid.Column="0"
+                        Width="48"
+                        Height="48"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+
+                        <Image.Source>
+                            <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                        </Image.Source>
+                    </Image>
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        HorizontalAlignment="Stretch">
+
+                        <TextBlock
+                            HorizontalAlignment="Left"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            TextWrapping="WrapWholeWords"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind Definition.DisplayProperties.Name}" />
+
+                        <TextBlock
+                            Margin="0,6,0,6"
+                            HorizontalAlignment="Left"
+                            MaxLines="2"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{x:Bind Definition.DisplayProperties.Description}"
+                            TextTrimming="WordEllipsis"
+                            TextWrapping="WrapWholeWords" />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="TriumphTemplate" x:DataType="models:Triumph">
+                <Grid Width="400" MinHeight="120" Padding="12" Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        Grid.Row="0" Grid.Column="0"
+                        Width="48"
+                        Height="48"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+
+                        <Image.Source>
+                            <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                        </Image.Source>
+                    </Image>
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        HorizontalAlignment="Stretch">
+
+                        <TextBlock
+                            HorizontalAlignment="Left"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            TextWrapping="WrapWholeWords"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind Definition.DisplayProperties.Name}" />
+
+                        <TextBlock
+                            Margin="0,6,0,6"
+                            HorizontalAlignment="Left"
+                            MaxLines="2"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{x:Bind Definition.DisplayProperties.Description}"
+                            TextTrimming="WordEllipsis"
+                            TextWrapping="WrapWholeWords" />
+
+                        <ListView
+                            IsHitTestVisible="False"
+                            IsItemClickEnabled="False"
+                            ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                            ItemTemplate="{StaticResource ObjectiveTemplate}"
+                            ItemsSource="{x:Bind Objectives}"
+                            SelectionMode="None" />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid Margin="6,0">
+        <Grid.Resources>
+            <CollectionViewSource x:Name="ItemsCollection" />
+        </Grid.Resources>
+
+
+        <GridView
+            x:Name="TriumphsGrid"
+            ItemsSource="{Binding Source={StaticResource ItemsCollection}}"
+            IsItemClickEnabled="True"
+            ItemClick="OnPresentationNodeClick"
+            SelectionChanged="Selector_OnSelectionChanged"
+            ItemContainerStyleSelector="{StaticResource TriumphViewGridItemStyleSelector}"
+            ItemTemplateSelector="{StaticResource TriumphsViewTemplateSelector}"
+            SelectionMode="Multiple">
+
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:WrapPanel Orientation="Horizontal" VerticalAlignment="Stretch" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+        </GridView>
+    </Grid>
 </Page>
