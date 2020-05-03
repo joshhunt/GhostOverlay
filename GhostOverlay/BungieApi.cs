@@ -92,7 +92,7 @@ namespace GhostOverlay
 
         public async Task<T> GetBungie<T>(string path, bool requireAuth = false)
         {   
-            Debug.WriteLine($"GetBungie request for {path}");
+            Debug.WriteLine($"REQUEST {path}");
             var request = new RestRequest(path);
 
             if (AppState.TokenData != null && AppState.TokenData.RefreshTokenIsValid())
@@ -108,7 +108,6 @@ namespace GhostOverlay
             if (AppState.TokenData != null && AppState.TokenData.AccessTokenIsValid())
             {
                 var headerValue = $"Bearer {AppState.TokenData.AccessToken}";
-                Debug.WriteLine("  Adding access token");
                 
                 request.AddHeader("authorization", headerValue);
             }
@@ -153,7 +152,6 @@ namespace GhostOverlay
             
             if (AppState.TokenData.AccessTokenIsValid())
             {
-                Debug.WriteLine("Access token is still valid, everything's all good!");
                 return true;
             }
 

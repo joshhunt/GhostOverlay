@@ -16,7 +16,7 @@ namespace GhostOverlay
     /// <summary>
     ///     An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<PropertyChanged>
+    public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>
     {
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
 
@@ -31,17 +31,17 @@ namespace GhostOverlay
             InitializeComponent();
         }
 
-        public void HandleMessage(PropertyChanged message)
+        public void HandleMessage(WidgetPropertyChanged message)
         {
             Debug.WriteLine($"HandleMessage in triumphs view {message}");
             switch (message)
             {
-                case PropertyChanged.Profile:
-                case PropertyChanged.DefinitionsPath:
+                case WidgetPropertyChanged.Profile:
+                case WidgetPropertyChanged.DefinitionsPath:
                     UpdateViewModel();
                     break;
 
-                case PropertyChanged.TrackedBounties:
+                case WidgetPropertyChanged.TrackedBounties:
                     UpdateSelection();
                     break;
             }

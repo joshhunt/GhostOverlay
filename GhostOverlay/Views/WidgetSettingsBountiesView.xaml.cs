@@ -1,47 +1,20 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using Windows.Foundation;
-using Windows.UI;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using GhostOverlay.Models;
-using Microsoft.Gaming.XboxGameBar;
 
 namespace GhostOverlay
 {
-    public sealed partial class WidgetSettingsBountiesView : Page, ISubscriber<PropertyChanged>
+    public sealed partial class WidgetSettingsBountiesView : Page, ISubscriber<WidgetPropertyChanged>
     {
         private readonly RangeObservableCollection<Item> Bounties = new RangeObservableCollection<Item>();
-        private string definitionsDbName = "<not loaded>";
         private bool viewIsUpdating;
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
 
         public WidgetSettingsBountiesView()
         {
             InitializeComponent();
-        }
-
-        public void HandleMessage(PropertyChanged message)
-        {
-            switch (message)
-            {
-                case PropertyChanged.Profile:
-                case PropertyChanged.DefinitionsPath:
-                    UpdateViewModel();
-                    break;
-
-                case PropertyChanged.TrackedBounties:
-                    UpdateSelection();
-                    break;
-            }
-            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -57,10 +30,26 @@ namespace GhostOverlay
             eventAggregator.Unsubscribe(this);
         }
 
+        public void HandleMessage(WidgetPropertyChanged message)
+        {
+            switch (message)
+            {
+                case WidgetPropertyChanged.Profile:
+                case WidgetPropertyChanged.DefinitionsPath:
+                    UpdateViewModel();
+                    break;
+
+                case WidgetPropertyChanged.TrackedBounties:
+                    UpdateSelection();
+                    break;
+            }
+
+        }
+
         private void UpdateViewModel()
         {
             viewIsUpdating = true;
-            definitionsDbName = Path.GetFileNameWithoutExtension(AppState.WidgetData.DefinitionsPath ?? "");
+            
 
             var profile = AppState.WidgetData.Profile;
             if (profile?.CharacterInventories?.Data != null && AppState.WidgetData.DefinitionsLoaded)
@@ -70,7 +59,7 @@ namespace GhostOverlay
 
                 BountiesCollection.Source =
                     from t in Bounties
-                    orderby t.IsCompleted
+                    orderby t.SortValue
                     group t by t.OwnerCharacter
                     into g
                     select g;
@@ -113,13 +102,6 @@ namespace GhostOverlay
             }
 
             AppState.WidgetData.TrackedEntries = copyOf;
-        }
-
-        private async void UpdateDefinitionsButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            DefinitionsProgressRing.IsActive = true;
-            await Definitions.CheckForLatestDefinitions();
-            DefinitionsProgressRing.IsActive = false;
         }
     }
 }

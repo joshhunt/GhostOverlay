@@ -65,10 +65,9 @@ namespace GhostOverlay
         {
             if (args.IsSettingsSelected)
             {
-                throw new NotImplementedException();
+                contentFrame.Navigate(typeof(WidgetSettingsSettingsView), null,
+                    args.RecommendedNavigationTransitionInfo);
             }
-
-            Debug.WriteLine($"Before Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
 
             var item = args.SelectedItem as muxc.NavigationViewItem;
             var selectedView = item?.Tag.ToString();

@@ -2,7 +2,6 @@
     x:Class="GhostOverlay.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    RequestedTheme="Dark"
     xmlns:local="using:GhostOverlay">
 
     <Application.Resources>
@@ -26,9 +25,15 @@
                         <Setter Property="FontFamily" Value="Assets\NHaasGroteskTXPro-55Rg.ttf#NeueHaasGroteskText Pro, Assets\DestinyKeys.ttf#Destiny Keys" />
                         <Setter Property="FontSize" Value="20" />
                     </Style>
+
+                    <AcrylicBrush x:Key="MyAcrylicBrush"
+                                  BackgroundSource="Backdrop"
+                                  TintColor="Black"
+                                  TintOpacity=".4"
+                                  TintLuminosityOpacity=".7"
+                                  AlwaysUseFallback="False"
+                                  FallbackColor="#aa000000"/>
                 </ResourceDictionary>
-
-
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>

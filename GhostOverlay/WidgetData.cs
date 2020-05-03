@@ -10,9 +10,10 @@ using GhostOverlay.Models;
 
 namespace GhostOverlay
 {
-    public enum PropertyChanged
+    public enum WidgetPropertyChanged
     {
         Profile,
+        ProfileUpdating,
         TrackedBounties,
         DefinitionsPath,
     }
@@ -21,11 +22,25 @@ namespace GhostOverlay
     {
         // number of requests to schedule profile updates. 
         public int ProfileScheduleRequesters = 0;
-        public static int ProfileUpdateInterval = 15 * 1000;
+        public static int ActiveProfileUpdateInterval = 15 * 1000;
+        public static int InactiveProfileUpdateInterval = 60 * 1000;
+        public DateTime ProfileUpdatedTime = DateTime.MinValue;
+        public bool WidgetsAreVisible { get; set; }
 
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+
+        private bool _profileIsUpdating;
+        public bool ProfileIsUpdating
+        {
+            get => _profileIsUpdating;
+            set
+            {
+                _profileIsUpdating = value;
+                eventAggregator.Publish(WidgetPropertyChanged.ProfileUpdating);
+            }
+        }
 
         private DestinyResponsesDestinyProfileResponse _profile;
         public DestinyResponsesDestinyProfileResponse Profile
@@ -34,10 +49,16 @@ namespace GhostOverlay
 
             set
             {
-                if (value.Equals(_profile)) return;
+                if (value.Equals(_profile))
+                {
+                    Debug.WriteLine("New profile is the same, so skipping");
+                    return;
+                }
 
+                Debug.WriteLine("New profile is very different!!!");
                 _profile = value;
-                eventAggregator.Publish(PropertyChanged.Profile);
+                ProfileUpdatedTime = DateTime.Now;
+                eventAggregator.Publish(WidgetPropertyChanged.Profile);
             }
         }
 
@@ -50,9 +71,8 @@ namespace GhostOverlay
                 if (value.Equals(_trackedEntries)) return;
 
                 _trackedEntries = value;
-                Debug.WriteLine("Setting new TrackedEntries");
                 AppState.SaveTrackedEntries(_trackedEntries);
-                eventAggregator.Publish(PropertyChanged.TrackedBounties);
+                eventAggregator.Publish(WidgetPropertyChanged.TrackedBounties);
             }
         }
 
@@ -64,12 +84,13 @@ namespace GhostOverlay
             {
                 if (value.Equals(_definitionsPath)) return;
                 _definitionsPath = value;
-                eventAggregator.Publish(PropertyChanged.DefinitionsPath);
+                eventAggregator.Publish(WidgetPropertyChanged.DefinitionsPath);
             }
         }
 
         public async Task UpdateProfile()
         {
+            ProfileIsUpdating = true;
             if (Profile == null)
             {   
                 Debug.WriteLine("Updating profile, for the first time using GetProfileForCurrentUser");
@@ -77,9 +98,9 @@ namespace GhostOverlay
             }
             else
             {
-                Debug.WriteLine("Updating profile");
                 Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
             }
+            ProfileIsUpdating = false;
         }
 
         public async void ScheduleProfileUpdates()
@@ -96,8 +117,22 @@ namespace GhostOverlay
 
             while (ProfileScheduleRequesters > 0)
             {
+                await UpdateProfile();
+
+                var delay = WidgetsAreVisible ? ActiveProfileUpdateInterval : InactiveProfileUpdateInterval;
+                Debug.WriteLine($"Waiting {delay}ms before fetching profile again");
+                
+                await Task.Delay(delay);
+            }
+        }
+
+        public void WidgetVisibilityChanged()
+        {
+            var sinceLastUpdate = DateTime.Now - ProfileUpdatedTime;
+            if (WidgetsAreVisible && !ProfileIsUpdating && sinceLastUpdate.TotalMilliseconds > ActiveProfileUpdateInterval)
+            {   
+                Debug.WriteLine("Visiblity changed, updating profile");
                 _ = UpdateProfile();
-                await Task.Delay(ProfileUpdateInterval);
             }
         }
 

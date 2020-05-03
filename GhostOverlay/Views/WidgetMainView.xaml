@@ -6,7 +6,9 @@
     xmlns:local="using:GhostOverlay"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:interop="using:Windows.UI.Xaml.Interop"
+    xmlns:media="using:Microsoft.Toolkit.Uwp.UI.Media"
     xmlns:models="using:GhostOverlay.Models"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
@@ -21,6 +23,7 @@
     </Page.Resources>
 
     <Grid>
+
         <StackPanel
             x:Name="EmptyState"
             HorizontalAlignment="Center"
@@ -85,7 +88,7 @@
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Stretch">
 
-                                <TextBlock Text="{Binding Key}" 
+                                <TextBlock Text="{Binding Key}"
                                            HorizontalAlignment="Stretch" />
                             </StackPanel>
                         </DataTemplate>
@@ -99,7 +102,7 @@
                     <Grid
                         Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}"
                         ToolTipService.ToolTip="{x:Bind DisplayProperties.Description}">
-                        
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -107,7 +110,8 @@
 
                         <Grid.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="Untrack" Icon="Delete" Click="UntrackItem_OnClick" Tag="{x:Bind TrackedEntry}" />
+                                <MenuFlyoutItem Text="Untrack" Icon="Delete" Click="UntrackItem_OnClick"
+                                                Tag="{x:Bind TrackedEntry}" />
                             </MenuFlyout>
                         </Grid.ContextFlyout>
 
@@ -142,6 +146,7 @@
                             <ListView
                                 Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
                                 IsItemClickEnabled="False"
+                                IsHitTestVisible="False"
                                 ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
                                 ItemTemplate="{StaticResource ObjectiveTemplate}"
                                 ItemsSource="{x:Bind Objectives}"
@@ -155,5 +160,17 @@
             </ListView.ItemTemplate>
         </ListView>
 
+        <StackPanel x:Name="ProfileUpdatesPanel" Visibility="Collapsed" IsHitTestVisible="False"
+                    VerticalAlignment="Top" HorizontalAlignment="Right" Padding="10,11,12,10">
+            <StackPanel Orientation="Horizontal">
+                <ProgressRing x:Name="ProfileUpdatingProgressRing" Margin="0,0,10,0" />
+
+                <TextBlock Foreground="#ffe0e0e0" FontSize="13">
+                    <Run>Updated</Run>
+                    <Run Text="{Binding SinceProfileUpdate}" />
+                    <Run>ago</Run>
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Page>

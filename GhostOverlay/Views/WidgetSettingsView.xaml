@@ -12,7 +12,7 @@
 
     <muxc:NavigationView
         x:Name="navView"
-        IsSettingsVisible="False"
+        IsSettingsVisible="True"
         IsBackButtonVisible="Visible"
         BackRequested="NavView_OnBackRequested"
         IsBackEnabled="True"

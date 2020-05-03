@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -22,7 +25,7 @@ using Microsoft.Toolkit.Uwp.UI.Extensions;
 
 namespace GhostOverlay
 {
-    public sealed partial class WidgetMainView : Page, ISubscriber<PropertyChanged>
+    public sealed partial class WidgetMainView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
         private enum VisualState
         {
@@ -33,22 +36,54 @@ namespace GhostOverlay
             DefinitionsLoading
         }
 
-        public TimerViewModel updateTimer;
-        public ObservableCollection<Item> TrackedBounties = new ObservableCollection<Item>();
         private XboxGameBarWidget widget;
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly List<ITrackable> Tracked = new List<ITrackable>();
+
+        // Timer stuff
+        private DispatcherTimer timer;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string SinceProfileUpdate
+        {
+            get
+            {
+                if (AppState.WidgetData.ProfileUpdatedTime == DateTime.MinValue)
+                {
+                    return "-";
+                }
+
+                var span = DateTime.Now - AppState.WidgetData.ProfileUpdatedTime;
+
+                if (span.TotalSeconds > 60)
+                    return $"{span.Minutes}m {span.Seconds}s";
+
+                return $"{span.Seconds}s";
+            }
+        }
 
         public WidgetMainView()
         {
             InitializeComponent();
             eventAggregator.Subscribe(this);
+
+            this.DataContext = this;
+        }
+
+        private void timer_Tick(object sender, object e)
+        {
+            RaisePropertyChanged("SinceProfileUpdate");
+        }
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             widget = e.Parameter as XboxGameBarWidget;
-            updateTimer = new TimerViewModel();
-
+            
             if (widget != null)
             {
                 widget.MaxWindowSize = new Size(1500, 1500);
@@ -59,12 +94,41 @@ namespace GhostOverlay
                 widget.SettingsClicked += Widget_SettingsClicked;
                 widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
                 Widget_RequestedThemeChanged(widget, null);
+
+                widget.GameBarDisplayModeChanged += WidgetOnGameBarDisplayModeChanged;
+                widget.PinnedChanged += WidgetOnPinnedChanged;
+                widget.VisibleChanged += WidgetOnVisibleChanged;
+                widget.WindowStateChanged += WidgetOnWindowStateChanged;
             }
 
             SetVisualState(VisualState.InitialProfileLoad);
 
             AppState.WidgetData.ScheduleProfileUpdates();
             UpdateFromProfile();
+
+            timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            timer.Tick += timer_Tick;
+            timer.Start();
+        }
+
+        private void WidgetOnWindowStateChanged(XboxGameBarWidget sender, object args)
+        {
+            Debug.WriteLine($"Main View WidgetOnWindowStateChanged: {sender.WindowState}");
+        }
+
+        private void WidgetOnVisibleChanged(XboxGameBarWidget sender, object args)
+        {
+            Debug.WriteLine($"Main View WidgetOnVisibleChanged: {sender.Visible}");
+        }
+
+        private void WidgetOnPinnedChanged(XboxGameBarWidget sender, object args)
+        {
+            Debug.WriteLine($"Main View WidgetOnPinnedChanged: {sender.Pinned}");
+        }
+
+        private void WidgetOnGameBarDisplayModeChanged(XboxGameBarWidget sender, object args)
+        {
+            Debug.WriteLine($"Main View GameBarDisplayModeChanged: {sender.GameBarDisplayMode}");
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -74,15 +138,32 @@ namespace GhostOverlay
             AppState.WidgetData.UnscheduleProfileUpdates();
         }
 
-        public void HandleMessage(PropertyChanged message)
+        public void HandleMessage(WidgetPropertyChanged message)
         {
+            Debug.WriteLine($"WidgetMainView HandleMessage {message}");
             switch (message)
             {
-                case PropertyChanged.Profile:
-                case PropertyChanged.DefinitionsPath:
-                case PropertyChanged.TrackedBounties:
+                case WidgetPropertyChanged.Profile:
+                case WidgetPropertyChanged.DefinitionsPath:
+                case WidgetPropertyChanged.TrackedBounties:
                     UpdateFromProfile();
                     break;
+
+                case WidgetPropertyChanged.ProfileUpdating:
+                    UpdateProfileUpdating();
+                    break;
+            }
+        }
+
+        private void UpdateProfileUpdating()
+        {
+            if (AppState.WidgetData.ProfileIsUpdating)
+            {
+                ProfileUpdatingProgressRing.IsActive = true;
+            }
+            else
+            {
+                ProfileUpdatingProgressRing.IsActive = false;
             }
         }
 
@@ -92,10 +173,12 @@ namespace GhostOverlay
             InitialProfileLoadState.Visibility = Visibility.Collapsed;
             ProfileErrorState.Visibility = Visibility.Collapsed;
             DefinitionsLoadingState.Visibility = Visibility.Collapsed;
+            ProfileUpdatesPanel.Visibility = Visibility.Collapsed;
 
             switch (state)
             {
                 case VisualState.None:
+                    ProfileUpdatesPanel.Visibility = Visibility.Visible;
                     break;
 
                 case VisualState.Empty:
@@ -140,11 +223,12 @@ namespace GhostOverlay
 
         private async void UpdateTracked()
         {
-            var tracked = new List<ITrackable>();
             var profile = AppState.WidgetData.Profile;
             var characters = new Dictionary<long, Character>();
-            var trackedEntriesToCleanup = new List<TrackedEntry>();
-            
+            var toCleanup = new List<TrackedEntry>();
+
+            Tracked.Clear();
+
             foreach (var trackedEntry in AppState.WidgetData.TrackedEntries)
             {
                 ITrackable trackable = default;
@@ -161,27 +245,21 @@ namespace GhostOverlay
                 }
 
                 if (trackable?.Objectives != null && trackable.Objectives.Count > 0)
-                {
-                    tracked.Add(trackable);
-                }
+                    Tracked.Add(trackable);
                 else
-                {
-                    Debug.WriteLine($"Tracked entry no longer exists {trackedEntry}");
-                    trackedEntriesToCleanup.Add(trackedEntry);
-                }
+                    toCleanup.Add(trackedEntry);
             }
 
-            AppState.WidgetData.TrackedEntries.RemoveAll(trackedEntriesToCleanup.Contains);
+            AppState.WidgetData.TrackedEntries.RemoveAll(toCleanup.Contains);
 
             var groupedBounties =
-                from t in tracked
-                orderby t.IsCompleted
+                from t in Tracked
+                orderby t.SortValue
                 group t by t.GroupByKey
                 into g
                 select g;
 
-            SetVisualState(tracked.Count == 0 ? VisualState.Empty : VisualState.None);
-
+            SetVisualState(Tracked.Count == 0 ? VisualState.Empty : VisualState.None);
             TrackedBountiesCollection.Source = groupedBounties;
         }
 
@@ -293,7 +371,20 @@ namespace GhostOverlay
 
         private async void SettingsButton_OnClick(object sender, RoutedEventArgs e)
         {
-            await widget.ActivateSettingsAsync();
+            if (widget != null)
+            {
+                // We're in Game Bar
+                await widget.ActivateSettingsAsync();
+                return;
+            }
+
+            // View has been launched outside of game bar.
+            // Note: this code is non optimal
+            AppWindow appWindow = await AppWindow.TryCreateAsync();
+            Frame appWindowContentFrame = new Frame();
+            appWindowContentFrame.Navigate(typeof(WidgetSettingsView));
+            ElementCompositionPreview.SetAppWindowContent(appWindow, appWindowContentFrame);
+            await appWindow.TryShowAsync();
         }
 
         private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)

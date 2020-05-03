@@ -9,8 +9,9 @@ namespace GhostOverlay.Models
 {
     public class Item : ITrackable
     {
-
         public static long PersuitsBucketHash = 1345459588;
+        public static string QuestTraitId = "inventory_filtering.quest";
+        public static string BountyTraitId = "inventory_filtering.bounty";
 
         public long ItemHash = 0;
         public long ItemInstanceId = 0;
@@ -30,6 +31,9 @@ namespace GhostOverlay.Models
             ItemDefinition?.SetData?.QuestLineName ?? ItemDefinition?.DisplayProperties?.Name ?? "No name";
 
         public Uri ImageUri => new Uri($"https://www.bungie.net{ItemDefinition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
+
+        public string SortValue => (IsCompleted ? "xxx_completed" : "") +
+                                   (ItemDefinition?.Inventory?.StackUniqueLabel ?? "");
 
         public async void PopulateDefinition()
         {

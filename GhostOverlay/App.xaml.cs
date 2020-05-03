@@ -104,6 +104,7 @@ namespace GhostOverlay
                 );
 
                 Window.Current.Closed += WidgetMainWindow_Closed;
+                widgetMain.VisibleChanged += AnyWidget_VisibleChanged;
 
                 if (AppState.TokenData.IsValid())
                     widgetRootFrame.Navigate(typeof(WidgetMainView), widgetMain);
@@ -120,11 +121,19 @@ namespace GhostOverlay
                 );
 
                 Window.Current.Closed += WidgetMainSettingsWindow_Closed;
+                widgetMainSettings.VisibleChanged += AnyWidget_VisibleChanged;
 
                 widgetRootFrame.Navigate(typeof(WidgetSettingsView), widgetMainSettings);
             }
 
             Window.Current.Activate();
+        }
+
+        private void AnyWidget_VisibleChanged(XboxGameBarWidget sender, object args)
+        {
+            AppState.WidgetData.WidgetsAreVisible = (widgetMain?.Visible ?? false) ||
+                                                    (widgetMainSettings?.Visible ?? false);
+            AppState.WidgetData.WidgetVisibilityChanged();
         }
 
         private async void HandleAuthCode(string authCode)
@@ -172,8 +181,9 @@ namespace GhostOverlay
             if (appRootFrame.Content == null)
             {
                 if (AppState.TokenData.IsValid())
-                    appRootFrame.Navigate(typeof(WidgetSettingsView));
-                    //appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
+                    appRootFrame.Navigate(typeof(WidgetMainView));
+                    // appRootFrame.Navigate(typeof(WidgetSettingsView));
+                    //  appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
                 else
                     appRootFrame.Navigate(typeof(MainPage));
             }
