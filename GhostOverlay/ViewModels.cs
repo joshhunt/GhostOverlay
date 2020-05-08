@@ -86,21 +86,22 @@ namespace GhostOverlay
     public class Character
     {
         public DestinyEntitiesCharactersDestinyCharacterComponent CharacterComponent;
-        public DestinyDefinitionsDestinyClassDefinition ClassDefinition;
+        public DestinyDefinitionsDestinyClassDefinition Definition;
 
         public string ClassName =>
-            ClassDefinition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
+            Definition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
 
-        public async void PopulateDefinition()
+        public async Task<DestinyDefinitionsDestinyClassDefinition> PopulateDefinition()
         {
             var classHash = Convert.ToUInt32(CharacterComponent.ClassHash);
-            ClassDefinition = await Definitions.GetClass(classHash);
+            Definition = await Definitions.GetClass(classHash);
+            return Definition;
         }
     }
 
     public class Objective
     {
-        public DestinyDefinitionsDestinyObjectiveDefinition ObjectiveDefinition =
+        public DestinyDefinitionsDestinyObjectiveDefinition Definition =
             new DestinyDefinitionsDestinyObjectiveDefinition();
 
         public DestinyQuestsDestinyObjectiveProgress Progress;
@@ -108,10 +109,12 @@ namespace GhostOverlay
         public double CompletionPercent =>
             Math.Min(100, Math.Floor((double)Progress.Progress / Progress.CompletionValue * 100));
 
-        public async void PopulateDefinition()
+        public async Task<DestinyDefinitionsDestinyObjectiveDefinition> PopulateDefinition()
         {
             var hash = Convert.ToUInt32(Progress.ObjectiveHash);
-            ObjectiveDefinition = await Definitions.GetObjective(hash);
+            Definition = await Definitions.GetObjective(hash);
+
+            return Definition;
         }
     }
 

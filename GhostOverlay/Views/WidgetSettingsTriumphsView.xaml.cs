@@ -87,37 +87,24 @@ namespace GhostOverlay
             foreach (var childRecord in rootNode.Children.Records)
             {
                 var recordDefinition = await Definitions.GetRecord(Convert.ToUInt32(childRecord.RecordHash));
-                var triumph = new Triumph {Definition = recordDefinition, Hash = childRecord.RecordHash};
-
-                if (profile?.CharacterRecords?.Data != null)
+                var triumph = new Triumph
                 {
-                    var isCharacterRecord = recordDefinition.Scope == 1;
-                    var record = new DestinyComponentsRecordsDestinyRecordComponent();
+                    Definition = recordDefinition,
+                    Hash = childRecord.RecordHash,
+                    Objectives = new List<Objective>()
+                };
 
-                    if (isCharacterRecord)
-                        foreach (var characterId in characterIds)
-                        {
-                            // TODO: we should probably return the most complete one, rather than the first we find?
-                            var recordsForCharacter = profile.CharacterRecords.Data[characterId.ToString()];
-                            record = recordsForCharacter.Records[childRecord.RecordHash.ToString()];
+                triumph.Record = Triumph.FindRecordInProfile(childRecord.RecordHash.ToString(), profile);
 
-                            if (record != null) break;
-                        }
-                    else
-                        record = profile.ProfileRecords.Data.Records[childRecord.RecordHash.ToString()];
+                var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
+                    ? triumph.Record.IntervalObjectives
+                    : triumph.Record?.Objectives ?? new List<DestinyQuestsDestinyObjectiveProgress>();
 
-                    triumph.Record = record;
-
-                    var objectives = (record?.IntervalObjectives?.Count ?? 0) > 0
-                        ? record.IntervalObjectives
-                        : record?.Objectives;
-
-                    triumph.Objectives = objectives?.ConvertAll(v =>
-                    {
-                        var obj = new Objective {Progress = v};
-                        obj.PopulateDefinition();
-                        return obj;
-                    });
+                foreach (var objectiveProgress in objectives)
+                {
+                    var obj = new Objective {Progress = objectiveProgress};
+                    //await obj.PopulateDefinition();
+                    triumph.Objectives.Add(obj);
                 }
 
                 if (triumph.Record != null)

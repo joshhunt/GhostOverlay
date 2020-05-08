@@ -81,7 +81,7 @@
                                 HorizontalAlignment="Left"
                                 MaxLines="2"
                                 Style="{ThemeResource BodyTextBlockStyle}"
-                                Text="{x:Bind ItemDefinition.DisplayProperties.Description}"
+                                Text="{x:Bind Definition.DisplayProperties.Description}"
                                 TextTrimming="WordEllipsis"
                                 TextWrapping="WrapWholeWords" />
 

@@ -46,16 +46,15 @@ namespace GhostOverlay
 
         }
 
-        private void UpdateViewModel()
+        private async void UpdateViewModel()
         {
             viewIsUpdating = true;
-            
 
             var profile = AppState.WidgetData.Profile;
             if (profile?.CharacterInventories?.Data != null && AppState.WidgetData.DefinitionsLoaded)
             {
                 Bounties.Clear();
-                Bounties.AddRange(Item.ItemsFromProfile(profile));
+                Bounties.AddRange(await Item.ItemsFromProfile(profile));
 
                 BountiesCollection.Source =
                     from t in Bounties

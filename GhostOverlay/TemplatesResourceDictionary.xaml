@@ -121,7 +121,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.ColumnSpan="2"
-                               Text="{x:Bind ObjectiveDefinition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
+                               Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
                                FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal">

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
 
@@ -30,6 +28,30 @@ namespace GhostOverlay.Models
         {
             Definition = await Definitions.GetRecord(Convert.ToUInt32(Hash));
             return Definition;
+        }
+
+        public static DestinyComponentsRecordsDestinyRecordComponent FindRecordInProfile(string triumphHash, DestinyResponsesDestinyProfileResponse profile)
+        {
+            var characterIds = profile?.Profile?.Data?.CharacterIds ?? new List<long>();
+            DestinyComponentsRecordsDestinyRecordComponent record;
+
+            if (profile?.CharacterRecords?.Data == null)
+            {
+                return default;
+            }
+
+            foreach (var characterId in characterIds)
+            {
+                // TODO: we should probably return the most complete one, rather than the first we find?
+                var recordsForCharacter = profile.CharacterRecords.Data[characterId.ToString()];
+                recordsForCharacter.Records.TryGetValue(triumphHash, out record);
+
+                if (record != null) break;
+            }
+
+            profile.ProfileRecords.Data.Records.TryGetValue(triumphHash, out record);
+
+            return record;
         }
     }
 }

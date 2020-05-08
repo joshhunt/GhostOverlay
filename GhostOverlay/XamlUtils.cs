@@ -142,14 +142,20 @@ namespace GhostOverlay
                 ("", "", 4231452845L)
             };
 
-            var incomming = (string)value;
-            foreach (var icon in icons)
+            
+
+            if (value is string)
             {
-                incomming = incomming.Replace(icon.Item1, icon.Item2);
+                var text = (string)value;
+                foreach (var icon in icons)
+                {
+                    text = text.Replace(icon.Item1, icon.Item2);
+                }
+
+                return text;
             }
 
-
-            return incomming;
+            return value;
         }
 
         public object ConvertBack(object value, Type targetType,

@@ -240,7 +240,7 @@ namespace GhostOverlay
                         break;
 
                     case TrackedEntryType.Item:
-                        trackable = ItemFromTrackedEntry(trackedEntry, profile, characters);
+                        trackable = await ItemFromTrackedEntry(trackedEntry, profile, characters);
                         break;
                 }
 
@@ -263,7 +263,7 @@ namespace GhostOverlay
             TrackedBountiesCollection.Source = groupedBounties;
         }
 
-        private Item ItemFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile, Dictionary<long, Character>  characters)
+        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile, Dictionary<long, Character>  characters)
         {
             if (profile == null) return default;
 
@@ -288,17 +288,18 @@ namespace GhostOverlay
                 }
             }
 
-            var objectives = rawObjectives.Select(v =>
+            var objectives = new List<Objective>();
+            foreach (var objectiveProgress in rawObjectives)
             {
-                var obj = new Objective { Progress = v };
-                obj.PopulateDefinition();
-                return obj;
-            }).ToList();
+                var obj = new Objective { Progress = objectiveProgress };
+                //await obj.PopulateDefinition();
+                objectives.Add(obj);
+            }
 
             if (!characters.ContainsKey(entry.OwnerId))
             {
                 characters[entry.OwnerId] = new Character { CharacterComponent = profile.Characters.Data[characterId] };
-                characters[entry.OwnerId].PopulateDefinition();
+                //await characters[entry.OwnerId].PopulateDefinition();
             }
 
             var bounty = new Item
@@ -310,10 +311,12 @@ namespace GhostOverlay
                 TrackedEntry = entry
             };
 
-            bounty.PopulateDefinition();
+            //await bounty.PopulateDefinition();
 
             return bounty;
         }
+
+        
 
         private async Task<Triumph> TriumphFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile)
         {
@@ -321,38 +324,25 @@ namespace GhostOverlay
 
             var triumph = new Triumph {
                 Hash = entry.Hash,
-                TrackedEntry = entry
+                TrackedEntry = entry,
+                Objectives = new List<Objective>()
             };
-            await triumph.PopulateDefinition();
+            //await triumph.PopulateDefinition();
 
-            var isCharacterRecord = triumph.Definition.Scope == 1;
-            var record = new DestinyComponentsRecordsDestinyRecordComponent();
-            var characterIds = profile?.Profile?.Data?.CharacterIds ?? new List<long>();
+            triumph.Record = Triumph.FindRecordInProfile(triumph.Hash.ToString(), profile);
 
-            if (isCharacterRecord)
-                foreach (var characterId in characterIds)
-                {
-                    // TODO: we should probably return the most complete one, rather than the first we find?
-                    var recordsForCharacter = profile.CharacterRecords.Data[characterId.ToString()];
-                    record = recordsForCharacter.Records[triumph.Hash.ToString()];
+            if (triumph.Record == null) return default;
 
-                    if (record != null) break;
-                }
-            else
-                record = profile.ProfileRecords.Data.Records[triumph.Hash.ToString()];
+            var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
+                ? triumph.Record.IntervalObjectives
+                : (triumph.Record?.Objectives ?? new List<DestinyQuestsDestinyObjectiveProgress>());
 
-            triumph.Record = record;
-
-            var objectives = (record?.IntervalObjectives?.Count ?? 0) > 0
-                ? record.IntervalObjectives
-                : record?.Objectives;
-
-            triumph.Objectives = objectives?.ConvertAll(v =>
+            foreach (var objectiveProgress in objectives)
             {
-                var obj = new Objective { Progress = v };
-                obj.PopulateDefinition();
-                return obj;
-            });
+                var obj = new Objective { Progress = objectiveProgress };
+                //await obj.PopulateDefinition();
+                triumph.Objectives.Add(obj);
+            }
 
             return triumph;
         }

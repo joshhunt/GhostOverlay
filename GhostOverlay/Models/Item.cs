@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
+using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 
 namespace GhostOverlay.Models
 {
@@ -17,10 +18,10 @@ namespace GhostOverlay.Models
         public long ItemInstanceId = 0;
         public TrackedEntry TrackedEntry { get; set; }
 
-        public DestinyDefinitionsDestinyInventoryItemDefinition ItemDefinition =
+        public DestinyDefinitionsDestinyInventoryItemDefinition Definition =
             new DestinyDefinitionsDestinyInventoryItemDefinition();
         public DestinyDefinitionsCommonDestinyDisplayPropertiesDefinition DisplayProperties =>
-            ItemDefinition.DisplayProperties;
+            Definition.DisplayProperties;
         public List<Objective> Objectives { get; set; }
         public Character OwnerCharacter;
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
@@ -28,20 +29,22 @@ namespace GhostOverlay.Models
         public string GroupByKey => OwnerCharacter.ClassName;
 
         public string Title =>
-            ItemDefinition?.SetData?.QuestLineName ?? ItemDefinition?.DisplayProperties?.Name ?? "No name";
+            Definition?.SetData?.QuestLineName ?? Definition?.DisplayProperties?.Name ?? "No name";
 
-        public Uri ImageUri => new Uri($"https://www.bungie.net{ItemDefinition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
+        public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
 
         public string SortValue => (IsCompleted ? "xxx_completed" : "") +
-                                   (ItemDefinition?.Inventory?.StackUniqueLabel ?? "");
+                                   (Definition?.Inventory?.StackUniqueLabel ?? "");
 
-        public async void PopulateDefinition()
+        public async Task<DestinyDefinitionsDestinyInventoryItemDefinition> PopulateDefinition()
         {
             var hash = Convert.ToUInt32(ItemHash);
-            ItemDefinition = await Definitions.GetInventoryItem(hash);
+            Definition = await Definitions.GetInventoryItem(hash);
+
+            return Definition;
         }
 
-        public static Item ItemFromItemComponent(DestinyEntitiesItemsDestinyItemComponent item, DestinyResponsesDestinyProfileResponse profile, Character ownerCharacter)
+        public static async Task<Item> ItemFromItemComponent(DestinyEntitiesItemsDestinyItemComponent item, DestinyResponsesDestinyProfileResponse profile, Character ownerCharacter)
         {
             var uninstancedObjectivesData = profile.CharacterUninstancedItemComponents[ownerCharacter.CharacterComponent.CharacterId.ToString()].Objectives.Data;
             var objectives = new List<DestinyQuestsDestinyObjectiveProgress>();
@@ -67,21 +70,23 @@ namespace GhostOverlay.Models
             {
                 ItemHash = item.ItemHash,
                 ItemInstanceId = item.ItemInstanceId,
-                OwnerCharacter = ownerCharacter
+                OwnerCharacter = ownerCharacter,
+                Objectives = new List<Objective>()
             };
-            bounty.PopulateDefinition();
 
-            bounty.Objectives = objectives?.ConvertAll(v =>
+            //await bounty.PopulateDefinition();
+
+            foreach (var destinyQuestsDestinyObjectiveProgress in objectives)
             {
-                var obj = new Objective { Progress = v };
-                obj.PopulateDefinition();
-                return obj;
-            });
+                var obj = new Objective { Progress = destinyQuestsDestinyObjectiveProgress };
+                //await obj.PopulateDefinition();
+                bounty.Objectives.Add(obj);
+            }
 
             return bounty;
         }
 
-        public static List<Item> ItemsFromProfile(DestinyResponsesDestinyProfileResponse profile, bool addCompletedBounties = true)
+        public static async Task<List<Item>> ItemsFromProfile(DestinyResponsesDestinyProfileResponse profile, bool addCompletedBounties = true)
         {
             var bounties = new List<Item>();
 
@@ -91,22 +96,18 @@ namespace GhostOverlay.Models
                 var inventory = inventoryKv.Value;
 
                 var character = new Character { CharacterComponent = profile.Characters.Data[characterId] };
-                character.PopulateDefinition();
+                //await character.PopulateDefinition();
 
                 foreach (var inventoryItem in inventory.Items)
                 {
                     if (inventoryItem.BucketHash != PersuitsBucketHash)
                         continue;
 
-                    var bounty = ItemFromItemComponent(inventoryItem, profile, character);
+                    var bounty = await ItemFromItemComponent(inventoryItem, profile, character);
 
                     if (bounty.Objectives?.Count > 0 && (addCompletedBounties || !bounty.IsCompleted))
                     {
                         bounties.Add(bounty);
-                    }
-                    else if (bounty.Objectives?.Count == 0)
-                    {
-                        bounty = null;
                     }
                 }
             }
