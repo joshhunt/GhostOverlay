@@ -9,150 +9,18 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <local:TemplatesResourceDictionary />
-            </ResourceDictionary.MergedDictionaries>
-
-            <CollectionViewSource x:Name="TrackedBountiesCollection" IsSourceGrouped="True" />
-        </ResourceDictionary>
-    </Page.Resources>
-
     <Grid>
         <StackPanel
             x:Name="EmptyState"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center" Text="No tracked bounties yet!" />
+
             <Button
                 Margin="0,12,0,0"
                 HorizontalAlignment="Center"
                 Click="SettingsButton_OnClick"
                 Content="Open Settings" />
         </StackPanel>
-
-        <StackPanel
-            x:Name="InitialProfileLoadState"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <ProgressRing IsActive="True" />
-            <TextBlock Margin="0,12,0,0" Text="Loading Profile..." />
-        </StackPanel>
-
-        <StackPanel
-            x:Name="DefinitionsLoadingState"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <ProgressRing IsActive="True" />
-            <TextBlock Margin="0,12,0,0" Text="Loading item database..." />
-        </StackPanel>
-
-        <StackPanel
-            x:Name="ProfileErrorState"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <TextBlock Text="">There was an error loading your Profile.</TextBlock>
-        </StackPanel>
-
-        <ListView
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Top"
-            ItemsSource="{Binding Source={StaticResource TrackedBountiesCollection}}"
-            SelectionMode="None">
-
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="VerticalContentAlignment" Value="Top" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Margin" Value="0,0,0,24" />
-                </Style>
-            </ListView.ItemContainerStyle>
-
-            <ListView.GroupStyle>
-                <GroupStyle>
-                    <GroupStyle.HeaderContainerStyle>
-                        <Style TargetType="ListViewHeaderItem">
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        </Style>
-                    </GroupStyle.HeaderContainerStyle>
-                    <GroupStyle.HeaderTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Stretch">
-
-                                <TextBlock Text="{Binding Key.ClassName}" 
-                                           HorizontalAlignment="Stretch" />
-
-                                <!--<TextBlock
-                                    TextAlignment="Right"
-                                    FontSize="10"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Bottom"
-
-                                    Text="updated 3 seconds ago" />-->
-                            </StackPanel>
-                        </DataTemplate>
-                    </GroupStyle.HeaderTemplate>
-                </GroupStyle>
-            </ListView.GroupStyle>
-
-            <ListView.ItemTemplate>
-
-                <DataTemplate x:DataType="local:Bounty">
-
-                    <Grid
-                        Opacity="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}"
-                        ToolTipService.ToolTip="{x:Bind ItemDefinition.DisplayProperties.Description}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <ContentControl
-                            Grid.Row="0"
-                            Grid.Column="0" ContentTemplate="{StaticResource BountyIcon}" />
-
-                        <StackPanel
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="12,0,0,0"
-                            HorizontalAlignment="Stretch">
-
-                            <TextBlock
-                                Margin="0,0,0,0"
-                                HorizontalAlignment="Left"
-                                FontSize="15"
-                                FontWeight="Medium"
-                                Style="{ThemeResource BaseTextBlockStyle}"
-                                Text="{x:Bind Title}" />
-
-                            <TextBlock
-                                x:Name="BountyDescriptionLabel"
-                                Margin="0,0,0,6"
-                                HorizontalAlignment="Left"
-                                MaxLines="2"
-                                Style="{ThemeResource BodyTextBlockStyle}"
-                                Text="{x:Bind ItemDefinition.DisplayProperties.Description}"
-                                TextTrimming="WordEllipsis"
-                                TextWrapping="WrapWholeWords" />
-
-                            <ListView
-                                Visibility="{x:Bind AllObjectivesComplete, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
-                                IsItemClickEnabled="False"
-                                ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
-                                ItemTemplate="{StaticResource ObjectiveTemplate}"
-                                ItemsSource="{x:Bind Objectives}"
-                                SelectionMode="None" />
-
-                            <ContentControl ContentTemplate="{StaticResource BountyCompletedObjectives}"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
     </Grid>
 </Page>

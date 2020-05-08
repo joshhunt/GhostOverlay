@@ -42,26 +42,9 @@ namespace GhostOverlay
         }
     }
 
-    // public struct SettingsKey
-    // {
-    //     public static string SelectedBounties = "SelectedBounties";
-    //     public static string AccessToken = "AccessToken";
-    //     public static string RefreshToken = "RefreshToken";
-    //     public static string AccessTokenExpiration = "AccessTokenExpiration";
-    //     public static string RefreshTokenExpiration = "RefreshTokenExpiration";
-    //     public static string Language = "Language";
-    //
-    //     public static string SelectedBountiesItemHash = "ItemHash";
-    //     public static string SelectedBountiesItemInstanceId = "ItemInstanceId";
-    // }
 
     public enum SettingsKey
     {
-        SelectedBounties,
-        AccessToken,
-        RefreshToken,
-        AccessTokenExpiration,
-        RefreshTokenExpiration,
         Language,
         DefinitionsPath,
     }
@@ -70,10 +53,6 @@ namespace GhostOverlay
     {
         public static BungieApi bungieApi = new BungieApi();
         public static WidgetData WidgetData = new WidgetData();
-        public static OAuthToken TokenData { get; set; }
-
-        // TODO: I don't think we need to use this here any more?
-        public static DestinyResponsesDestinyProfileResponse Profile { get; set; }
 
         public static T ReadSetting<T>(SettingsKey key, T defaultValue)
         {
@@ -91,51 +70,6 @@ namespace GhostOverlay
         {
             var localSettings = ApplicationData.Current.LocalSettings;
             localSettings.Values[key.ToString()] = value;
-        }
-
-        internal static void SaveTrackedBounties(List<TrackedBounty> trackedBounties)
-        {
-            var selectedBountiesSettings = new ApplicationDataCompositeValue();
-            var counter = 0;
-
-            foreach (var item in trackedBounties)
-            {
-                selectedBountiesSettings[counter.ToString()] = JsonConvert.SerializeObject(item);
-                counter += 1;
-            }
-
-            Debug.WriteLine($"Actually saving setting {selectedBountiesSettings.Count} bounties");
-
-            SaveSetting(SettingsKey.SelectedBounties, selectedBountiesSettings);
-        }
-
-        public static List<TrackedBounty> RestoreTrackedBounties()
-        {
-            Debug.WriteLine("Restoring saved bounties");
-            var selectedBountiesSettings =
-                ReadSetting(SettingsKey.SelectedBounties, new ApplicationDataCompositeValue());
-
-            var trackedBounties = new List<TrackedBounty>();
-            foreach (var settingsPair in selectedBountiesSettings)
-            {
-                var value = settingsPair.Value as string;
-                var parsed = JsonConvert.DeserializeObject<TrackedBounty>(value);
-                Debug.WriteLine(
-                    $"Index {Convert.ToInt32(settingsPair.Key)}, got JSON from settings {value}. Parsed as ItemInstanceId: {parsed.ItemInstanceId}, ItemHash: {parsed.ItemHash}");
-                trackedBounties.Insert(Convert.ToInt32(settingsPair.Key), parsed);
-            }
-
-            Debug.WriteLine($"Got {trackedBounties.Count} from settings");
-
-            return trackedBounties;
-        }
-
-        public static void RestoreBungieTokenDataFromSettings()
-        {
-            TokenData = OAuthToken.RestoreTokenFromSettings();
-
-            Debug.WriteLine("Restored TokenData:");
-            Debug.WriteLine(TokenData.ToString());
         }
     }
 }

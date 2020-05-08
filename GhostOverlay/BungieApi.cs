@@ -11,7 +11,7 @@ namespace GhostOverlay
     public class BungieApi
     {
         private readonly RestClient client;
-        public readonly int[] DefaultProfileComponents = new[] { 100, 102, 200, 201, 300, 301, 900, 800 };
+        public static readonly int[] DefaultProfileComponents = new[] { 100, 102, 200, 201, 300, 301, 900, 800 };
 
         public BungieApi()
         {

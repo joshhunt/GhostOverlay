@@ -1,13 +1,10 @@
 using System;
 using System.Diagnostics;
-using System.Web;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
 
@@ -30,19 +27,15 @@ namespace GhostOverlay
         {
             this.UnhandledException += (sender, e) =>
             {
-                System.Diagnostics.Debug.WriteLine("my unhandled exception handler");
+                Debug.WriteLine("my unhandled exception handler");
                 e.Handled = true;
-                System.Diagnostics.Debug.WriteLine(e.Exception);
-                System.Diagnostics.Debug.WriteLine(e.Exception.StackTrace);
-                System.Diagnostics.Debug.WriteLine(e.ToString());
-                System.Diagnostics.Debug.WriteLine(sender.ToString());
+                Debug.WriteLine(e.Exception);
+                Debug.WriteLine(e.Exception.StackTrace);
+                Debug.WriteLine(e.ToString());
+                Debug.WriteLine(sender.ToString());
             };
 
-            Debug.WriteLine("App constructor");
-
             Definitions.InitializeDatabase();
-            AppState.RestoreBungieTokenDataFromSettings();
-            AppState.WidgetData.RestoreTrackedBountiesFromSettings();
 
             InitializeComponent();
 
@@ -157,13 +150,7 @@ namespace GhostOverlay
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             Debug.WriteLine("OnLaunched");
-
             LaunchMainApp();
-
-            if (e.PrelaunchActivated)
-            {
-                Debug.WriteLine("PrelaunchActivated was true, i wonder if we needed to do something different here?");
-            }
         }
 
         private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
@@ -179,7 +166,6 @@ namespace GhostOverlay
             widgetMainSettings = null;
             widgetMain = null;
 
-            //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
     }

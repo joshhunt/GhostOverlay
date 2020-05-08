@@ -92,10 +92,8 @@ namespace GhostOverlay
 
         public List<Objective> Objectives = new List<Objective>();
         public Character OwnerCharacter;
-        public bool AllObjectivesComplete => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
 
-        public string Title =>
-            ItemDefinition?.SetData?.QuestLineName ?? ItemDefinition?.DisplayProperties?.Name ?? "No name";
+        public string Title => ItemDefinition?.DisplayProperties?.Name ?? "No name";
 
         [Obsolete("OwnerCharacterId is deprecated, use OwnerCharacter instead.")]
         public string OwnerCharacterId;
@@ -129,7 +127,6 @@ namespace GhostOverlay
             {
                 Item = item,
                 OwnerCharacter = ownerCharacter
-                //AllObjectivesComplete = objectives.TrueForAll(v => v.Complete)
             };
             bounty.PopulateDefinition();
 
@@ -146,7 +143,7 @@ namespace GhostOverlay
         public static List<Bounty> BountiesFromProfile(DestinyResponsesDestinyProfileResponse profile, bool addCompletedBounties = true)
         {
             var bounties = new List<Bounty>();
-        
+
             foreach (var inventoryKv in profile.CharacterInventories.Data)
             {
                 var characterId = inventoryKv.Key;
@@ -161,15 +158,9 @@ namespace GhostOverlay
                     if (inventoryItem.BucketHash != 1345459588) continue;
 
                     var bounty = BountyFromItemComponent(inventoryItem, profile, character);
-
-                    if (addCompletedBounties || !bounty.AllObjectivesComplete)
-                    {
-                        bounties.Add(bounty);
-                    }
+                    bounties.Add(bounty);
                 }
             }
-
-            //bounties.Sort((a, b) => a.AllObjectivesComplete != b.AllObjectivesComplete ? ( a.AllObjectivesComplete ? 100 : 1 ) : 0);
 
             return bounties;
         }
