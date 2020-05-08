@@ -8,61 +8,14 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <local:TemplatesResourceDictionary />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
+    <Image
+        Width="48"
+        Height="48"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top">
 
-    <Grid Margin="6,0">
-        <GridView
-            x:Name="BountiesGridView"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Top"
-            ItemsSource="{x:Bind Bounties}"
-            SelectionMode="Multiple">
-
-            <GridView.ItemTemplate>
-                <DataTemplate x:DataType="local:Bounty">
-                    <Grid MaxWidth="400">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <ContentControl
-                            Grid.Row="0" Grid.Column="0"
-                            ContentTemplate="{StaticResource BountyIcon}" />
-
-                        <StackPanel
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="12,0,0,0"
-                            HorizontalAlignment="Stretch">
-
-                            <TextBlock
-                                HorizontalAlignment="Left"
-                                FontSize="15"
-                                FontWeight="Medium"
-                                Style="{ThemeResource BaseTextBlockStyle}"
-                                TextWrapping="WrapWholeWords"
-                                Text="{x:Bind Title}" />
-
-                            <TextBlock
-                                Margin="0,6,0,6"
-                                HorizontalAlignment="Left"
-                                MaxLines="2"
-                                Style="{ThemeResource BodyTextBlockStyle}"
-                                Text="{x:Bind ItemDefinition.DisplayProperties.Description}"
-                                TextTrimming="WordEllipsis"
-                                TextWrapping="WrapWholeWords" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-
-        </GridView>
-    </Grid>
+        <Image.Source>
+            <BitmapImage UriSource="https://www.bungie.net/common/destiny2_content/icons/2e07357bb9efacc0bd7e4e573a7e3f05.jpg" />
+        </Image.Source>
+    </Image>
 </Page>

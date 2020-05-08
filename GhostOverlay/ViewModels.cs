@@ -75,12 +75,6 @@ namespace GhostOverlay
 
         public string ClassName =>
             ClassDefinition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
-
-        public async Task PopulateDefinition()
-        {
-            var classHash = Convert.ToUInt32(CharacterComponent.ClassHash);
-            ClassDefinition = await Definitions.GetClassDefinition(classHash);
-        }
     }
 
     public class Bounty
@@ -93,18 +87,7 @@ namespace GhostOverlay
         public List<Objective> Objectives = new List<Objective>();
         public Character OwnerCharacter;
 
-        public string Title => ItemDefinition?.DisplayProperties?.Name ?? "No name";
-
-        [Obsolete("OwnerCharacterId is deprecated, use OwnerCharacter instead.")]
-        public string OwnerCharacterId;
-
         public Uri ImageUri => new Uri($"https://www.bungie.net{ItemDefinition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
-
-        public async void PopulateDefinition()
-        {
-            var hash = Convert.ToUInt32(Item.ItemHash);
-            ItemDefinition = await Definitions.GetItemDefinition(hash);
-        }
 
         public static Bounty BountyFromItemComponent(DestinyEntitiesItemsDestinyItemComponent item, DestinyResponsesDestinyProfileResponse profile, Character ownerCharacter)
         {
@@ -128,12 +111,10 @@ namespace GhostOverlay
                 Item = item,
                 OwnerCharacter = ownerCharacter
             };
-            bounty.PopulateDefinition();
 
             foreach (var objectiveProgress in objectives)
             {
                 var objective = new Objective { Progress = objectiveProgress };
-                objective.PopulateDefinition();
                 bounty.Objectives.Add(objective);
             }
 
@@ -150,7 +131,6 @@ namespace GhostOverlay
                 var inventory = inventoryKv.Value;
 
                 var character = new Character { CharacterComponent = profile.Characters.Data[characterId] };
-                _ = character.PopulateDefinition();
 
                 foreach (var inventoryItem in inventory.Items)
                 {
@@ -172,14 +152,5 @@ namespace GhostOverlay
             new DestinyDefinitionsDestinyObjectiveDefinition();
 
         public DestinyQuestsDestinyObjectiveProgress Progress;
-
-        public double CompletionPercent =>
-            Math.Min(100, Math.Floor((double)Progress.Progress / Progress.CompletionValue * 100));
-
-        public async void PopulateDefinition()
-        {
-            var hash = Convert.ToUInt32(Progress.ObjectiveHash);
-            ObjectiveDefinition = await Definitions.GetObjectiveDefinition(hash);
-        }
     }
 }

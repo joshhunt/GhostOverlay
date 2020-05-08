@@ -20,8 +20,7 @@ namespace GhostOverlay
         public async void GetDataAsync()
         {
             var profile = await AppState.bungieApi.GetProfileForCurrentUser(BungieApi.DefaultProfileComponents);
-            Bounties.Clear();
-            Bounties.AddRange(Bounty.BountiesFromProfile(profile));
+            Bounty.BountiesFromProfile(profile);
         }
     }
 }
