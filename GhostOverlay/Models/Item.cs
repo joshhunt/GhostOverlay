@@ -33,8 +33,20 @@ namespace GhostOverlay.Models
 
         public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
 
-        public string SortValue => (IsCompleted ? "xxx_completed" : "") +
-                                   (Definition?.Inventory?.StackUniqueLabel ?? "");
+        public string SortValue {
+            get
+            {
+                var value = 0;
+
+                if (IsCompleted)
+                    value += 10000;
+
+                if (Definition?.TraitIds?.Contains(QuestTraitId) ?? false)
+                    value += 1000;
+
+                return value.ToString();
+            }
+        }
 
         public async Task<DestinyDefinitionsDestinyInventoryItemDefinition> PopulateDefinition()
         {
@@ -44,9 +56,13 @@ namespace GhostOverlay.Models
             return Definition;
         }
 
-        public static async Task<Item> ItemFromItemComponent(DestinyEntitiesItemsDestinyItemComponent item, DestinyResponsesDestinyProfileResponse profile, Character ownerCharacter)
+        public static async Task<Item> ItemFromItemComponent(DestinyEntitiesItemsDestinyItemComponent item, DestinyResponsesDestinyProfileResponse profile, Character ownerCharacter = default)
         {
-            var uninstancedObjectivesData = profile.CharacterUninstancedItemComponents[ownerCharacter.CharacterComponent.CharacterId.ToString()].Objectives.Data;
+            var uninstancedObjectivesData =
+                ownerCharacter == null
+                ?  new Dictionary<string, DestinyEntitiesItemsDestinyItemObjectivesComponent>()
+                : profile.CharacterUninstancedItemComponents[ownerCharacter.CharacterComponent.CharacterId.ToString()].Objectives.Data;
+
             var objectives = new List<DestinyQuestsDestinyObjectiveProgress>();
             var itemInstanceId = item.ItemInstanceId.ToString();
             var itemHash = item.ItemHash.ToString();
@@ -73,13 +89,13 @@ namespace GhostOverlay.Models
                 OwnerCharacter = ownerCharacter,
                 Objectives = new List<Objective>()
             };
-
-            //await bounty.PopulateDefinition();
+            
+            await bounty.PopulateDefinition();
 
             foreach (var destinyQuestsDestinyObjectiveProgress in objectives)
             {
                 var obj = new Objective { Progress = destinyQuestsDestinyObjectiveProgress };
-                //await obj.PopulateDefinition();
+                await obj.PopulateDefinition();
                 bounty.Objectives.Add(obj);
             }
 
@@ -96,7 +112,7 @@ namespace GhostOverlay.Models
                 var inventory = inventoryKv.Value;
 
                 var character = new Character { CharacterComponent = profile.Characters.Data[characterId] };
-                //await character.PopulateDefinition();
+                await character.PopulateDefinition();
 
                 foreach (var inventoryItem in inventory.Items)
                 {
@@ -111,6 +127,16 @@ namespace GhostOverlay.Models
                     }
                 }
             }
+
+            //foreach (var inventoryItem in profile.ProfileInventory.Data.Items)
+            //{
+            //    var bounty = await ItemFromItemComponent(inventoryItem, profile);
+
+            //    if (bounty.Objectives?.Count > 0 && (addCompletedBounties || !bounty.IsCompleted))
+            //    {
+            //        bounties.Add(bounty);
+            //    }
+            //}
 
             return bounties;
         }

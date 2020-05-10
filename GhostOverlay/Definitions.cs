@@ -1,7 +1,10 @@
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
@@ -16,6 +19,7 @@ namespace GhostOverlay
         private static readonly string defaultDefinitionsPath = "@@NotDownloaded";
         private static SqliteConnection db;
         public static Task<string> Ready;
+        private static string DefaultLanguage = "en";
 
         public static int HashToDbHash(uint hash)
         {
@@ -25,9 +29,7 @@ namespace GhostOverlay
         public static async void InitializeDatabase()
         {
             Ready = ActuallyInitializeDatabase();
-
-            _ = IsDefinitionsLatest();
-
+            _ = CheckForLatestDefinitions();
             await Ready;
         }
 
@@ -44,10 +46,20 @@ namespace GhostOverlay
 
             Debug.WriteLine($"definitionsPath is {definitionsPath}");
 
+            if (db != null && db.State.HasFlag(ConnectionState.Open))
+            {
+                Debug.WriteLine($"db is open!");
+                db.Close();
+                db = null;
+            }
+
             db = new SqliteConnection($"Filename={definitionsPath}");
             await db.OpenAsync();
 
             AppState.WidgetData.DefinitionsPath = definitionsPath;
+
+            Debug.WriteLine("Cleaning up old definitions");
+            CleanUpDownloadedDefinitions(definitionsPath);
 
             return definitionsPath;
         }
@@ -65,9 +77,12 @@ namespace GhostOverlay
 
         public static async Task<string> FetchLatestDefinitionsPath()
         {
-            var language = AppState.ReadSetting(SettingsKey.Language, "en");
+            var language = AppState.ReadSetting(SettingsKey.Language, DefaultLanguage);
+            Debug.WriteLine($"language: {language}");
             var manifest = await AppState.bungieApi.GetManifest();
+            Debug.WriteLine("*** got manifest back");
             var remotePath = manifest.MobileWorldContentPaths[language];
+            Debug.WriteLine($"*** remotePath {remotePath}");
 
             return $"https://www.bungie.net{remotePath}";
         }
@@ -123,11 +138,20 @@ namespace GhostOverlay
 
         private static async Task<bool> IsDefinitionsLatest()
         {
+            Debug.WriteLine("IsDefinitionsLatest");
             var currentPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
+            Debug.WriteLine($"currentPath: {currentPath}");
 
-            if (currentPath.Equals("@@NotDownloaded")) return false;
+            if (currentPath.Equals("@@NotDownloaded"))
+            {
+                Debug.WriteLine($"returning early");
+                return false;
+            }
 
+            Debug.WriteLine("*** About to FetchLatestDefinitionsPath");
             var latestRemotePath = await FetchLatestDefinitionsPath();
+            Debug.WriteLine("*** Finished  FetchLatestDefinitionsPath");
+            Debug.WriteLine($"latestRemotePath: {latestRemotePath}");
 
             var currentBathPath = Path.GetFileNameWithoutExtension(currentPath);
             var latestBasePath = Path.GetFileNameWithoutExtension(latestRemotePath);
@@ -135,10 +159,40 @@ namespace GhostOverlay
             Debug.WriteLine($"currentBathPath: {currentBathPath}");
             Debug.WriteLine($"latestBasePath: {latestBasePath}");
 
-            var answer = currentBathPath == latestBasePath;
-            Debug.WriteLine($"answer: {answer}");
+            var isLatest = currentBathPath == latestBasePath;
+            Debug.WriteLine($"isLatest: {isLatest}");
 
-            return answer;
+            return isLatest;
+        }
+
+        public static async void CleanUpDownloadedDefinitions(string currentPath)
+        {
+            var folder = ApplicationData.Current.LocalCacheFolder;
+            var currentBasePath = Path.GetFileNameWithoutExtension(currentPath);
+
+            var files = await folder.GetFilesAsync();
+
+            var filesToTrash = files.Where(v =>
+            {
+                var vBase = Path.GetFileNameWithoutExtension(v.Path);
+                var match = Regex.Match(vBase, "^world_sql_content");
+                return match.Success && vBase != currentBasePath;
+            });
+
+            foreach (var storageFile in filesToTrash)
+            {
+                try
+                {
+                    Debug.WriteLine($"Deleting {storageFile.Path}");
+                    await storageFile.DeleteAsync();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Unable to clean up definition:");
+                    Debug.WriteLine(e);
+                }
+                
+            }
         }
 
         public static async Task<T> GetDefinition<T>(string command, uint hash)

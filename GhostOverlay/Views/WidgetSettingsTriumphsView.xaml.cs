@@ -103,7 +103,7 @@ namespace GhostOverlay
                 foreach (var objectiveProgress in objectives)
                 {
                     var obj = new Objective {Progress = objectiveProgress};
-                    //await obj.PopulateDefinition();
+                    await obj.PopulateDefinition();
                     triumph.Objectives.Add(obj);
                 }
 

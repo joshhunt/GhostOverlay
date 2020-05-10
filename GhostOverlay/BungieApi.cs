@@ -1,27 +1,37 @@
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using BungieNetApi.Client;
+using Windows.ApplicationModel.Resources;
+using BungieNetApi.Model;
 using Newtonsoft.Json;
 using RestSharp;
-using BungieNetApi.Model;
 
 namespace GhostOverlay
 {
-
-    [Serializable()]
-    public class BungieApiException : System.Exception
+    [Serializable]
+    public class BungieApiException : Exception
     {
-        public BungieApiException() : base() { }
-        public BungieApiException(string message) : base(message) { }
-        public BungieApiException(string message, System.Exception inner) : base(message, inner) { }
+        public BungieApiException()
+        {
+        }
+
+        public BungieApiException(string message) : base(message)
+        {
+        }
+
+        public BungieApiException(string message, Exception inner) : base(message, inner)
+        {
+        }
 
         // A constructor is needed for serialization when an
         // exception propagates from a remoting server to the client. 
-        protected BungieApiException(System.Runtime.Serialization.SerializationInfo info,
-            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+        protected BungieApiException(SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 
     public class BungieOAuthTokenResponse
@@ -34,20 +44,62 @@ namespace GhostOverlay
         public string membership_id { get; set; }
     }
 
+    public enum DestinyComponent
+    {
+        Profiles = 100,
+        VendorReceipts = 101,
+        ProfileInventories = 102,
+        ProfileCurrencies = 103,
+        ProfileProgression = 104,
+        PlatformSilver = 105,
+        Characters = 200,
+        CharacterInventories = 201,
+        CharacterProgressions = 202,
+        CharacterRenderData = 203,
+        CharacterActivities = 204,
+        CharacterEquipment = 205,
+        ItemInstances = 300,
+        ItemObjectives = 301,
+        ItemPerks = 302,
+        ItemRenderData = 303,
+        ItemStats = 304,
+        ItemSockets = 305,
+        ItemTalentGrids = 306,
+        ItemCommonData = 307,
+        ItemPlugStates = 308,
+        ItemPlugObjectives = 309,
+        ItemReusablePlugs = 310,
+        Vendors = 400,
+        VendorCategories = 401,
+        VendorSales = 402,
+        Kiosks = 500,
+        CurrencyLookups = 600,
+        PresentationNodes = 700,
+        Collectibles = 800,
+        Records = 900,
+        Transitory = 1000,
+        Metrics = 1100
+    }
+
     public class BungieApi
     {
-        public readonly int[] DefaultProfileComponents = new[] { 100, 102, 200, 201, 300, 301, 900 };
-
         // Loaded from Configuration.resw by the constructor
-        private readonly string apiKey; 
-        private readonly string clientId;
-        private readonly string clientSecret; 
+        private readonly string apiKey;
 
         private readonly RestClient client;
+        private readonly string clientId;
+        private readonly string clientSecret;
+
+        public readonly DestinyComponent[] DefaultProfileComponents =
+        {
+            DestinyComponent.Profiles, DestinyComponent.ProfileInventories, DestinyComponent.Characters,
+            DestinyComponent.CharacterInventories, DestinyComponent.ItemInstances, DestinyComponent.ItemObjectives,
+            DestinyComponent.Records
+        };
 
         public BungieApi()
         {
-            var resources = new Windows.ApplicationModel.Resources.ResourceLoader("Configuration");
+            var resources = new ResourceLoader("Configuration");
             apiKey = resources.GetString("BungieApiKey");
             clientId = resources.GetString("BungieClientId");
             clientSecret = resources.GetString("BungieClientSecret");
@@ -55,14 +107,15 @@ namespace GhostOverlay
             client = new RestClient("https://www.bungie.net");
             client.AddDefaultHeader("x-api-key", apiKey);
             client.UserAgent = "GhostOverlay/dev josh@trtr.co";
-            client.CookieContainer = new System.Net.CookieContainer();
+            client.CookieContainer = new CookieContainer();
         }
 
-        public async Task<DestinyResponsesDestinyProfileResponse> GetProfile(int membershipType, long membershipId , int[] components, bool requireAuth = false)
-        {   
-            var componemtsSt = string.Join(",", components);
+        public async Task<DestinyResponsesDestinyProfileResponse> GetProfile(int membershipType, long membershipId,
+            DestinyComponent[] components, bool requireAuth = false)
+        {
+            var componentsStr = string.Join(",", components);
             return await GetBungie<DestinyResponsesDestinyProfileResponse>(
-                    $"Platform/Destiny2/{membershipType}/Profile/{membershipId}/?components={componemtsSt}", requireAuth: requireAuth);
+                $"Platform/Destiny2/{membershipType}/Profile/{membershipId}/?components={componentsStr}", requireAuth);
         }
 
         public async Task<UserUserMembershipData> GetMembershipsForCurrentUser()
@@ -70,45 +123,41 @@ namespace GhostOverlay
             return await GetBungie<UserUserMembershipData>("/Platform/User/GetMembershipsForCurrentUser/", true);
         }
 
-        public async Task<DestinyResponsesDestinyProfileResponse> GetProfileForCurrentUser(int[] components)
+        public async Task<DestinyResponsesDestinyProfileResponse> GetProfileForCurrentUser(
+            DestinyComponent[] components)
         {
             var membershipData = await GetMembershipsForCurrentUser();
             var user = membershipData.DestinyMemberships.Find(p =>
                 p.MembershipId == membershipData.PrimaryMembershipId);
-            
+
             if (user == null)
-            {   
+            {
                 Debug.WriteLine("TODO: Unable to find primary membership, so just returning the 0th one");
                 user = membershipData.DestinyMemberships[0];
             }
 
-            return await GetProfile(user.MembershipType, user.MembershipId, components, requireAuth: true);
+            return await GetProfile(user.MembershipType, user.MembershipId, components, true);
         }
 
-        public async Task<DestinyConfigDestinyManifest> GetManifest()
+        public Task<DestinyConfigDestinyManifest> GetManifest()
         {
-            return await GetBungie<DestinyConfigDestinyManifest>("/Platform/Destiny2/Manifest");
+            return GetBungie<DestinyConfigDestinyManifest>("/Platform/Destiny2/Manifest");
         }
 
         public async Task<T> GetBungie<T>(string path, bool requireAuth = false)
-        {   
+        {
             Debug.WriteLine($"REQUEST {path}");
             var request = new RestRequest(path);
 
-            if (AppState.TokenData != null && AppState.TokenData.RefreshTokenIsValid())
-            {
-                await EnsureTokenDataIsValid();
-            }
-            
+            if (AppState.TokenData != null && AppState.TokenData.RefreshTokenIsValid()) await EnsureTokenDataIsValid();
+
             if (requireAuth && (AppState.TokenData == null || !AppState.TokenData.AccessTokenIsValid()))
-            {
                 throw new BungieApiException("Auth was required but the access token was not valid");
-            }
 
             if (AppState.TokenData != null && AppState.TokenData.AccessTokenIsValid())
             {
                 var headerValue = $"Bearer {AppState.TokenData.AccessToken}";
-                
+
                 request.AddHeader("authorization", headerValue);
             }
 
@@ -117,21 +166,14 @@ namespace GhostOverlay
             // TODO: handle errors when there's just no response at all
 
             if (response.ContentType.Contains("application/json") != true)
-            {
                 throw new BungieApiException("API did not return JSON");
-            }
 
             var data = JsonConvert.DeserializeObject<BungieApiResponse<T>>(response.Content);
 
             if (data.ErrorStatus.Equals("Success") != true)
-            {
                 throw new BungieApiException($"Bungie API Error {data.ErrorStatus}: {data.Message}");
-            }
 
-            if (data.Response == null)
-            {
-                throw new BungieApiException("API did not return JSON");
-            }
+            if (data.Response == null) throw new BungieApiException("API did not return JSON");
 
             return data.Response;
         }
@@ -143,17 +185,14 @@ namespace GhostOverlay
                 Debug.WriteLine("ERROR: TokenData is null");
                 throw new BungieApiException("TokenData is null when attempted to refresh it");
             }
-            
+
             if (AppState.TokenData.IsValid() != true)
             {
                 Debug.WriteLine("ERROR: TokenData is not valid");
                 throw new BungieApiException("TokenData is not valid when attempted to refresh it");
             }
-            
-            if (AppState.TokenData.AccessTokenIsValid())
-            {
-                return true;
-            }
+
+            if (AppState.TokenData.AccessTokenIsValid()) return true;
 
             if (AppState.TokenData.RefreshTokenIsValid())
             {
@@ -164,7 +203,8 @@ namespace GhostOverlay
                 return true;
             }
 
-            throw new BungieApiException("Unhandled scenario while ensuring TokenData is valid, which shouldn't happen!!");
+            throw new BungieApiException(
+                "Unhandled scenario while ensuring TokenData is valid, which shouldn't happen!!");
         }
 
         public async Task RefreshOAuthAccessToken()

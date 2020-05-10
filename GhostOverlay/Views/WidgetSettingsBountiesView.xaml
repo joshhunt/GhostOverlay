@@ -27,6 +27,7 @@
             x:Name="BountiesGridView"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
+            AllowFocusOnInteraction="False"
             ItemsSource="{Binding Source={StaticResource BountiesCollection}}"
             SelectionChanged="SelectedBountiesChanged"
             SelectionMode="Multiple">

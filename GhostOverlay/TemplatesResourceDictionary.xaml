@@ -124,13 +124,11 @@
                                Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
                                FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <TextBlock
-                            Text="{x:Bind Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
-                        <TextBlock Text=" / " />
-                        <TextBlock
-                            Text="{x:Bind Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
-                    </StackPanel>
+                    <TextBlock Grid.Column="1">
+                        <Run Text="{x:Bind Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
+                        <Run Text="/" />
+                        <Run Text="{x:Bind Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
+                    </TextBlock>
                 </Grid>
             </Grid>
         </StackPanel>

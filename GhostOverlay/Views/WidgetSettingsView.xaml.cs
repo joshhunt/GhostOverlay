@@ -1,25 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
-using System.ComponentModel;
 using Windows.UI;
 using Windows.UI.Core;
-using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
-using NavigationViewSelectionChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs;
-using muxc = Microsoft.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -61,15 +50,16 @@ namespace GhostOverlay
             AppState.WidgetData.UnscheduleProfileUpdates();
         }
 
-        private void NavView_OnSelectionChanged(NavigationView sender, muxc.NavigationViewSelectionChangedEventArgs args)
+        private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.IsSettingsSelected)
             {
                 contentFrame.Navigate(typeof(WidgetSettingsSettingsView), null,
                     args.RecommendedNavigationTransitionInfo);
+                return;
             }
 
-            var item = args.SelectedItem as muxc.NavigationViewItem;
+            var item = args.SelectedItem as NavigationViewItem;
             var selectedView = item?.Tag.ToString();
 
             switch (selectedView)
@@ -87,18 +77,6 @@ namespace GhostOverlay
             Debug.WriteLine($"After Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
         }
 
-        private void GoToBounties_Click(object sender, RoutedEventArgs e)
-        {
-            contentFrame.Navigate(typeof(WidgetSettingsBountiesView));
-            Debug.WriteLine($"After Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
-        }
-
-        private void GoToTriumphs_Click(object sender, RoutedEventArgs e)
-        {
-            contentFrame.Navigate(typeof(WidgetSettingsTriumphsView));
-            Debug.WriteLine($"After Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
-        }
-
         private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
@@ -110,9 +88,10 @@ namespace GhostOverlay
                 });
         }
 
-        private void NavView_OnBackRequested(NavigationView sender, muxc.NavigationViewBackRequestedEventArgs args)
+        private void NavView_OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
             Debug.WriteLine($"Back requested! contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
+
             if (contentFrame.CanGoBack)
             {
                 contentFrame.GoBack();

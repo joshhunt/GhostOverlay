@@ -292,14 +292,14 @@ namespace GhostOverlay
             foreach (var objectiveProgress in rawObjectives)
             {
                 var obj = new Objective { Progress = objectiveProgress };
-                //await obj.PopulateDefinition();
+                await obj.PopulateDefinition();
                 objectives.Add(obj);
             }
 
             if (!characters.ContainsKey(entry.OwnerId))
             {
                 characters[entry.OwnerId] = new Character { CharacterComponent = profile.Characters.Data[characterId] };
-                //await characters[entry.OwnerId].PopulateDefinition();
+                await characters[entry.OwnerId].PopulateDefinition();
             }
 
             var bounty = new Item
@@ -311,7 +311,7 @@ namespace GhostOverlay
                 TrackedEntry = entry
             };
 
-            //await bounty.PopulateDefinition();
+            await bounty.PopulateDefinition();
 
             return bounty;
         }
@@ -327,7 +327,7 @@ namespace GhostOverlay
                 TrackedEntry = entry,
                 Objectives = new List<Objective>()
             };
-            //await triumph.PopulateDefinition();
+            await triumph.PopulateDefinition();
 
             triumph.Record = Triumph.FindRecordInProfile(triumph.Hash.ToString(), profile);
 
@@ -340,7 +340,7 @@ namespace GhostOverlay
             foreach (var objectiveProgress in objectives)
             {
                 var obj = new Objective { Progress = objectiveProgress };
-                //await obj.PopulateDefinition();
+                await obj.PopulateDefinition();
                 triumph.Objectives.Add(obj);
             }
 
