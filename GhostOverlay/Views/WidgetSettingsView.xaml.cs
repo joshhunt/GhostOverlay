@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Xaml.Controls;
+using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
+using NavigationViewBackRequestedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs;
+using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
+using NavigationViewSelectionChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 

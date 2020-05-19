@@ -59,7 +59,16 @@ namespace GhostOverlay
             AppState.WidgetData.DefinitionsPath = definitionsPath;
 
             Debug.WriteLine("Cleaning up old definitions");
-            CleanUpDownloadedDefinitions(definitionsPath);
+
+            try
+            {
+                CleanUpDownloadedDefinitions(definitionsPath);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("CleanUpDownloadedDefinitions failed");
+                Debug.WriteLine(e);
+            }
 
             return definitionsPath;
         }

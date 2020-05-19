@@ -181,8 +181,9 @@ namespace GhostOverlay
             if (appRootFrame.Content == null)
             {
                 if (AppState.TokenData.IsValid())
-                    appRootFrame.Navigate(typeof(WidgetMainView));
-                    // appRootFrame.Navigate(typeof(WidgetSettingsView));
+                    //appRootFrame.Navigate(typeof(NewSettingsUI));
+                    //appRootFrame.Navigate(typeof(WidgetMainView));
+                    appRootFrame.Navigate(typeof(WidgetSettingsView));
                     //  appRootFrame.Navigate(typeof(AppAuthSuccessfulView));
                 else
                     appRootFrame.Navigate(typeof(MainPage));
