@@ -145,7 +145,7 @@ namespace GhostOverlay
             {
                 case WidgetPropertyChanged.Profile:
                 case WidgetPropertyChanged.DefinitionsPath:
-                case WidgetPropertyChanged.TrackedBounties:
+                case WidgetPropertyChanged.TrackedItems:
                     UpdateFromProfile();
                     break;
 

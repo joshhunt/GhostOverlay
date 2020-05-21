@@ -125,5 +125,8 @@ namespace GhostOverlay
         public long PresentationNodeHash;
         public DestinyDefinitionsPresentationDestinyPresentationNodeDefinition Definition;
         public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
+        public PresentationNode ParentNode;
+
+        public String Name => Definition?.DisplayProperties?.Name ?? "No name";
     }
 }

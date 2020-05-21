@@ -1,0 +1,94 @@
+﻿<Page
+    x:Class="GhostOverlay.Views.TriumphsListing"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GhostOverlay.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:GhostOverlay.Models"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:ghostOverlay="using:GhostOverlay"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ghostOverlay:TemplatesResourceDictionary />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+        <GridView
+                x:Name="TriumphsGrid"
+                ItemsSource="{x:Bind triumphs}"
+                IsItemClickEnabled="True"
+                VerticalAlignment="Stretch"
+                SelectionChanged="OnSelectedTriumphsChanged"
+                SelectionMode="Multiple">
+
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:WrapPanel Orientation="Horizontal" >
+                    </controls:WrapPanel>
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+
+        <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:Triumph">
+                    <Grid Width="400" MinHeight="120" Padding="12"
+                              Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Image
+                                Grid.Row="0" Grid.Column="0"
+                                Width="48"
+                                Height="48"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top">
+
+                            <Image.Source>
+                                <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                            </Image.Source>
+                        </Image>
+
+                        <StackPanel
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="12,0,0,0"
+                                HorizontalAlignment="Stretch">
+
+                            <TextBlock
+                                    HorizontalAlignment="Left"
+                                    FontSize="15"
+                                    FontWeight="Medium"
+                                    TextWrapping="WrapWholeWords"
+                                    Style="{StaticResource SubtitleTextBlockStyle}"
+                                    Text="{x:Bind Definition.DisplayProperties.Name}" />
+
+                            <TextBlock
+                                    Margin="0,6,0,6"
+                                    HorizontalAlignment="Left"
+                                    MaxLines="2"
+                                    Style="{StaticResource BodyTextBlockStyle}"
+                                    Text="{x:Bind Definition.DisplayProperties.Description}"
+                                    TextTrimming="WordEllipsis"
+                                    TextWrapping="WrapWholeWords" />
+
+                            <ListView
+                                    IsHitTestVisible="False"
+                                    IsItemClickEnabled="False"
+                                    ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                                    ItemTemplate="{StaticResource ObjectiveTemplate}"
+                                    ItemsSource="{x:Bind Objectives}"
+                                    SelectionMode="None" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+</Page>

@@ -147,6 +147,12 @@
       <DependentUpon>TemplatesResourceDictionary.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels.cs" />
+    <Compile Include="Views\SettingsRootTriumphsView.xaml.cs">
+      <DependentUpon>SettingsRootTriumphsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TriumphsListing.xaml.cs">
+      <DependentUpon>TriumphsListing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WidgetData.cs" />
     <Compile Include="Views\WidgetMainView.xaml.cs">
       <DependentUpon>WidgetMainView.xaml</DependentUpon>
@@ -943,6 +949,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TemplatesResourceDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsRootTriumphsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TriumphsListing.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using BungieNetApi.Model;
-using ColorCode.Common;
 using GhostOverlay.Models;
+using GhostOverlay.Views;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -16,19 +16,73 @@ namespace GhostOverlay
     /// <summary>
     ///     An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>
+    public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        private readonly RangeObservableCollection<ITriumphsViewChildren> Items =
-            new RangeObservableCollection<ITriumphsViewChildren>();
+        private readonly RangeObservableCollection<PresentationNode> secondLevelNodes =
+            new RangeObservableCollection<PresentationNode>();
 
-        private long thisPresentationNodeHash = 1024788583; // root: 1024788583
+        private readonly RangeObservableCollection<PresentationNode> thirdLevelNodes =
+            new RangeObservableCollection<PresentationNode>();
+
         private bool viewIsUpdating;
+
+        // cleaned up stuff
+        private PresentationNode _selectedTopLevelNode;
+        private PresentationNode _selectedSecondLevelNode;
+        private PresentationNode _selectedThirdLevelNode;
+
+        private PresentationNode SelectedTopLevelNode
+        {
+            get { return _selectedTopLevelNode; }
+            set
+            {
+                _selectedTopLevelNode = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private PresentationNode SelectedSecondLevelNode
+        {
+            get { return _selectedSecondLevelNode; }
+            set
+            {
+                _selectedSecondLevelNode = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private PresentationNode SelectedThirdLevelNode
+        {
+            get { return _selectedThirdLevelNode; }
+            set
+            {
+                _selectedThirdLevelNode = value;
+                OnPropertyChanged();
+            }
+        }
 
         public WidgetSettingsTriumphsView()
         {
             InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            if (e.Parameter is PresentationNode paramNode)
+            {
+                //topPresentationHash = thisPresentationNode.ParentNode.PresentationNodeHash;
+                //secondLevelPresentationNodeHash = thisPresentationNode.PresentationNodeHash;
+
+                // TODO: is this thread safe?
+                SelectedTopLevelNode = paramNode.ParentNode;
+                SelectedSecondLevelNode = paramNode;
+            }
+
+            eventAggregator.Subscribe(this);
+            UpdateViewModel();
         }
 
         public void HandleMessage(WidgetPropertyChanged message)
@@ -41,18 +95,12 @@ namespace GhostOverlay
                     UpdateViewModel();
                     break;
 
-                case WidgetPropertyChanged.TrackedBounties:
+                case WidgetPropertyChanged.TrackedItems:
                     UpdateSelection();
                     break;
             }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            if (e.Parameter != null) thisPresentationNodeHash = (long) e.Parameter;
-            eventAggregator.Subscribe(this);
-            UpdateViewModel();
-        }
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             Debug.WriteLine("TriumphsView OnNavigatingFrom");
@@ -60,126 +108,122 @@ namespace GhostOverlay
             eventAggregator.Unsubscribe(this);
         }
 
-        private async void UpdateViewModel()
+        private void UpdateViewModel()
         {
+            // TODO: handle first render better before user selected item
+            // - list shouldnt flash so often
+
             viewIsUpdating = true;
 
-            var profile = AppState.WidgetData.Profile;
+            UpdateSecondLevel();
+            UpdateThirdLevel();
+            UpdateTriumphsListingView();
 
-            if (!AppState.WidgetData.DefinitionsLoaded) return;
-
-            var rootNode = await Definitions.GetPresentationNode(Convert.ToUInt32(thisPresentationNodeHash));
-            if (rootNode == null) return;
-
-            Items.Clear();
-
-            var characterIds = profile?.Profile?.Data?.CharacterIds ?? new List<long>();
-
-            foreach (var childNode in rootNode.Children.PresentationNodes)
-            {
-                var childNodeDefinition =
-                    await Definitions.GetPresentationNode(Convert.ToUInt32(childNode.PresentationNodeHash));
-                var node = new PresentationNode
-                    {PresentationNodeHash = childNode.PresentationNodeHash, Definition = childNodeDefinition};
-                Items.Add(node);
-            }
-
-            foreach (var childRecord in rootNode.Children.Records)
-            {
-                var recordDefinition = await Definitions.GetRecord(Convert.ToUInt32(childRecord.RecordHash));
-                var triumph = new Triumph
-                {
-                    Definition = recordDefinition,
-                    Hash = childRecord.RecordHash,
-                    Objectives = new List<Objective>()
-                };
-
-                triumph.Record = Triumph.FindRecordInProfile(childRecord.RecordHash.ToString(), profile);
-
-                var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
-                    ? triumph.Record.IntervalObjectives
-                    : triumph.Record?.Objectives ?? new List<DestinyQuestsDestinyObjectiveProgress>();
-
-                foreach (var objectiveProgress in objectives)
-                {
-                    var obj = new Objective {Progress = objectiveProgress};
-                    await obj.PopulateDefinition();
-                    triumph.Objectives.Add(obj);
-                }
-
-                if (triumph.Record != null)
-                    Items.Add(triumph);
-                else
-                    Debug.WriteLine(
-                        $"triumph {triumph.Definition.DisplayProperties.Name} skipped because its record is missing");
-            }
-
-            Items.SortStable((a, b) =>
-            {
-                var aTriumph = a as Triumph;
-                var bTriumph = b as Triumph;
-
-                if (aTriumph != null && bTriumph != null)
-                {
-                    if (aTriumph.IsCompleted && bTriumph.IsCompleted ||
-                        !aTriumph.IsCompleted && !bTriumph.IsCompleted) return 0;
-
-                    if (aTriumph.IsCompleted && !bTriumph.IsCompleted) return 1;
-
-                    if (!aTriumph.IsCompleted && bTriumph.IsCompleted) return -1;
-                }
-
-                return 0;
-            });
-
-            ItemsCollection.Source = Items;
-
-            UpdateSelection();
             viewIsUpdating = false;
         }
 
         private void UpdateSelection()
         {
             viewIsUpdating = true;
-            TriumphsGrid.SelectedItems.Clear();
-            foreach (var item in Items)
-            {
-                if (item is Triumph triumph && AppState.WidgetData.IsTracked(triumph))
-                {
-                    TriumphsGrid.SelectedItems.Add(item);
-                }
-            }
             viewIsUpdating = false;
         }
 
-        private void OnPresentationNodeClick(object sender, ItemClickEventArgs e)
+        private async void UpdateSecondLevel()
         {
-            if (e.ClickedItem is PresentationNode node)
-                Frame.Navigate(typeof(WidgetSettingsTriumphsView), node.PresentationNodeHash);
+            // Clear items. Maybe we shouldnt do this?
+            secondLevelNodes.Clear();
+
+            // First, set up the list of items
+            var topLevelDef = SelectedTopLevelNode.Definition;
+
+            foreach (var child in topLevelDef.Children.PresentationNodes)
+            {
+                var childNode = new PresentationNode
+                {
+                    PresentationNodeHash = child.PresentationNodeHash,
+                    Definition = await Definitions.GetPresentationNode(Convert.ToUInt32(child.PresentationNodeHash))
+                };
+
+                secondLevelNodes.Add(childNode);
+
+                if ((SelectedSecondLevelNode?.PresentationNodeHash ?? 0) == child.PresentationNodeHash)
+                {
+                    SelectedSecondLevelNode = childNode;
+                }
+            }
+
+            // Second, select a current item
+            if (SelectedSecondLevelNode == null)
+            {
+                Debug.WriteLine("selectedSecondLevelNode == null - I don't think this should happen?");
+                SelectedSecondLevelNode = secondLevelNodes[0];
+            }
         }
 
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void UpdateThirdLevel()
         {
-            if (viewIsUpdating) return;
-            var wasChanged = false;
-            var copyOf = AppState.WidgetData.TrackedEntries.ToList();
+            viewIsUpdating = true;
 
-            foreach (var item in e.AddedItems)
-                if (item is Triumph triumph)
+            // TODO: Figure out if we can not clear this out
+            thirdLevelNodes.Clear();
+
+            if (SelectedSecondLevelNode == null)
+            {
+                Debug.WriteLine("In UpdateThirdLevel, secondLevelNode really shouldnt be null");
+                return;
+            }
+
+            foreach (var child in SelectedSecondLevelNode.Definition.Children.PresentationNodes)
+            {
+                var childNode = new PresentationNode
                 {
-                    wasChanged = true;
-                    var n = TrackedEntry.FromTriumph(triumph);
-                    copyOf.Add(n);
-                }
+                    PresentationNodeHash = child.PresentationNodeHash,
+                    Definition = await Definitions.GetPresentationNode(Convert.ToUInt32(child.PresentationNodeHash))
+                };
+                
+                thirdLevelNodes.Add(childNode);
+            }
 
-            foreach (var item in e.RemovedItems)
-                if (item is Triumph triumph)
-                {
-                    wasChanged = true;
-                    copyOf.RemoveAll(v => v.Matches(triumph));
-                }
+            // Then update the selected item
+            if (SelectedThirdLevelNode == null)
+            {
+                SelectedThirdLevelNode = thirdLevelNodes[0];
+            }
 
-            if (wasChanged) AppState.WidgetData.TrackedEntries = copyOf;
+            viewIsUpdating = false;
+        }
+
+        private void UpdateTriumphsListingView()
+        {
+            TriumphsFrame.Navigate(typeof(TriumphsListing), SelectedThirdLevelNode.PresentationNodeHash);
+        }
+
+        private void OnSecondLevelNodeClicked(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is PresentationNode selectedNode)
+            {
+                SelectedSecondLevelNode = selectedNode;
+
+                // Clear out the selected hash to the default can be handled
+                SelectedThirdLevelNode = default;
+
+                UpdateThirdLevel();
+                UpdateTriumphsListingView();
+            }
+        }
+
+        private void OnThirdLevelNodeClicked(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is PresentationNode selectedNode)
+            {
+                SelectedThirdLevelNode = selectedNode;
+                UpdateTriumphsListingView();
+            }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 

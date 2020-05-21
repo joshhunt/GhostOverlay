@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
 using Windows.UI;
 using Windows.UI.Core;
+using GhostOverlay.Views;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -39,7 +40,7 @@ namespace GhostOverlay
                 Widget_RequestedThemeChanged(widget, null);
             }
 
-            navView.SelectedItem = navView.MenuItems[0];
+            navView.SelectedItem = navView.MenuItems[1];
 
             AppState.WidgetData.ScheduleProfileUpdates();
         }
@@ -69,12 +70,9 @@ namespace GhostOverlay
                     break;
 
                 case "Triumphs":
-                    contentFrame.Navigate(typeof(WidgetSettingsTriumphsView), null, args.RecommendedNavigationTransitionInfo);
+                    contentFrame.Navigate(typeof(SettingsRootTriumphsView), contentFrame, args.RecommendedNavigationTransitionInfo);
                     break;
             }
-
-            contentFrame.BackStack.Clear();
-            Debug.WriteLine($"After Clicking a nav item, contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
         }
 
         private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)

@@ -39,7 +39,7 @@ namespace GhostOverlay
                     UpdateViewModel();
                     break;
 
-                case WidgetPropertyChanged.TrackedBounties:
+                case WidgetPropertyChanged.TrackedItems:
                     UpdateSelection();
                     break;
             }

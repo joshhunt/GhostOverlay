@@ -14,7 +14,7 @@ namespace GhostOverlay
     {
         Profile,
         ProfileUpdating,
-        TrackedBounties,
+        TrackedItems,
         DefinitionsPath,
     }
 
@@ -72,7 +72,7 @@ namespace GhostOverlay
 
                 _trackedEntries = value;
                 AppState.SaveTrackedEntries(_trackedEntries);
-                eventAggregator.Publish(WidgetPropertyChanged.TrackedBounties);
+                eventAggregator.Publish(WidgetPropertyChanged.TrackedItems);
             }
         }
 

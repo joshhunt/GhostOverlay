@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
 
@@ -46,7 +47,11 @@ namespace GhostOverlay.Models
                 var recordsForCharacter = profile.CharacterRecords.Data[characterId.ToString()];
                 recordsForCharacter.Records.TryGetValue(triumphHash, out record);
 
-                if (record != null) break;
+                if (record != null)
+                {
+                    Debug.WriteLine($"Found triumph {triumphHash} in character {characterId}");
+                    break;
+                };
             }
 
             profile.ProfileRecords.Data.Records.TryGetValue(triumphHash, out record);
