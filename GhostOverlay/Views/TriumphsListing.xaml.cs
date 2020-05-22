@@ -43,7 +43,7 @@ namespace GhostOverlay.Views
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"HandleMessage in triumphs root view {message}");
+            Debug.WriteLine($"[TriumphsListing] HandleMessage {message}");
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
@@ -59,7 +59,9 @@ namespace GhostOverlay.Views
 
         private async void UpdateViewModel()
         {
-            var profile = AppState.WidgetData.Profile;
+            var profile = AppState.Data.Profile;
+
+            if (!AppState.Data.DefinitionsLoaded || profile == null) return;
 
             triumphs.Clear();
 
@@ -108,7 +110,7 @@ namespace GhostOverlay.Views
             TriumphsGrid.SelectedItems.Clear();
             foreach (var item in triumphs)
             {
-                if (item is Triumph triumph && AppState.WidgetData.IsTracked(triumph))
+                if (item is Triumph triumph && AppState.Data.IsTracked(triumph))
                 {
                     TriumphsGrid.SelectedItems.Add(item);
                 }
@@ -122,7 +124,7 @@ namespace GhostOverlay.Views
             if (viewIsUpdating) return;
 
             var wasChanged = false;
-            var copyOf = AppState.WidgetData.TrackedEntries.ToList();
+            var copyOf = AppState.Data.TrackedEntries.ToList();
 
             foreach (var item in e.AddedItems)
                 if (item is Triumph triumph)
@@ -139,7 +141,7 @@ namespace GhostOverlay.Views
                     copyOf.RemoveAll(v => v.Matches(triumph));
                 }
 
-            if (wasChanged) AppState.WidgetData.TrackedEntries = copyOf;
+            if (wasChanged) AppState.Data.TrackedEntries = copyOf;
         }
     }
 }

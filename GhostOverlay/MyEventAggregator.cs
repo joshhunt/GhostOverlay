@@ -35,7 +35,7 @@ namespace GhostOverlay
                 if (messageType.IsInstanceOfType(handler))
                 {
                     var dispatcher = subscriber.Item1;
-                    _ = dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    _ = dispatcher?.RunAsync(CoreDispatcherPriority.Normal, () =>
                       {
                           ((ISubscriber<TMessage>)handler).HandleMessage(message);
                       });

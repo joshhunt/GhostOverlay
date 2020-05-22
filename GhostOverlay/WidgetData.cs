@@ -16,6 +16,7 @@ namespace GhostOverlay
         ProfileUpdating,
         TrackedItems,
         DefinitionsPath,
+        TokenData
     }
 
     public class WidgetData
@@ -49,7 +50,7 @@ namespace GhostOverlay
 
             set
             {
-                if (value.Equals(_profile))
+                if (value?.Equals(_profile) ?? false)
                 {
                     Debug.WriteLine("New profile is the same, so skipping");
                     return;
@@ -68,7 +69,7 @@ namespace GhostOverlay
             get => _trackedEntries;
             set
             {
-                if (value.Equals(_trackedEntries)) return;
+                if (value?.Equals(_trackedEntries) ?? false) return;
 
                 _trackedEntries = value;
                 AppState.SaveTrackedEntries(_trackedEntries);
@@ -82,24 +83,46 @@ namespace GhostOverlay
             get => _definitionsPath;
             set
             {
-                if (value.Equals(_definitionsPath)) return;
+                if (value?.Equals(_definitionsPath) ?? false) return;
+
                 _definitionsPath = value;
                 eventAggregator.Publish(WidgetPropertyChanged.DefinitionsPath);
+            }
+        }
+
+        private OAuthToken _tokenData;
+        public OAuthToken TokenData
+        {
+            get => _tokenData;
+            set
+            {
+                _tokenData = value;
+                eventAggregator.Publish(WidgetPropertyChanged.TokenData);
             }
         }
 
         public async Task UpdateProfile()
         {
             ProfileIsUpdating = true;
-            if (Profile == null)
-            {   
-                Debug.WriteLine("Updating profile, for the first time using GetProfileForCurrentUser");
-                Profile = await AppState.bungieApi.GetProfileForCurrentUser(AppState.bungieApi.DefaultProfileComponents);
-            }
-            else
+
+            try
             {
-                Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                if (Profile == null)
+                {
+                    Debug.WriteLine("Updating profile, for the first time using GetProfileForCurrentUser");
+                    Profile = await AppState.bungieApi.GetProfileForCurrentUser(AppState.bungieApi.DefaultProfileComponents);
+                }
+                else
+                {
+                    Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                }
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error trying to UpdateProfile:");
+                Debug.WriteLine(e);
+            }
+            
             ProfileIsUpdating = false;
         }
 
@@ -112,6 +135,7 @@ namespace GhostOverlay
             {
                 // Someone else has already started the schedule, so can just return
                 Debug.WriteLine("Updates area already happening, so we can return");
+                await UpdateProfile();
                 return;
             }
 
@@ -120,10 +144,15 @@ namespace GhostOverlay
                 await UpdateProfile();
 
                 var delay = WidgetsAreVisible ? ActiveProfileUpdateInterval : InactiveProfileUpdateInterval;
-                Debug.WriteLine($"Waiting {delay}ms before fetching profile again");
+                Debug.WriteLine($"Waiting {delay / 1000}s before fetching profile again");
                 
                 await Task.Delay(delay);
             }
+        }
+
+        public void CancelAllScheduledProfileUpdates()
+        {
+            ProfileScheduleRequesters = 0;
         }
 
         public void WidgetVisibilityChanged()
@@ -163,6 +192,27 @@ namespace GhostOverlay
 
             foreach (var trackedEntry in TrackedEntries)
                 Debug.WriteLine($"  Restored {trackedEntry}");
+        }
+
+        public void RestoreBungieTokenDataFromSettings()
+        {
+            TokenData = OAuthToken.RestoreTokenFromSettings();
+
+            Debug.WriteLine("Restored TokenData:");
+            Debug.WriteLine(TokenData.ToString());
+        }
+
+        public void SignOutAndResetAllData()
+        {
+            CancelAllScheduledProfileUpdates();
+
+            Profile = default;
+            TrackedEntries = new List<TrackedEntry>();
+            TokenData = default;
+            DefinitionsPath = default;
+
+            AppState.ClearAllSettings();
+            Definitions.ClearAllDefinitions();
         }
     }
 }

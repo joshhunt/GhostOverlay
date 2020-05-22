@@ -8,11 +8,46 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel>
-        <StackPanel Margin="6" Orientation="Horizontal">
-            <Button Click="UpdateDefinitionsButton_OnClick">Update items database</Button>
-            <TextBlock Text="{x:Bind definitionsDbName}" Margin="12,0" />
-            <ProgressRing x:Name="DefinitionsProgressRing" IsActive="False"></ProgressRing>
+    <StackPanel Margin="16,8,16,0">
+        <StackPanel>
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Bungie account</TextBlock>
+            <TextBlock Margin="0,4,0,0">joshhunt_ (Cross save: Playstation, Stadia, Xbox)</TextBlock>
+
+            <Button Margin="0,8,0,0" Click="UpdateDefinitionsButton_OnClick">
+                Sign out
+
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel>
+                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" FontWeight="SemiBold" Margin="0,0,0,12" MaxWidth="350" TextWrapping="WrapWholeWords">
+                                This will sign you out of your Bungie account and remove all tracked Bounties and Triumphs from Ghost on this computer.
+                            </TextBlock>
+
+                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Margin="0,0,0,12" MaxWidth="350" TextWrapping="WrapWholeWords">
+                                It will not remove any data or items from the Bungie servers - that's safe and sound.
+                            </TextBlock>
+
+                            <Button Click="SignOutConfirmedClicked" Content="Yes, sign out and reset data" />
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+
+            </Button>
         </StackPanel>
+
+        <StackPanel Margin="0,24,0,0">
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Items database</TextBlock>
+
+            <TextBlock Margin="0,4,0,0">
+                <Run FontWeight="SemiBold">Current database:</Run> <Run Text="{x:Bind definitionsDbName}" />
+            </TextBlock>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Button Click="UpdateDefinitionsButton_OnClick">Update items database</Button>
+                <ProgressRing Margin="8,0,0,0" x:Name="DefinitionsProgressRing" IsActive="False"></ProgressRing>
+            </StackPanel>
+        </StackPanel>
+
+        
     </StackPanel>
 </Page>

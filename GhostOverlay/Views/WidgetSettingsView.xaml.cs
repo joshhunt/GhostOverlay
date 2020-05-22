@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -15,9 +14,10 @@ using GhostOverlay.Views;
 
 namespace GhostOverlay
 {
-    public sealed partial class WidgetSettingsView : Page
+    public sealed partial class WidgetSettingsView : Page, ISubscriber<WidgetPropertyChanged>
     {
         private XboxGameBarWidget widget;
+        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
 
         public WidgetSettingsView()
         {
@@ -38,17 +38,32 @@ namespace GhostOverlay
 
                 widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
                 Widget_RequestedThemeChanged(widget, null);
+
+                widget.Close();
             }
 
             navView.SelectedItem = navView.MenuItems[1];
 
-            AppState.WidgetData.ScheduleProfileUpdates();
+            eventAggregator.Subscribe(this);
+            AppState.Data.ScheduleProfileUpdates();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
-            AppState.WidgetData.UnscheduleProfileUpdates();
+            AppState.Data.UnscheduleProfileUpdates();
+        }
+
+        public void HandleMessage(WidgetPropertyChanged message)
+        {
+            Debug.WriteLine($"[WidgetSettingsView] HandleMessage {message}");
+
+            switch (message)
+            {
+                case WidgetPropertyChanged.TokenData:
+                    CheckAuth();
+                    break;
+            }
         }
 
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -97,6 +112,14 @@ namespace GhostOverlay
             }
 
             return;
+        }
+
+        private void CheckAuth()
+        {
+            if (AppState.Data.TokenData == null || !AppState.Data.TokenData.IsValid())
+            {
+                widget.Close();
+            }
         }
     }
 }

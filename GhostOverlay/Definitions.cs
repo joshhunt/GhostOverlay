@@ -30,6 +30,7 @@ namespace GhostOverlay
         {
             Ready = ActuallyInitializeDatabase();
             _ = CheckForLatestDefinitions();
+
             await Ready;
         }
 
@@ -56,7 +57,7 @@ namespace GhostOverlay
             db = new SqliteConnection($"Filename={definitionsPath}");
             await db.OpenAsync();
 
-            AppState.WidgetData.DefinitionsPath = definitionsPath;
+            AppState.Data.DefinitionsPath = definitionsPath;
 
             Debug.WriteLine("Cleaning up old definitions");
             CleanUpDownloadedDefinitions(definitionsPath);
@@ -192,6 +193,31 @@ namespace GhostOverlay
                     Debug.WriteLine(e);
                 }
                 
+            }
+        }
+
+        public static async void ClearAllDefinitions()
+        {
+            db.Close();
+            db = default;
+
+            var folder = ApplicationData.Current.LocalCacheFolder;
+
+            var filesToTrash = await folder.GetFilesAsync();
+
+            foreach (var storageFile in filesToTrash)
+            {
+                try
+                {
+                    Debug.WriteLine($"Deleting {storageFile.Path}");
+                    await storageFile.DeleteAsync();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Unable to clean up definition:");
+                    Debug.WriteLine(e);
+                }
+
             }
         }
 

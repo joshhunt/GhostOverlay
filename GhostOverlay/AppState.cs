@@ -98,8 +98,6 @@ namespace GhostOverlay
 
     public enum SettingsKey
     {
-        [Obsolete("Use TrackedEntries")]
-        SelectedBounties, // TODO: Clean SelectedBounties from settings, its not used anymore
         AccessToken,
         RefreshToken,
         AccessTokenExpiration,
@@ -112,11 +110,10 @@ namespace GhostOverlay
     public static class AppState
     {
         public static BungieApi bungieApi = new BungieApi();
-        public static WidgetData WidgetData = new WidgetData();
-        public static OAuthToken TokenData { get; set; }
+        public static WidgetData Data = new WidgetData();
 
-        [Obsolete("Use AppState.Widgetdata.Profile instead.")]
-        public static DestinyResponsesDestinyProfileResponse Profile { get; set; }
+        [Obsolete("Use AppState.Widgetdata.TokenData instead.")]
+        public static OAuthToken TokenData { get; set; }
 
         public static T ReadSetting<T>(SettingsKey key, T defaultValue)
         {
@@ -150,12 +147,17 @@ namespace GhostOverlay
             return JsonConvert.DeserializeObject<List<TrackedEntry>>(json);
         }
 
-        public static void RestoreBungieTokenDataFromSettings()
-        {
-            TokenData = OAuthToken.RestoreTokenFromSettings();
+        [Obsolete("Use AppState.Widgetdata.RestoreBungieTokenDataFromSettings instead.")]
+        public static void RestoreBungieTokenDataFromSettings() {}
 
-            Debug.WriteLine("Restored TokenData:");
-            Debug.WriteLine(TokenData.ToString());
+        public static void ClearAllSettings()
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+            foreach (var valuesKey in localSettings.Values.Keys)
+            {
+                localSettings.Values.Remove(valuesKey);
+            }
+            localSettings.Values.Clear();
         }
     }
 }

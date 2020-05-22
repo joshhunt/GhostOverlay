@@ -27,8 +27,6 @@ namespace GhostOverlay
         private readonly RangeObservableCollection<PresentationNode> thirdLevelNodes =
             new RangeObservableCollection<PresentationNode>();
 
-        private bool viewIsUpdating;
-
         // cleaned up stuff
         private PresentationNode _selectedTopLevelNode;
         private PresentationNode _selectedSecondLevelNode;
@@ -87,16 +85,12 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"HandleMessage in triumphs view {message}");
+            Debug.WriteLine($"[WidgetSettingsTriumphsView] HandleMessage {message}");
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
                 case WidgetPropertyChanged.DefinitionsPath:
                     UpdateViewModel();
-                    break;
-
-                case WidgetPropertyChanged.TrackedItems:
-                    UpdateSelection();
                     break;
             }
         }
@@ -113,19 +107,11 @@ namespace GhostOverlay
             // TODO: handle first render better before user selected item
             // - list shouldnt flash so often
 
-            viewIsUpdating = true;
+            if (!AppState.Data.DefinitionsLoaded) return;
 
             UpdateSecondLevel();
             UpdateThirdLevel();
             UpdateTriumphsListingView();
-
-            viewIsUpdating = false;
-        }
-
-        private void UpdateSelection()
-        {
-            viewIsUpdating = true;
-            viewIsUpdating = false;
         }
 
         private async void UpdateSecondLevel()
@@ -162,8 +148,6 @@ namespace GhostOverlay
 
         private async void UpdateThirdLevel()
         {
-            viewIsUpdating = true;
-
             // TODO: Figure out if we can not clear this out
             thirdLevelNodes.Clear();
 
@@ -189,8 +173,6 @@ namespace GhostOverlay
             {
                 SelectedThirdLevelNode = thirdLevelNodes[0];
             }
-
-            viewIsUpdating = false;
         }
 
         private void UpdateTriumphsListingView()

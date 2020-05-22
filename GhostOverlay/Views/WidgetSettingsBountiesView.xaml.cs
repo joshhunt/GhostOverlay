@@ -32,6 +32,8 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
+            Debug.WriteLine($"[WidgetSettingsBountiesView] HandleMessage {message}");
+
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
@@ -43,15 +45,14 @@ namespace GhostOverlay
                     UpdateSelection();
                     break;
             }
-
         }
 
         private async void UpdateViewModel()
         {
             viewIsUpdating = true;
 
-            var profile = AppState.WidgetData.Profile;
-            if (profile?.CharacterInventories?.Data != null && AppState.WidgetData.DefinitionsLoaded)
+            var profile = AppState.Data.Profile;
+            if (profile?.CharacterInventories?.Data != null && AppState.Data.DefinitionsLoaded)
             {
                 Bounties.Clear();
                 Bounties.AddRange(await Item.ItemsFromProfile(profile));
@@ -75,7 +76,7 @@ namespace GhostOverlay
             this.BountiesGridView.SelectedItems.Clear();
             foreach (var bounty in Bounties)
             {
-                if (AppState.WidgetData.IsTracked(bounty))
+                if (AppState.Data.IsTracked(bounty))
                 {
                     this.BountiesGridView.SelectedItems.Add(bounty);
                 }
@@ -86,7 +87,7 @@ namespace GhostOverlay
         private void SelectedBountiesChanged(object sender, SelectionChangedEventArgs e)
         {
             if (viewIsUpdating) return;
-            var copyOf = AppState.WidgetData.TrackedEntries.ToList();
+            var copyOf = AppState.Data.TrackedEntries.ToList();
             
             foreach (var addedItem in e.AddedItems)
             {
@@ -100,7 +101,7 @@ namespace GhostOverlay
                 copyOf.RemoveAll(v => v.Matches(bounty));
             }
 
-            AppState.WidgetData.TrackedEntries = copyOf;
+            AppState.Data.TrackedEntries = copyOf;
         }
     }
 }

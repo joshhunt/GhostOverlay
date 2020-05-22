@@ -149,14 +149,14 @@ namespace GhostOverlay
             Debug.WriteLine($"REQUEST {path}");
             var request = new RestRequest(path);
 
-            if (AppState.TokenData != null && AppState.TokenData.RefreshTokenIsValid()) await EnsureTokenDataIsValid();
+            if (AppState.Data.TokenData != null && AppState.Data.TokenData.RefreshTokenIsValid()) await EnsureTokenDataIsValid();
 
-            if (requireAuth && (AppState.TokenData == null || !AppState.TokenData.AccessTokenIsValid()))
+            if (requireAuth && (AppState.Data.TokenData == null || !AppState.Data.TokenData.AccessTokenIsValid()))
                 throw new BungieApiException("Auth was required but the access token was not valid");
 
-            if (AppState.TokenData != null && AppState.TokenData.AccessTokenIsValid())
+            if (AppState.Data.TokenData != null && AppState.Data.TokenData.AccessTokenIsValid())
             {
-                var headerValue = $"Bearer {AppState.TokenData.AccessToken}";
+                var headerValue = $"Bearer {AppState.Data.TokenData.AccessToken}";
 
                 request.AddHeader("authorization", headerValue);
             }
@@ -180,26 +180,26 @@ namespace GhostOverlay
 
         public async Task<bool> EnsureTokenDataIsValid()
         {
-            if (AppState.TokenData == null)
+            if (AppState.Data.TokenData == null)
             {
                 Debug.WriteLine("ERROR: TokenData is null");
                 throw new BungieApiException("TokenData is null when attempted to refresh it");
             }
 
-            if (AppState.TokenData.IsValid() != true)
+            if (AppState.Data.TokenData.IsValid() != true)
             {
                 Debug.WriteLine("ERROR: TokenData is not valid");
                 throw new BungieApiException("TokenData is not valid when attempted to refresh it");
             }
 
-            if (AppState.TokenData.AccessTokenIsValid()) return true;
+            if (AppState.Data.TokenData.AccessTokenIsValid()) return true;
 
-            if (AppState.TokenData.RefreshTokenIsValid())
+            if (AppState.Data.TokenData.RefreshTokenIsValid())
             {
                 Debug.WriteLine("Need to refresh access token!");
                 await RefreshOAuthAccessToken();
                 Debug.WriteLine("Successfully refreshed token. New TokenData:");
-                Debug.WriteLine(AppState.TokenData);
+                Debug.WriteLine(AppState.Data.TokenData);
                 return true;
             }
 
@@ -209,7 +209,7 @@ namespace GhostOverlay
 
         public async Task RefreshOAuthAccessToken()
         {
-            if (AppState.TokenData == null || AppState.TokenData.RefreshTokenIsValid() != true)
+            if (AppState.Data.TokenData == null || AppState.Data.TokenData.RefreshTokenIsValid() != true)
             {
                 // TODO: throw exception?
                 Debug.WriteLine("ERROR: have no valid refresh token to use to refresh");
@@ -218,15 +218,15 @@ namespace GhostOverlay
 
             var request = new RestRequest("/Platform/App/OAuth/Token/", DataFormat.Json);
             request.AddParameter("application/x-www-form-urlencoded; charset=utf-8",
-                $"grant_type=refresh_token&refresh_token={AppState.TokenData.RefreshToken}", ParameterType.RequestBody);
+                $"grant_type=refresh_token&refresh_token={AppState.Data.TokenData.RefreshToken}", ParameterType.RequestBody);
 
             var auth = Base64Encode($"{clientId}:{clientSecret}");
             request.AddHeader("Authorization", $"Basic {auth}");
             var data = await client.PostAsync<BungieOAuthTokenResponse>(request);
 
-            AppState.TokenData = new OAuthToken(data.access_token, data.refresh_token,
+            AppState.Data.TokenData = new OAuthToken(data.access_token, data.refresh_token,
                 data.expires_in, data.refresh_expires_in);
-            AppState.TokenData.SaveToSettings();
+            AppState.Data.TokenData.SaveToSettings();
         }
 
         public async Task GetOAuthAccessToken(string authCode)
@@ -239,9 +239,10 @@ namespace GhostOverlay
             request.AddHeader("Authorization", $"Basic {auth}");
             var data = await client.PostAsync<BungieOAuthTokenResponse>(request);
 
-            AppState.TokenData = new OAuthToken(data.access_token, data.refresh_token,
+            AppState.Data.TokenData = new OAuthToken(data.access_token, data.refresh_token,
                 data.expires_in, data.refresh_expires_in);
-            AppState.TokenData.SaveToSettings();
+
+            AppState.Data.TokenData.SaveToSettings();
         }
 
         public string GetAuthorisationUrl()

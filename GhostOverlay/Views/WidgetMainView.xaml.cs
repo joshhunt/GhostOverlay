@@ -48,12 +48,12 @@ namespace GhostOverlay
         {
             get
             {
-                if (AppState.WidgetData.ProfileUpdatedTime == DateTime.MinValue)
+                if (AppState.Data.ProfileUpdatedTime == DateTime.MinValue)
                 {
                     return "-";
                 }
 
-                var span = DateTime.Now - AppState.WidgetData.ProfileUpdatedTime;
+                var span = DateTime.Now - AppState.Data.ProfileUpdatedTime;
 
                 if (span.TotalSeconds > 60)
                     return $"{span.Minutes}m {span.Seconds}s";
@@ -65,7 +65,6 @@ namespace GhostOverlay
         public WidgetMainView()
         {
             InitializeComponent();
-            eventAggregator.Subscribe(this);
 
             this.DataContext = this;
         }
@@ -94,16 +93,12 @@ namespace GhostOverlay
                 widget.SettingsClicked += Widget_SettingsClicked;
                 widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
                 Widget_RequestedThemeChanged(widget, null);
-
-                widget.GameBarDisplayModeChanged += WidgetOnGameBarDisplayModeChanged;
-                widget.PinnedChanged += WidgetOnPinnedChanged;
-                widget.VisibleChanged += WidgetOnVisibleChanged;
-                widget.WindowStateChanged += WidgetOnWindowStateChanged;
             }
 
             SetVisualState(VisualState.InitialProfileLoad);
 
-            AppState.WidgetData.ScheduleProfileUpdates();
+            eventAggregator.Subscribe(this);
+            AppState.Data.ScheduleProfileUpdates();
             UpdateFromProfile();
 
             timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -111,36 +106,17 @@ namespace GhostOverlay
             timer.Start();
         }
 
-        private void WidgetOnWindowStateChanged(XboxGameBarWidget sender, object args)
-        {
-            Debug.WriteLine($"Main View WidgetOnWindowStateChanged: {sender.WindowState}");
-        }
-
-        private void WidgetOnVisibleChanged(XboxGameBarWidget sender, object args)
-        {
-            Debug.WriteLine($"Main View WidgetOnVisibleChanged: {sender.Visible}");
-        }
-
-        private void WidgetOnPinnedChanged(XboxGameBarWidget sender, object args)
-        {
-            Debug.WriteLine($"Main View WidgetOnPinnedChanged: {sender.Pinned}");
-        }
-
-        private void WidgetOnGameBarDisplayModeChanged(XboxGameBarWidget sender, object args)
-        {
-            Debug.WriteLine($"Main View GameBarDisplayModeChanged: {sender.GameBarDisplayMode}");
-        }
-
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
             base.OnNavigatingFrom(e);
-            eventAggregator.Subscribe(this);
-            AppState.WidgetData.UnscheduleProfileUpdates();
+            eventAggregator.Unsubscribe(this);
+            AppState.Data.UnscheduleProfileUpdates();
         }
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"WidgetMainView HandleMessage {message}");
+            Log($"HandleMessage {message}");
+
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
@@ -152,12 +128,32 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.ProfileUpdating:
                     UpdateProfileUpdating();
                     break;
+
+                case WidgetPropertyChanged.TokenData:
+                    CheckAuth();
+                    break;
+            }
+        }
+
+        private void CheckAuth()
+        {
+            if (AppState.Data.TokenData == null || !AppState.Data.TokenData.IsValid())
+            {
+                // Navigate frame to the "not logged in" view
+                if (this.Frame.CanGoBack && this.Frame.BackStack[this.Frame.BackStack.Count - 1].SourcePageType == typeof(WidgetNotAuthedView))
+                {
+                    this.Frame.GoBack();
+                }
+                else
+                {
+                    this.Frame.Navigate(typeof(WidgetNotAuthedView), widget);
+                }
             }
         }
 
         private void UpdateProfileUpdating()
         {
-            if (AppState.WidgetData.ProfileIsUpdating)
+            if (AppState.Data.ProfileIsUpdating)
             {
                 ProfileUpdatingProgressRing.IsActive = true;
             }
@@ -201,7 +197,7 @@ namespace GhostOverlay
 
         private void UpdateFromProfile()
         {
-            var profile = AppState.WidgetData.Profile;
+            var profile = AppState.Data.Profile;
 
             if (profile?.CharacterInventories?.Data == null)
             {
@@ -211,7 +207,7 @@ namespace GhostOverlay
                 return;
             }
 
-            if (!AppState.WidgetData.DefinitionsLoaded)
+            if (!AppState.Data.DefinitionsLoaded)
             {
                 SetVisualState(VisualState.DefinitionsLoading);
                 return;
@@ -223,13 +219,13 @@ namespace GhostOverlay
 
         private async void UpdateTracked()
         {
-            var profile = AppState.WidgetData.Profile;
+            var profile = AppState.Data.Profile;
             var characters = new Dictionary<long, Character>();
             var toCleanup = new List<TrackedEntry>();
 
             Tracked.Clear();
 
-            foreach (var trackedEntry in AppState.WidgetData.TrackedEntries)
+            foreach (var trackedEntry in AppState.Data.TrackedEntries)
             {
                 ITrackable trackable = default;
 
@@ -250,7 +246,7 @@ namespace GhostOverlay
                     toCleanup.Add(trackedEntry);
             }
 
-            AppState.WidgetData.TrackedEntries.RemoveAll(toCleanup.Contains);
+            AppState.Data.TrackedEntries.RemoveAll(toCleanup.Contains);
 
             var groupedBounties =
                 from t in Tracked
@@ -349,13 +345,14 @@ namespace GhostOverlay
 
         private void RemoveTrackedEntry(TrackedEntry entry)
         {
-            var copyOf = AppState.WidgetData.TrackedEntries.ToList();
+            var copyOf = AppState.Data.TrackedEntries.ToList();
             copyOf.RemoveAll(v => v == entry);
-            AppState.WidgetData.TrackedEntries = copyOf;
+            AppState.Data.TrackedEntries = copyOf;
         }
 
         private async void Widget_SettingsClicked(XboxGameBarWidget sender, object args)
         {
+            Log("Tryna open settings");
             await widget.ActivateSettingsAsync();
         }
 
@@ -396,6 +393,11 @@ namespace GhostOverlay
             {
                 RemoveTrackedEntry(trackedEntry);
             }
+        }
+
+        private void Log(string message)
+        {
+            Debug.WriteLine($"[WidgetMainView] {message}");
         }
     }
 }

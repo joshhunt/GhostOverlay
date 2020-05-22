@@ -26,7 +26,6 @@ namespace GhostOverlay.Views
     {
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
         private readonly long rootTriumphsNodeHash = 1024788583;
-        private bool viewIsUpdating = false;
         private Frame parentFrame;
 
         public SettingsRootTriumphsView()
@@ -53,7 +52,8 @@ namespace GhostOverlay.Views
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"HandleMessage in triumphs root view {message}");
+            Debug.WriteLine($"[SettingsRootTriumphsView] HandleMessage {message}");
+
             switch (message) 
             {
                 case WidgetPropertyChanged.DefinitionsPath:
@@ -64,8 +64,8 @@ namespace GhostOverlay.Views
 
         private async void UpdateViewModel()
         {
-            viewIsUpdating = true;
             var nodes = new List<PresentationNode>();
+            if (!AppState.Data.DefinitionsLoaded) return;
 
             var rootNode = await Definitions.GetPresentationNode(Convert.ToUInt32(rootTriumphsNodeHash));
 
@@ -99,8 +99,6 @@ namespace GhostOverlay.Views
                 group t by t.ParentNode
                 into g
                 select g;
-
-            viewIsUpdating = false;
         }
 
         private void OnNodeClicked(object sender, ItemClickEventArgs e)

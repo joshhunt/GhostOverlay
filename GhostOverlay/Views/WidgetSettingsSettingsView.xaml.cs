@@ -1,4 +1,8 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -33,6 +37,8 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
+            Debug.WriteLine($"[WidgetSettingsSettingsView] HandleMessage {message}");
+
             switch (message)
             {
                 case WidgetPropertyChanged.DefinitionsPath:
@@ -43,17 +49,24 @@ namespace GhostOverlay
 
         private void UpdateViewModel()
         {
-            if (AppState.WidgetData.DefinitionsPath != null)
+            if (AppState.Data.DefinitionsPath != null)
             {
-                definitionsDbName = AppState.WidgetData.DefinitionsPath;
+                definitionsDbName = Path.GetFileName(AppState.Data.DefinitionsPath);
             }
         }
 
         private async void UpdateDefinitionsButton_OnClick(object sender, RoutedEventArgs e)
         {
             DefinitionsProgressRing.IsActive = true;
+            var rateLimit = Task.Delay(TimeSpan.FromSeconds(2));
             await Definitions.CheckForLatestDefinitions();
+            await rateLimit;
             DefinitionsProgressRing.IsActive = false;
+        }
+
+        private void SignOutConfirmedClicked(object sender, RoutedEventArgs e)
+        {
+            AppState.Data.SignOutAndResetAllData();
         }
     }
 }

@@ -22,33 +22,22 @@ namespace GhostOverlay
         private XboxGameBarWidget widgetMain;
         private XboxGameBarWidget widgetMainSettings;
 
+        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+
         /// <summary>
         ///     Initializes the singleton application object.  This is the first line of authored code
         ///     executed, and as such is the logical equivalent of main() or WinMain().
         /// </summary>
         public App()
         {
-            this.UnhandledException += (sender, e) =>
-            {
-                System.Diagnostics.Debug.WriteLine("my unhandled exception handler");
-                e.Handled = true;
-                System.Diagnostics.Debug.WriteLine(e.Exception);
-                System.Diagnostics.Debug.WriteLine(e.Exception.StackTrace);
-                System.Diagnostics.Debug.WriteLine(e.ToString());
-                System.Diagnostics.Debug.WriteLine(sender.ToString());
-            };
-
-            Debug.WriteLine("App constructor");
-
             Definitions.InitializeDatabase();
-            AppState.RestoreBungieTokenDataFromSettings();
-            AppState.WidgetData.RestoreTrackedBountiesFromSettings();
+            AppState.Data.RestoreBungieTokenDataFromSettings();
+            AppState.Data.RestoreTrackedBountiesFromSettings();
 
             InitializeComponent();
 
             Suspending += OnSuspending;
         }
-
 
         protected override void OnActivated(IActivatedEventArgs args)
         {
@@ -85,6 +74,7 @@ namespace GhostOverlay
 
         private void HandleGameBarWidgetActivation(IActivatedEventArgs args)
         {
+            Debug.WriteLine("HandleGameBarWidgetActivation");
             var widgetArgs = args as XboxGameBarWidgetActivatedEventArgs;
 
             if (widgetArgs == null || !widgetArgs.IsLaunchActivation) return;
@@ -106,7 +96,7 @@ namespace GhostOverlay
                 Window.Current.Closed += WidgetMainWindow_Closed;
                 widgetMain.VisibleChanged += AnyWidget_VisibleChanged;
 
-                if (AppState.TokenData.IsValid())
+                if (AppState.Data.TokenData.IsValid())
                     widgetRootFrame.Navigate(typeof(WidgetMainView), widgetMain);
                 else
                     widgetRootFrame.Navigate(typeof(WidgetNotAuthedView), widgetMain);
@@ -131,9 +121,9 @@ namespace GhostOverlay
 
         private void AnyWidget_VisibleChanged(XboxGameBarWidget sender, object args)
         {
-            AppState.WidgetData.WidgetsAreVisible = (widgetMain?.Visible ?? false) ||
+            AppState.Data.WidgetsAreVisible = (widgetMain?.Visible ?? false) ||
                                                     (widgetMainSettings?.Visible ?? false);
-            AppState.WidgetData.WidgetVisibilityChanged();
+            AppState.Data.WidgetVisibilityChanged();
         }
 
         private async void HandleAuthCode(string authCode)
@@ -141,9 +131,9 @@ namespace GhostOverlay
             Debug.WriteLine($"handling auth code {authCode}");
             await AppState.bungieApi.GetOAuthAccessToken(authCode);
 
-            Debug.WriteLine($"saved access token?: {AppState.TokenData}");
+            Debug.WriteLine($"saved access token?: {AppState.Data.TokenData}");
 
-            if (AppState.TokenData.IsValid() != true)
+            if (AppState.Data.TokenData.IsValid() != true)
                 throw new Exception("Exchanged code for token, but the TokenData is not valid??");
 
             appRootFrame?.Navigate(typeof(AppAuthSuccessfulView));
@@ -180,7 +170,7 @@ namespace GhostOverlay
 
             if (appRootFrame.Content == null)
             {
-                if (AppState.TokenData.IsValid())
+                if (AppState.Data.TokenData.IsValid())
                     appRootFrame.Navigate(typeof(WidgetSettingsView));
                     // appRootFrame.Navigate(typeof(WidgetSettingsView));
                     //  appRootFrame.Navigate(typeof(AppAuthSuccessfulView));

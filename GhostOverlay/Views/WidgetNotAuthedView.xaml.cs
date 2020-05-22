@@ -64,7 +64,7 @@ namespace GhostOverlay
 
         private async void WaitForAuth()
         {
-            while (!AppState.TokenData.IsValid())
+            while (!(AppState.Data.TokenData?.IsValid() ?? false))
             {
                 await Task.Delay(500);
             }
