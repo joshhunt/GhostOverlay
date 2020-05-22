@@ -14,7 +14,7 @@ using GhostOverlay.Views;
 
 namespace GhostOverlay
 {
-    public sealed partial class WidgetSettingsView : Page, ISubscriber<WidgetPropertyChanged>
+    public sealed partial class WidgetSettingsView : Page
     {
         private XboxGameBarWidget widget;
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
@@ -42,9 +42,8 @@ namespace GhostOverlay
                 widget.Close();
             }
 
-            navView.SelectedItem = navView.MenuItems[1];
+            navView.SelectedItem = navView.MenuItems[0];
 
-            eventAggregator.Subscribe(this);
             AppState.Data.ScheduleProfileUpdates();
         }
 
@@ -52,18 +51,6 @@ namespace GhostOverlay
         {
             base.OnNavigatingFrom(e);
             AppState.Data.UnscheduleProfileUpdates();
-        }
-
-        public void HandleMessage(WidgetPropertyChanged message)
-        {
-            Debug.WriteLine($"[WidgetSettingsView] HandleMessage {message}");
-
-            switch (message)
-            {
-                case WidgetPropertyChanged.TokenData:
-                    CheckAuth();
-                    break;
-            }
         }
 
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -108,17 +95,6 @@ namespace GhostOverlay
             if (contentFrame.CanGoBack)
             {
                 contentFrame.GoBack();
-                return;
-            }
-
-            return;
-        }
-
-        private void CheckAuth()
-        {
-            if (AppState.Data.TokenData == null || !AppState.Data.TokenData.IsValid())
-            {
-                widget.Close();
             }
         }
     }
