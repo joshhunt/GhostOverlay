@@ -209,10 +209,8 @@ namespace GhostOverlay
             Profile = default;
             TrackedEntries = new List<TrackedEntry>();
             TokenData = default;
-            DefinitionsPath = default;
 
-            AppState.ClearAllSettings();
-            Definitions.ClearAllDefinitions();
+            AppState.ClearUserSpecificSettings();
         }
     }
 }

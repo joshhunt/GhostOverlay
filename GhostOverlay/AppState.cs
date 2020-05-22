@@ -112,6 +112,8 @@ namespace GhostOverlay
         public static BungieApi bungieApi = new BungieApi();
         public static WidgetData Data = new WidgetData();
 
+        public static SettingsKey[] UserSpecificSettings = { SettingsKey.AccessToken, SettingsKey.RefreshToken, SettingsKey.AccessTokenExpiration, SettingsKey.RefreshTokenExpiration, SettingsKey.TrackedEntries };
+
         [Obsolete("Use AppState.Widgetdata.TokenData instead.")]
         public static OAuthToken TokenData { get; set; }
 
@@ -150,14 +152,14 @@ namespace GhostOverlay
         [Obsolete("Use AppState.Widgetdata.RestoreBungieTokenDataFromSettings instead.")]
         public static void RestoreBungieTokenDataFromSettings() {}
 
-        public static void ClearAllSettings()
+        public static void ClearUserSpecificSettings()
         {
             var localSettings = ApplicationData.Current.LocalSettings;
-            foreach (var valuesKey in localSettings.Values.Keys)
+
+            foreach (var valuesKey in UserSpecificSettings)
             {
-                localSettings.Values.Remove(valuesKey);
+                localSettings.Values.Remove(valuesKey.ToString());
             }
-            localSettings.Values.Clear();
         }
     }
 }
