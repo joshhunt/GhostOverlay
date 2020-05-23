@@ -34,7 +34,7 @@
             <Style TargetType="GridViewItem">
                 <Setter Property="VerticalContentAlignment" Value="Top" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="Margin" Value="6" />
+                <Setter Property="Margin" Value="4" />
             </Style>
         </GridView.ItemContainerStyle>
 
@@ -50,7 +50,7 @@
 
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="models:Item">
-                <Grid Width="400" MinHeight="125"
+                <Grid Width="375" MinHeight="125"
                       Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />

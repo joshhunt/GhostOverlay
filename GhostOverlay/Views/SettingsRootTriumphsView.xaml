@@ -10,14 +10,29 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <CollectionViewSource x:Name="NodesCollection" IsSourceGrouped="True" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ghostOverlay:TemplatesResourceDictionary />
+            </ResourceDictionary.MergedDictionaries>
+
+            <CollectionViewSource x:Name="NodesCollection" IsSourceGrouped="True" />
+        </ResourceDictionary>
     </Page.Resources>
 
     <GridView
         Margin="8,0"
+        SelectionMode="None"
         IsItemClickEnabled="True"
         ItemClick="OnNodeClicked"
         ItemsSource="{Binding Source={StaticResource NodesCollection}}">
+
+        <GridView.ItemContainerStyle>
+            <Style TargetType="GridViewItem">
+                <Setter Property="VerticalContentAlignment" Value="Top" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="4" />
+            </Style>
+        </GridView.ItemContainerStyle>
 
         <GridView.GroupStyle>
             <GroupStyle>
@@ -31,7 +46,7 @@
 
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="ghostOverlay:PresentationNode">
-                <Grid Width="400" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Padding="16">
+                <Grid Width="375" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Padding="16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />

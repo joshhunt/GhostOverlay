@@ -19,76 +19,83 @@
         </ResourceDictionary>
     </Page.Resources>
 
-        <GridView
-                x:Name="TriumphsGrid"
-                ItemsSource="{x:Bind triumphs}"
-                IsItemClickEnabled="True"
-                VerticalAlignment="Stretch"
-                SelectionChanged="OnSelectedTriumphsChanged"
-                SelectionMode="Multiple">
+    <GridView
+        x:Name="TriumphsGrid"
+        ItemsSource="{x:Bind triumphs}"
+        IsItemClickEnabled="True"
+        VerticalAlignment="Stretch"
+        SelectionChanged="OnSelectedTriumphsChanged"
+        SelectionMode="Multiple">
 
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <controls:WrapPanel Orientation="Horizontal" >
-                    </controls:WrapPanel>
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
+        <GridView.ItemContainerStyle>
+            <Style TargetType="GridViewItem">
+                <Setter Property="VerticalContentAlignment" Value="Top" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="4" />
+            </Style>
+        </GridView.ItemContainerStyle>
+
+        <GridView.ItemsPanel>
+            <ItemsPanelTemplate>
+                <controls:WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </GridView.ItemsPanel>
 
         <GridView.ItemTemplate>
-                <DataTemplate x:DataType="models:Triumph">
-                    <Grid Width="400" MinHeight="120" Padding="12"
-                              Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}">
+            <DataTemplate x:DataType="models:Triumph">
+                <Grid Width="404" MinHeight="120" Padding="12"
+                      Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}">
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                        <Image
-                                Grid.Row="0" Grid.Column="0"
-                                Width="48"
-                                Height="48"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top">
+                    <Image
+                        Grid.Row="0" Grid.Column="0"
+                        Width="48"
+                        Height="48"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
 
-                            <Image.Source>
-                                <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
-                            </Image.Source>
-                        </Image>
+                        <Image.Source>
+                            <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                        </Image.Source>
+                    </Image>
 
-                        <StackPanel
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Margin="12,0,0,0"
-                                HorizontalAlignment="Stretch">
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        HorizontalAlignment="Stretch">
 
-                            <TextBlock
-                                    HorizontalAlignment="Left"
-                                    FontSize="15"
-                                    FontWeight="Medium"
-                                    TextWrapping="WrapWholeWords"
-                                    Style="{StaticResource SubtitleTextBlockStyle}"
-                                    Text="{x:Bind Definition.DisplayProperties.Name}" />
+                        <TextBlock
+                            HorizontalAlignment="Left"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            TextWrapping="WrapWholeWords"
+                            Style="{StaticResource SubtitleTextBlockStyle}"
+                            Text="{x:Bind Definition.DisplayProperties.Name}" />
 
-                            <TextBlock
-                                    Margin="0,6,0,6"
-                                    HorizontalAlignment="Left"
-                                    MaxLines="2"
-                                    Style="{StaticResource BodyTextBlockStyle}"
-                                    Text="{x:Bind Definition.DisplayProperties.Description}"
-                                    TextTrimming="WordEllipsis"
-                                    TextWrapping="WrapWholeWords" />
+                        <TextBlock
+                            Margin="0,6,0,6"
+                            HorizontalAlignment="Left"
+                            MaxLines="2"
+                            Style="{StaticResource BodyTextBlockStyle}"
+                            Text="{x:Bind Definition.DisplayProperties.Description}"
+                            TextTrimming="WordEllipsis"
+                            TextWrapping="WrapWholeWords" />
 
-                            <ListView
-                                    IsHitTestVisible="False"
-                                    IsItemClickEnabled="False"
-                                    ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
-                                    ItemTemplate="{StaticResource ObjectiveTemplate}"
-                                    ItemsSource="{x:Bind Objectives}"
-                                    SelectionMode="None" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
+                        <ListView
+                            IsHitTestVisible="False"
+                            IsItemClickEnabled="False"
+                            ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                            ItemTemplate="{StaticResource ObjectiveTemplate}"
+                            ItemsSource="{x:Bind Objectives}"
+                            SelectionMode="None" />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </GridView.ItemTemplate>
+    </GridView>
 </Page>
