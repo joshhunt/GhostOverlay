@@ -1,22 +1,53 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace GhostOverlay
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public sealed partial class WidgetSettingsSettingsView : Page, ISubscriber<WidgetPropertyChanged>
+    public sealed partial class WidgetSettingsSettingsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-        private string definitionsDbName = "<not loaded>";
+        public event PropertyChangedEventHandler PropertyChanged;
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+
+        private string _displayName;
+        private string DisplayName
+        {
+            get => _displayName;
+            set
+            {
+                _displayName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _platformString;
+        private string PlatformString
+        {
+            get => _platformString;
+            set
+            {
+                _platformString = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _definitionsDbName;
+        private string DefinitionsDbName
+        {
+            get => _definitionsDbName;
+            set
+            {
+                _definitionsDbName = value;
+                OnPropertyChanged();
+            }
+        }
 
         public WidgetSettingsSettingsView()
         {
@@ -41,6 +72,7 @@ namespace GhostOverlay
 
             switch (message)
             {
+                case WidgetPropertyChanged.Profile:
                 case WidgetPropertyChanged.DefinitionsPath:
                     UpdateViewModel();
                     break;
@@ -51,7 +83,24 @@ namespace GhostOverlay
         {
             if (AppState.Data.DefinitionsPath != null)
             {
-                definitionsDbName = Path.GetFileName(AppState.Data.DefinitionsPath);
+                DefinitionsDbName = Path.GetFileName(AppState.Data.DefinitionsPath);
+            }
+
+            var userInfo = AppState.Data.Profile?.Profile?.Data?.UserInfo;
+            if (userInfo != null)
+            {
+                DisplayName = userInfo.DisplayName;
+
+                if (userInfo.CrossSaveOverride == 0)
+                {
+                    // User has not enabled cross save. Just one platform
+                    PlatformString = $"({MembershipTypeToString(userInfo.MembershipType)})";
+                }
+                else
+                {
+                    var platforms = userInfo.ApplicableMembershipTypes.Select(MembershipTypeToString);
+                    PlatformString = $"(Cross save: {string.Join(", ", platforms)})";
+                }
             }
         }
 
@@ -67,6 +116,28 @@ namespace GhostOverlay
         private void SignOutConfirmedClicked(object sender, RoutedEventArgs e)
         {
             AppState.Data.SignOutAndResetAllData();
+        }
+
+        public static string MembershipTypeToString(int membershipType)
+        {
+            switch (membershipType)
+            {
+                case 0: return "None";
+                case 1: return "Xbox";
+                case 2: return "PlayStation";
+                case 3: return "Steam";
+                case 4: return "Blizzard";
+                case 5: return "Stadia";
+                case 10: return "Demon";
+                case 254: return "BungieNext";
+                case -1: return "None";
+                default: return "Uknown";
+            }
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

@@ -382,6 +382,11 @@ namespace GhostOverlay
             }
         }
 
+        private void ClearAllItems_OnClick(object sender, RoutedEventArgs e)
+        {
+            AppState.Data.TrackedEntries = new List<TrackedEntry>();
+        }
+
         private void Log(string message)
         {
             Debug.WriteLine($"[WidgetMainView] {message}");

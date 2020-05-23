@@ -1,21 +1,15 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using GhostOverlay.Models;
 using GhostOverlay.Views;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace GhostOverlay
 {
-    /// <summary>
-    ///     An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
         private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
@@ -206,42 +200,6 @@ namespace GhostOverlay
         private void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-    }
-
-    public class TriumphsViewTemplateSelector : DataTemplateSelector
-    {
-        public DataTemplate PresentationNode { get; set; }
-        public DataTemplate Triumph { get; set; }
-
-        private DataTemplate Select(object item)
-        {
-            if (item is PresentationNode) return PresentationNode;
-            if (item is Triumph) return Triumph;
-            throw new NotImplementedException();
-        }
-
-        protected override DataTemplate SelectTemplateCore(object item)
-        {
-            return Select(item);
-        }
-
-        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
-        {
-            return Select(item);
-        }
-    }
-
-    public class TriumphViewGridItemStyleSelector : StyleSelector
-    {
-        public Style PresentationNode { get; set; }
-        public Style Triumph { get; set; }
-
-        protected override Style SelectStyleCore(object item, DependencyObject container)
-        {
-            if (item is PresentationNode) return PresentationNode;
-            if (item is Triumph) return Triumph;
-            throw new NotImplementedException();
         }
     }
 }

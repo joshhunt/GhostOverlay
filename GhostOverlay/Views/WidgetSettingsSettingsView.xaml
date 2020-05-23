@@ -11,7 +11,7 @@
     <StackPanel Margin="16,8,16,0">
         <StackPanel>
             <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Bungie account</TextBlock>
-            <TextBlock Margin="0,4,0,0">joshhunt_ (Cross save: Playstation, Stadia, Xbox)</TextBlock>
+            <TextBlock Margin="0,4,0,0"><Run Text="{x:Bind DisplayName, Mode=OneWay}" /> <Run Text="{x:Bind PlatformString, Mode=OneWay}" /></TextBlock>
 
             <Button Margin="0,8,0,0" Click="UpdateDefinitionsButton_OnClick">
                 Sign out
@@ -39,7 +39,7 @@
             <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Items database</TextBlock>
 
             <TextBlock Margin="0,4,0,0">
-                <Run FontWeight="SemiBold">Current database:</Run> <Run Text="{x:Bind definitionsDbName}" />
+                <Run FontWeight="SemiBold">Current database:</Run> <Run Text="{x:Bind DefinitionsDbName, Mode=OneWay}" />
             </TextBlock>
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">

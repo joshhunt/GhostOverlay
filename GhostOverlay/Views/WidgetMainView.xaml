@@ -110,7 +110,10 @@
 
                         <Grid.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="Untrack" Icon="Delete" Click="UntrackItem_OnClick"
+                                <MenuFlyoutItem Text="Untrack" Icon="Unpin" Click="UntrackItem_OnClick"
+                                                Tag="{x:Bind TrackedEntry}" />
+
+                                <MenuFlyoutItem Text="Clear all tracked items" Icon="Delete" Click="ClearAllItems_OnClick"
                                                 Tag="{x:Bind TrackedEntry}" />
                             </MenuFlyout>
                         </Grid.ContextFlyout>

@@ -61,7 +61,6 @@
 
     <DataTemplate x:Key="BountyIcon" x:DataType="models:ITrackable">
         <Canvas
-            Margin="0,4,0,0"
             Width="48"
             Height="48">
             <Image

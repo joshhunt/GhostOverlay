@@ -16,35 +16,6 @@
                 <local:TemplatesResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
 
-            <local:TriumphsViewTemplateSelector x:Key="TriumphsViewTemplateSelector"
-                                                PresentationNode="{StaticResource PresentationNodeTemplate}"
-                                                Triumph="{StaticResource TriumphTemplate}" />
-
-            <local:TriumphViewGridItemStyleSelector x:Key="TriumphViewGridItemStyleSelector"
-                                                    PresentationNode="{StaticResource PresentationNodeGridItemStyle}"
-                                                    Triumph="{StaticResource TriumphGridItemStyle}" />
-
-            <Style x:Key="PresentationNodeGridItemStyle" TargetType="GridViewItem">
-                <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="Margin" Value="6" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="GridViewItem">
-                            <ListViewItemPresenter />
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="TriumphGridItemStyle" TargetType="GridViewItem">
-                <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="Margin" Value="6" />
-            </Style>
-
-
-            <!-- TODO: delete this? -->
             <DataTemplate x:Key="PresentationNodeTemplate" x:DataType="local:PresentationNode">
                 <Grid Width="400" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Padding="12">
                     <Grid.ColumnDefinitions>
