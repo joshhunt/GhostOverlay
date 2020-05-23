@@ -91,8 +91,6 @@ namespace GhostOverlay
                 widget.VerticalResizeSupported = true;
                 widget.SettingsSupported = true;
                 widget.SettingsClicked += Widget_SettingsClicked;
-                widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
-                Widget_RequestedThemeChanged(widget, null);
             }
 
             SetVisualState(VisualState.InitialProfileLoad);
@@ -372,17 +370,6 @@ namespace GhostOverlay
             appWindowContentFrame.Navigate(typeof(WidgetSettingsView));
             ElementCompositionPreview.SetAppWindowContent(appWindow, appWindowContentFrame);
             await appWindow.TryShowAsync();
-        }
-
-        private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () =>
-                {
-                    Background = widget.RequestedTheme == ElementTheme.Dark
-                        ? new SolidColorBrush(Color.FromArgb(255, 0, 0, 0))
-                        : new SolidColorBrush(Color.FromArgb(255, 76, 76, 76));
-                });
         }
 
         private void UntrackItem_OnClick(object sender, RoutedEventArgs e)

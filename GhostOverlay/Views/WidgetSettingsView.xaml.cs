@@ -1,16 +1,10 @@
 using System;
 using System.Diagnostics;
 using Windows.Foundation;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
-using Windows.UI;
-using Windows.UI.Core;
 using GhostOverlay.Views;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace GhostOverlay
 {
@@ -35,14 +29,9 @@ namespace GhostOverlay
                 widget.HorizontalResizeSupported = true;
                 widget.VerticalResizeSupported = true;
                 widget.SettingsSupported = false;
-
-                widget.RequestedThemeChanged += Widget_RequestedThemeChanged;
-                Widget_RequestedThemeChanged(widget, null);
-
-                widget.Close();
             }
 
-            navView.SelectedItem = navView.MenuItems[1];
+            navView.SelectedItem = navView.MenuItems[0];
 
             eventAggregator.Subscribe(this);
             AppState.Data.ScheduleProfileUpdates();
@@ -90,36 +79,26 @@ namespace GhostOverlay
             }
         }
 
-        private async void Widget_RequestedThemeChanged(XboxGameBarWidget sender, object args)
-        {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                () =>
-                {
-                    Background = widget.RequestedTheme == ElementTheme.Dark
-                        ? new SolidColorBrush(Color.FromArgb(255, 0, 0, 0))
-                        : new SolidColorBrush(Color.FromArgb(255, 76, 76, 76));
-                });
-        }
-
         private void NavView_OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            Debug.WriteLine($"Back requested! contentFrame.BackStackDepth: {contentFrame.BackStackDepth}, canGoBack {contentFrame.CanGoBack}");
-
             if (contentFrame.CanGoBack)
             {
                 contentFrame.GoBack();
-                return;
             }
-
-            return;
         }
 
-        private void CheckAuth()
+        private async void CheckAuth()
         {
             if (AppState.Data.TokenData == null || !AppState.Data.TokenData.IsValid())
             {
-                widget.Close();
+                var widgetControl = new XboxGameBarWidgetControl(widget);
+                await widgetControl.CloseAsync("WidgetMainSettings");
             }
+        }
+
+        private void Log(string message)
+        {
+            Debug.WriteLine($"[WidgetSettingsView] {message}");
         }
     }
 }
