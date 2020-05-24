@@ -6,6 +6,11 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
 using GhostOverlay.Views;
 
+using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
+using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
+using NavigationViewBackRequestedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs;
+using NavigationViewSelectionChangedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs;
+
 namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsView : Page, ISubscriber<WidgetPropertyChanged>
@@ -31,7 +36,7 @@ namespace GhostOverlay
                 widget.SettingsSupported = false;
             }
 
-            navView.SelectedItem = navView.MenuItems[0];
+            NavView.SelectedItem = NavView.MenuItems[0];
 
             eventAggregator.Subscribe(this);
             AppState.Data.ScheduleProfileUpdates();
@@ -58,7 +63,7 @@ namespace GhostOverlay
         {
             if (args.IsSettingsSelected)
             {
-                contentFrame.Navigate(typeof(WidgetSettingsSettingsView), null,
+                ContentFrame.Navigate(typeof(WidgetSettingsSettingsView), null,
                     args.RecommendedNavigationTransitionInfo);
                 return;
             }
@@ -69,20 +74,20 @@ namespace GhostOverlay
             switch (selectedView)
             {
                 case "Bounties":
-                    contentFrame.Navigate(typeof(WidgetSettingsBountiesView), null, args.RecommendedNavigationTransitionInfo);
+                    ContentFrame.Navigate(typeof(WidgetSettingsBountiesView), null, args.RecommendedNavigationTransitionInfo);
                     break;
 
                 case "Triumphs":
-                    contentFrame.Navigate(typeof(SettingsRootTriumphsView), contentFrame, args.RecommendedNavigationTransitionInfo);
+                    ContentFrame.Navigate(typeof(SettingsRootTriumphsView), ContentFrame, args.RecommendedNavigationTransitionInfo);
                     break;
             }
         }
 
-        private void NavView_OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+        private void NavView_OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs navigationViewBackRequestedEventArgs)
         {
-            if (contentFrame.CanGoBack)
+            if (ContentFrame.CanGoBack)
             {
-                contentFrame.GoBack();
+                ContentFrame.GoBack();
             }
         }
 

@@ -6,23 +6,24 @@
     xmlns:local="using:GhostOverlay"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     RequestedTheme="Dark"
     mc:Ignorable="d">
 
-    <NavigationView
-        x:Name="navView"
+    <muxc:NavigationView
+        x:Name="NavView"
         IsSettingsVisible="True"
         IsBackButtonVisible="Visible"
         BackRequested="NavView_OnBackRequested"
-        IsBackEnabled="True"
+        IsBackEnabled="{x:Bind ContentFrame.CanGoBack, Mode=OneWay}"
         PaneDisplayMode="Top"
         SelectionChanged="NavView_OnSelectionChanged">
 
-        <NavigationView.MenuItems>
-            <NavigationViewItem Content="Bounties" Tag="Bounties" />
-            <NavigationViewItem Content="Triumphs" Tag="Triumphs" />
-        </NavigationView.MenuItems>
+        <muxc:NavigationView.MenuItems>
+            <muxc:NavigationViewItem Content="Bounties" Tag="Bounties" />
+            <muxc:NavigationViewItem Content="Triumphs" Tag="Triumphs" />
+        </muxc:NavigationView.MenuItems>
 
-        <Frame x:Name="contentFrame" />
-    </NavigationView>
+        <Frame x:Name="ContentFrame" />
+    </muxc:NavigationView>
 </Page>
