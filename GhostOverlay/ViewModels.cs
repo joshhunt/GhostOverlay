@@ -86,16 +86,15 @@ namespace GhostOverlay
     public class Character
     {
         public DestinyEntitiesCharactersDestinyCharacterComponent CharacterComponent;
-        public DestinyDefinitionsDestinyClassDefinition Definition;
+        public DestinyDefinitionsDestinyClassDefinition ClassDefinition;
 
         public string ClassName =>
-            Definition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
+            ClassDefinition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
 
         public async Task<DestinyDefinitionsDestinyClassDefinition> PopulateDefinition()
         {
-            var classHash = Convert.ToUInt32(CharacterComponent.ClassHash);
-            Definition = await Definitions.GetClass(classHash);
-            return Definition;
+            ClassDefinition = await Definitions.GetClass(CharacterComponent.ClassHash);
+            return ClassDefinition;
         }
     }
 
@@ -111,8 +110,7 @@ namespace GhostOverlay
 
         public async Task<DestinyDefinitionsDestinyObjectiveDefinition> PopulateDefinition()
         {
-            var hash = Convert.ToUInt32(Progress.ObjectiveHash);
-            Definition = await Definitions.GetObjective(hash);
+            Definition = await Definitions.GetObjective(Progress.ObjectiveHash);
 
             return Definition;
         }

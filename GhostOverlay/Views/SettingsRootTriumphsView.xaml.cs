@@ -67,7 +67,7 @@ namespace GhostOverlay.Views
             var nodes = new List<PresentationNode>();
             if (!AppState.Data.DefinitionsLoaded) return;
 
-            var rootNode = await Definitions.GetPresentationNode(Convert.ToUInt32(rootTriumphsNodeHash));
+            var rootNode = await Definitions.GetPresentationNode(rootTriumphsNodeHash);
 
             foreach (var topLevelChild in rootNode.Children.PresentationNodes)
             {
@@ -75,10 +75,8 @@ namespace GhostOverlay.Views
                 {
                     PresentationNodeHash = topLevelChild.PresentationNodeHash,
                     Definition =
-                        await Definitions.GetPresentationNode(Convert.ToUInt32(topLevelChild.PresentationNodeHash))
+                        await Definitions.GetPresentationNode(topLevelChild.PresentationNodeHash)
                 };
-
-                Debug.WriteLine($"Top level node definition {topLevelNode.Definition}");
 
                 foreach (var secondLevelChild in topLevelNode.Definition.Children.PresentationNodes)
                 {
@@ -87,7 +85,7 @@ namespace GhostOverlay.Views
                         PresentationNodeHash = secondLevelChild.PresentationNodeHash,
                         ParentNode = topLevelNode,
                         Definition =
-                            await Definitions.GetPresentationNode(Convert.ToUInt32(secondLevelChild.PresentationNodeHash))
+                            await Definitions.GetPresentationNode(secondLevelChild.PresentationNodeHash),
                     };
 
                     nodes.Add(secondLevelNode);

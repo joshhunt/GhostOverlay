@@ -27,7 +27,7 @@ namespace GhostOverlay.Models
 
         public async Task<DestinyDefinitionsRecordsDestinyRecordDefinition> PopulateDefinition()
         {
-            Definition = await Definitions.GetRecord(Convert.ToUInt32(Hash));
+            Definition = await Definitions.GetRecord(Hash);
             return Definition;
         }
 

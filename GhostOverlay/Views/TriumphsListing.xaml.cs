@@ -65,7 +65,7 @@ namespace GhostOverlay.Views
 
             triumphs.Clear();
 
-            var presentationNode = await Definitions.GetPresentationNode(Convert.ToUInt32(presentationNodeHash));
+            var presentationNode = await Definitions.GetPresentationNode(presentationNodeHash);
             Debug.WriteLine($"thirdLevelNode: {presentationNode}");
 
             if (presentationNode == null) return;
@@ -73,7 +73,7 @@ namespace GhostOverlay.Views
             Debug.WriteLine($"thirdLevelNode.hash: {presentationNode.Hash}");
             foreach (var childRecord in presentationNode.Children.Records)
             {
-                var recordDefinition = await Definitions.GetRecord(Convert.ToUInt32(childRecord.RecordHash));
+                var recordDefinition = await Definitions.GetRecord(childRecord.RecordHash);
                 var triumph = new Triumph
                 {
                     Definition = recordDefinition,

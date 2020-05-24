@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -10,6 +11,7 @@ using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using BungieNetApi.Model;
 using Microsoft.Data.Sqlite;
+using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 using Newtonsoft.Json;
 
 namespace GhostOverlay
@@ -221,12 +223,13 @@ namespace GhostOverlay
             }
         }
 
-        public static async Task<T> GetDefinition<T>(string command, uint hash)
+        public static async Task<T> GetDefinition<T>(string command, long hash)
         {
             await Ready;
 
             var selectCommand = new SqliteCommand(command, db);
-            selectCommand.Parameters.AddWithValue("@Hash", HashToDbHash(hash));
+            var hashAsInt = Convert.ToUInt32(hash); // TODO: Maybe HashToDbHash can just take long instead?
+            selectCommand.Parameters.AddWithValue("@Hash", HashToDbHash(hashAsInt));
 
             var query = await selectCommand.ExecuteReaderAsync();
 
@@ -238,31 +241,44 @@ namespace GhostOverlay
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetInventoryItem(uint hash)
+        public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetInventoryItem(long hash)
         {
             return await GetDefinition<DestinyDefinitionsDestinyInventoryItemDefinition>(
                 "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyObjectiveDefinition> GetObjective(uint hash)
+        public static async Task<DestinyDefinitionsDestinyObjectiveDefinition> GetObjective(long hash)
         {
             return await GetDefinition<DestinyDefinitionsDestinyObjectiveDefinition>(
                 "SELECT json FROM DestinyObjectiveDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetClass(uint hash)
+        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetClass(long hash)
         {
             return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
                 "SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsPresentationDestinyPresentationNodeDefinition> GetPresentationNode(uint hash)
+        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetGender(long hash)
+        {
+            return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
+                "SELECT json FROM DestinyGenderDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetRace(long hash)
+        {
+            return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
+                "SELECT json FROM DestinyRaceDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsPresentationDestinyPresentationNodeDefinition>
+            GetPresentationNode(long hash)
         {
             return await GetDefinition<DestinyDefinitionsPresentationDestinyPresentationNodeDefinition>(
                 "SELECT json FROM DestinyPresentationNodeDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsRecordsDestinyRecordDefinition> GetRecord(uint hash)
+        public static async Task<DestinyDefinitionsRecordsDestinyRecordDefinition> GetRecord(long hash)
         {
             return await GetDefinition<DestinyDefinitionsRecordsDestinyRecordDefinition>(
                 "SELECT json FROM DestinyRecordDefinition WHERE id = @Hash;", hash);

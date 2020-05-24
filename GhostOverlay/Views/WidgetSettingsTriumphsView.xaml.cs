@@ -121,7 +121,7 @@ namespace GhostOverlay
                 var childNode = new PresentationNode
                 {
                     PresentationNodeHash = child.PresentationNodeHash,
-                    Definition = await Definitions.GetPresentationNode(Convert.ToUInt32(child.PresentationNodeHash))
+                    Definition = await Definitions.GetPresentationNode(child.PresentationNodeHash)
                 };
 
                 secondLevelNodes.Add(childNode);
@@ -156,7 +156,7 @@ namespace GhostOverlay
                 var childNode = new PresentationNode
                 {
                     PresentationNodeHash = child.PresentationNodeHash,
-                    Definition = await Definitions.GetPresentationNode(Convert.ToUInt32(child.PresentationNodeHash))
+                    Definition = await Definitions.GetPresentationNode(child.PresentationNodeHash)
                 };
                 
                 thirdLevelNodes.Add(childNode);

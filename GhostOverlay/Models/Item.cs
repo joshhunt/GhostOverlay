@@ -50,8 +50,7 @@ namespace GhostOverlay.Models
 
         public async Task<DestinyDefinitionsDestinyInventoryItemDefinition> PopulateDefinition()
         {
-            var hash = Convert.ToUInt32(ItemHash);
-            Definition = await Definitions.GetInventoryItem(hash);
+            Definition = await Definitions.GetInventoryItem(ItemHash);
 
             return Definition;
         }
