@@ -225,7 +225,7 @@ namespace GhostOverlay
             var data = await client.PostAsync<BungieOAuthTokenResponse>(request);
 
             AppState.Data.TokenData = new OAuthToken(data.access_token, data.refresh_token,
-                data.expires_in, data.refresh_expires_in);
+                data.expires_in, data.refresh_expires_in, AppState.Data.TokenData.Version);
             AppState.Data.TokenData.SaveToSettings();
         }
 
@@ -240,7 +240,7 @@ namespace GhostOverlay
             var data = await client.PostAsync<BungieOAuthTokenResponse>(request);
 
             AppState.Data.TokenData = new OAuthToken(data.access_token, data.refresh_token,
-                data.expires_in, data.refresh_expires_in);
+                data.expires_in, data.refresh_expires_in, OAuthToken.CurrentVersion);
 
             AppState.Data.TokenData.SaveToSettings();
         }

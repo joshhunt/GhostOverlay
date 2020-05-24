@@ -102,6 +102,7 @@ namespace GhostOverlay
         RefreshToken,
         AccessTokenExpiration,
         RefreshTokenExpiration,
+        AuthTokenVersion,
         Language,
         DefinitionsPath,
         TrackedEntries

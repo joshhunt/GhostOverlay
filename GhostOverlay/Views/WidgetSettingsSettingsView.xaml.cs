@@ -68,7 +68,7 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"[WidgetSettingsSettingsView] HandleMessage {message}");
+            //Debug.WriteLine($"[WidgetSettingsSettingsView] HandleMessage {message}");
 
             switch (message)
             {

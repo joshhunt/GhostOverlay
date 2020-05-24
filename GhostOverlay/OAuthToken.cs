@@ -7,6 +7,7 @@ namespace GhostOverlay
 {
     public class OAuthToken
     {
+        public static readonly int CurrentVersion = 1;
         public static DateTimeOffset DefaultExpirationTime = new DateTimeOffset();
 
         public OAuthToken()
@@ -14,8 +15,9 @@ namespace GhostOverlay
         }
 
         public OAuthToken(string accessToken, string refreshToken, int accessTokenExpiresInSeconds,
-            int refreshTokenExpiresInSeconds)
+            int refreshTokenExpiresInSeconds, int version = 0)
         {
+            Version = version;
             AccessToken = accessToken;
             RefreshToken = refreshToken;
 
@@ -23,6 +25,7 @@ namespace GhostOverlay
             SetRefreshTokenExpiration(refreshTokenExpiresInSeconds);
         }
 
+        public int Version = 0;
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
         public DateTimeOffset AccessTokenExpiration { get; set; }
@@ -30,6 +33,7 @@ namespace GhostOverlay
 
         public static OAuthToken RestoreTokenFromSettings()
         {
+            var version = AppState.ReadSetting(SettingsKey.AuthTokenVersion, 0);
             var accessToken = AppState.ReadSetting(SettingsKey.AccessToken, "");
             var refreshToken = AppState.ReadSetting(SettingsKey.RefreshToken, "");
 
@@ -40,6 +44,7 @@ namespace GhostOverlay
 
             var tokenData = new OAuthToken
             {
+                Version = version,
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 AccessTokenExpiration = accessTokenExpiration,
@@ -51,7 +56,7 @@ namespace GhostOverlay
 
         public void SaveToSettings()
         {
-            var localSettings = ApplicationData.Current.LocalSettings;
+            AppState.SaveSetting(SettingsKey.AuthTokenVersion, Version);
             AppState.SaveSetting(SettingsKey.AccessToken, AccessToken);
             AppState.SaveSetting(SettingsKey.RefreshToken, RefreshToken);
             AppState.SaveSetting(SettingsKey.AccessTokenExpiration, AccessTokenExpiration);
@@ -78,7 +83,7 @@ namespace GhostOverlay
             var accessTokenValidity = AccessTokenIsValid();
             var refreshTokenValidity = RefreshTokenIsValid();
 
-            return accessTokenValidity || refreshTokenValidity;
+            return Version >= CurrentVersion && (accessTokenValidity || refreshTokenValidity);
         }
 
         public bool AccessTokenIsValid()
@@ -97,6 +102,7 @@ namespace GhostOverlay
         {
             var sb = new StringBuilder();
             sb.Append("OAuthTokenData\n");
+            sb.Append($"    Version: {Version}\n");
             sb.Append($"    AccessToken: {AccessToken}\n");
             sb.Append($"    RefreshToken: {RefreshToken}\n");
             sb.Append($"    AccessTokenExpiration: {AccessTokenExpiration}\n");

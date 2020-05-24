@@ -32,7 +32,7 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"[WidgetSettingsBountiesView] HandleMessage {message}");
+            //Debug.WriteLine($"[WidgetSettingsBountiesView] HandleMessage {message}");
 
             switch (message)
             {

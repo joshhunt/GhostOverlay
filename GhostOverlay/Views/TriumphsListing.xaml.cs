@@ -43,7 +43,7 @@ namespace GhostOverlay.Views
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"[TriumphsListing] HandleMessage {message}");
+            //Debug.WriteLine($"[TriumphsListing] HandleMessage {message}");
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:

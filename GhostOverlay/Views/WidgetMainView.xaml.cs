@@ -113,7 +113,7 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Log($"HandleMessage {message}");
+            //Log($"HandleMessage {message}");
 
             switch (message)
             {

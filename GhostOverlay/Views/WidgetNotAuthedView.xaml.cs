@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Web;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -57,10 +58,50 @@ namespace GhostOverlay
             } 
         }
 
-        // public async void LoginWithXboxBroker_OnClick(object sender, RoutedEventArgs e)
-        // {
-        //     AuthWaiting.Visibility = Visibility.Visible;
-        // }
+        public async void LoginWithXboxBroker_OnClick(object sender, RoutedEventArgs e)
+        {
+            AuthWaiting.Visibility = Visibility.Visible;
+            LoginWithDesktopBrowserButton.Visibility = Visibility.Visible;
+
+            // original bungie redirect url: ghost-overlay:///oauth-return
+            var requestUri = new Uri(AppState.bungieApi.GetAuthorisationUrl());
+            var callbackUri = new Uri("https://destiny.report/ghost-auth-return");
+
+            XboxGameBarWebAuthenticationResult result = await gameBarWebAuth.AuthenticateAsync(
+                XboxGameBarWebAuthenticationOptions.None,
+                requestUri,
+                callbackUri);
+
+            AuthWaiting.Visibility = Visibility.Collapsed;
+
+            Debug.WriteLine("Auth ResponseData: " + result.ResponseData);
+            Debug.WriteLine("Auth ResponseStatus: " + result.ResponseStatus.ToString());
+            Debug.WriteLine("Auth ResponseErrorDetail: " + result.ResponseErrorDetail);
+
+            if (result.ResponseStatus == XboxGameBarWebAuthenticationStatus.Success)
+            {
+                Debug.WriteLine($"Auth has returned successfully with data {result.ResponseData}");
+
+                var responseUri = new Uri(result.ResponseData);
+                var parsed = HttpUtility.ParseQueryString(responseUri.Query);
+                var authCode = parsed["code"];
+
+                Debug.WriteLine($"authCode: {authCode}");
+
+                await AppState.bungieApi.GetOAuthAccessToken(authCode);
+
+                Debug.WriteLine($"New token data: {AppState.Data.TokenData}");
+
+                if (AppState.Data.TokenData.IsValid())
+                {
+                    this.Frame.Navigate(typeof(WidgetMainView), widget);
+                }
+                else
+                {
+                    throw new Exception("Exchanged code for token, but the TokenData is not valid??");
+                }
+            }
+        }
 
         private async void WaitForAuth()
         {

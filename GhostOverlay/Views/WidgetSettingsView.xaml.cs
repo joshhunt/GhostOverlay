@@ -45,8 +45,7 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"[WidgetSettingsView] HandleMessage {message}");
-
+            //Debug.WriteLine($"[WidgetSettingsView] HandleMessage {message}");
             switch (message)
             {
                 case WidgetPropertyChanged.TokenData:

@@ -35,12 +35,19 @@
         <!--  HorizontalAlignment="Center"  -->
         <!--  Click="LoginWithDesktopBrowser_OnClick"  -->
         <!--  Content="Login with Bungie (desktop browser)" />  -->
-
         <Button
             Margin="0,12,0,0"
             HorizontalAlignment="Center"
-            Click="LoginWithDesktopBrowser_OnClick"
+            Click="LoginWithXboxBroker_OnClick"
             Content="Login with Bungie" />
+
+        <Button
+            x:Name="LoginWithDesktopBrowserButton"
+            Margin="0,24,0,0"
+            Visibility="Collapsed"
+            HorizontalAlignment="Center"
+            Click="LoginWithDesktopBrowser_OnClick"
+            Content="Login with Bungie (old style)" />
 
         <StackPanel
             x:Name="AuthWaiting"

@@ -52,7 +52,7 @@ namespace GhostOverlay.Views
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Debug.WriteLine($"[SettingsRootTriumphsView] HandleMessage {message}");
+            //Debug.WriteLine($"[SettingsRootTriumphsView] HandleMessage {message}");
 
             switch (message) 
             {
