@@ -20,7 +20,7 @@
     </Page.Resources>
 
     <GridView
-        Margin="8,0"
+        Padding="8,0"
         SelectionMode="None"
         IsItemClickEnabled="True"
         ItemClick="OnNodeClicked"

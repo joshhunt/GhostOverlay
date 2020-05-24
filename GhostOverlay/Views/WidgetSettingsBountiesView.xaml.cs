@@ -32,12 +32,13 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            //Debug.WriteLine($"[WidgetSettingsBountiesView] HandleMessage {message}");
+            Log($"HandleMessage {message}");
 
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
                 case WidgetPropertyChanged.DefinitionsPath:
+                case WidgetPropertyChanged.ActiveCharacter:
                     UpdateViewModel();
                     break;
 
@@ -49,23 +50,23 @@ namespace GhostOverlay
 
         private async void UpdateViewModel()
         {
-            viewIsUpdating = true;
+            viewIsUpdating = true; 
 
             var profile = AppState.Data.Profile;
-            if (profile?.CharacterInventories?.Data != null && AppState.Data.DefinitionsLoaded)
+
+            if (profile?.CharacterInventories?.Data == null || !AppState.Data.DefinitionsLoaded || AppState.Data.ActiveCharacter == null)
             {
-                Bounties.Clear();
-                Bounties.AddRange(await Item.ItemsFromProfile(profile));
-
-                BountiesCollection.Source =
-                    from t in Bounties
-                    orderby t.SortValue
-                    group t by t.OwnerCharacter
-                    into g
-                    select g;
-
-                UpdateSelection();
+                return;
             }
+
+            Log($"ActiveCharacter {AppState.Data.ActiveCharacter.CharacterId}");
+
+            var bountiesForCharacter = await Item.ItemsFromProfile(profile, AppState.Data.ActiveCharacter);
+
+            Bounties.Clear();
+            Bounties.AddRange(bountiesForCharacter.OrderBy(v => v.SortValue));
+
+            UpdateSelection();
 
             viewIsUpdating = false;
         }
@@ -102,6 +103,13 @@ namespace GhostOverlay
             }
 
             AppState.Data.TrackedEntries = copyOf;
+        }
+
+
+
+        private void Log(string message)
+        {
+            Debug.WriteLine($"[WidgetSettingsBountiesview] {message}");
         }
     }
 }

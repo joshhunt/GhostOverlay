@@ -63,20 +63,22 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid Margin="6,16,6,0">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <!-- SideNav -->
-        <StackPanel Grid.Column="0" BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
-                    BorderThickness="0,0,1,0">
+        <StackPanel
+            Grid.Column="0"
+            Margin="4,8"
+            BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+            BorderThickness="0,0,1,0">
 
             <!-- "Second level" categories -->
             <ListView
                 SelectedItem="{x:Bind SelectedSecondLevelNode, Mode=OneWay}"
-                Margin="4,0"
                 ItemsSource="{x:Bind secondLevelNodes}"
                 IsItemClickEnabled="True"
                 ItemClick="OnSecondLevelNodeClicked">
@@ -126,7 +128,7 @@
                     <Style TargetType="ListViewItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="Margin" Value="8,4" />
+                        <Setter Property="Margin" Value="4,4" />
                         <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundListLowBrush}" />
                     </Style>
                 </ListView.ItemContainerStyle>

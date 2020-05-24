@@ -16,6 +16,7 @@ namespace GhostOverlay
         ProfileUpdating,
         TrackedItems,
         DefinitionsPath,
+        ActiveCharacter,
         TokenData
     }
 
@@ -60,6 +61,20 @@ namespace GhostOverlay
                 _profile = value;
                 ProfileUpdatedTime = DateTime.Now;
                 eventAggregator.Publish(WidgetPropertyChanged.Profile);
+            }
+        }
+
+        private Character _activeCharacter;
+        public Character ActiveCharacter
+        {
+            get => _activeCharacter;
+
+            set
+            {
+                if (value?.Equals(_activeCharacter) ?? false) return;
+
+                _activeCharacter = value;
+                eventAggregator.Publish(WidgetPropertyChanged.ActiveCharacter);
             }
         }
 

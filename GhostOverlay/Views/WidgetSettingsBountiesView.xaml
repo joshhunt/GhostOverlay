@@ -15,18 +15,16 @@
             <ResourceDictionary.MergedDictionaries>
                 <local:TemplatesResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
-
-            <CollectionViewSource x:Name="BountiesCollection" IsSourceGrouped="True" />
         </ResourceDictionary>
     </Page.Resources>
 
     <GridView
-        Margin="8,0"
+        Padding="8,4,8,0"
         x:Name="BountiesGridView"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Top"
         AllowFocusOnInteraction="False"
-        ItemsSource="{Binding Source={StaticResource BountiesCollection}}"
+        ItemsSource="{x:Bind Bounties}"
         SelectionChanged="SelectedBountiesChanged"
         SelectionMode="Multiple">
 

@@ -259,15 +259,15 @@ namespace GhostOverlay
                 "SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetGender(long hash)
+        public static async Task<DestinyDefinitionsDestinyGenderDefinition> GetGender(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
+            return await GetDefinition<DestinyDefinitionsDestinyGenderDefinition>(
                 "SELECT json FROM DestinyGenderDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetRace(long hash)
+        public static async Task<DestinyDefinitionsDestinyRaceDefinition> GetRace(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
+            return await GetDefinition<DestinyDefinitionsDestinyRaceDefinition>(
                 "SELECT json FROM DestinyRaceDefinition WHERE id = @Hash;", hash);
         }
 

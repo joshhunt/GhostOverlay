@@ -26,44 +26,21 @@ namespace GhostOverlay
         CanEquipTitle = 0b_0100_0000  // 64
     }
 
-    public class TimerViewModel : INotifyPropertyChanged
+    public class CommonHelpers
     {
-        public TimerViewModel()
+        public static Uri BungieUri(string baseUrl)
         {
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += timer_Tick;
-            timer.Start();
-            startTime = DateTime.Now;
-        }
-
-        private DispatcherTimer timer;
-        private DateTime startTime;
-        public event PropertyChangedEventHandler PropertyChanged;
-        public TimeSpan TimeFromStart => DateTime.Now - startTime;
-
-        private void timer_Tick(object sender, object e)
-        {
-            RaisePropertyChanged("TimeFromStart");
-        }
-
-        private void RaisePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            return new Uri($"http://www.bungie.net{baseUrl ?? "/img/misc/missing_icon_d2.png"}");
         }
     }
 
-
     public class RangeObservableCollection<T> : ObservableCollection<T>
     {
-        private bool _suppressNotification = false;
+        private bool suppressNotification = false;
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            if (!_suppressNotification)
+            if (!suppressNotification)
                 base.OnCollectionChanged(e);
         }
 
@@ -72,13 +49,13 @@ namespace GhostOverlay
             if (list == null)
                 throw new ArgumentNullException(nameof(list));
 
-            _suppressNotification = true;
+            suppressNotification = true;
 
             foreach (T item in list)
             {
                 Add(item);
             }
-            _suppressNotification = false;
+            suppressNotification = false;
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
@@ -86,7 +63,13 @@ namespace GhostOverlay
     public class Character
     {
         public DestinyEntitiesCharactersDestinyCharacterComponent CharacterComponent;
-        public DestinyDefinitionsDestinyClassDefinition ClassDefinition;
+        public DestinyDefinitionsDestinyClassDefinition ClassDefinition { get; set; }
+        public DestinyDefinitionsDestinyGenderDefinition GenderDefinition { get; set; }
+        public DestinyDefinitionsDestinyRaceDefinition RaceDefinition { get; set; }
+
+        public Uri EmblemBackgroundUri => CommonHelpers.BungieUri(CharacterComponent?.EmblemBackgroundPath);
+
+        public long CharacterId => CharacterComponent?.CharacterId ?? 0;
 
         public string ClassName =>
             ClassDefinition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
@@ -95,6 +78,30 @@ namespace GhostOverlay
         {
             ClassDefinition = await Definitions.GetClass(CharacterComponent.ClassHash);
             return ClassDefinition;
+        }
+
+        public async Task<DestinyDefinitionsDestinyGenderDefinition> PopulateGenderDefinition()
+        {
+            GenderDefinition = await Definitions.GetGender(CharacterComponent.GenderHash);
+            return GenderDefinition;
+        }
+
+        public async Task<DestinyDefinitionsDestinyRaceDefinition> PopulateRaceDefinition()
+        {
+            RaceDefinition = await Definitions.GetRace(CharacterComponent.GenderHash);
+            return RaceDefinition;
+        }
+
+        public async Task PopulatedExtendedDefinitions()
+        {
+            var tasks = new List<Task>
+            {
+                PopulateDefinition(),
+                PopulateGenderDefinition(),
+                PopulateRaceDefinition()
+            };
+
+            await Task.WhenAll(tasks);
         }
     }
 
@@ -122,7 +129,7 @@ namespace GhostOverlay
     {
         public long PresentationNodeHash;
         public DestinyDefinitionsPresentationDestinyPresentationNodeDefinition Definition;
-        public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
+        public Uri ImageUri => CommonHelpers.BungieUri(Definition?.DisplayProperties?.Icon);
         public PresentationNode ParentNode;
 
         public String Name => Definition?.DisplayProperties?.Name ?? "No name";

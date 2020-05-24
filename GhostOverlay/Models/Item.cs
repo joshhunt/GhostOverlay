@@ -101,7 +101,7 @@ namespace GhostOverlay.Models
             return bounty;
         }
 
-        public static async Task<List<Item>> ItemsFromProfile(DestinyResponsesDestinyProfileResponse profile, bool addCompletedBounties = true)
+        public static async Task<List<Item>> ItemsFromProfile(DestinyResponsesDestinyProfileResponse profile, Character activeCharacter)
         {
             var bounties = new List<Item>();
 
@@ -109,6 +109,11 @@ namespace GhostOverlay.Models
             {
                 var characterId = inventoryKv.Key;
                 var inventory = inventoryKv.Value;
+
+                if (characterId != activeCharacter.CharacterId.ToString())
+                {
+                    continue;
+                }
 
                 var character = new Character { CharacterComponent = profile.Characters.Data[characterId] };
                 await character.PopulateDefinition();
@@ -120,7 +125,7 @@ namespace GhostOverlay.Models
 
                     var bounty = await ItemFromItemComponent(inventoryItem, profile, character);
 
-                    if (bounty.Objectives?.Count > 0 && (addCompletedBounties || !bounty.IsCompleted))
+                    if (bounty.Objectives?.Count > 0)
                     {
                         bounties.Add(bounty);
                     }

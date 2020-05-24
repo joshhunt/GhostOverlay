@@ -10,6 +10,30 @@
     RequestedTheme="Dark"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <!--<ImageBrush
+            Opacity=".75"
+            Stretch="UniformToFill"
+            ImageSource="https://bungie.net/common/destiny2_content/icons/df1b08b2a4c9ddfe44f7930505eef6be.jpg"
+            x:Key="NavigationViewTopPaneBackground"/>-->
+
+        <x:Double x:Key="NavigationViewTopPaneHeight">45</x:Double>
+
+        <Style TargetType="Button" x:Key="ButtonStyleLol">
+            <Setter Property="Foreground" Value="{ThemeResource NavigationViewItemForeground}" />
+            <Setter Property="Background" Value="{ThemeResource NavigationViewItemBackground}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource NavigationViewItemBorderBrush}" />
+            <!--<Setter Property="BorderThickness" Value="{StaticResource NavigationViewItemBorderThickness}" />-->
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+            <Setter Property="UseSystemFocusVisuals" Value="True" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="TabNavigation" Value="Once"/>
+            <!--<contract7Present:Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />-->
+        </Style>
+    </Page.Resources>
+
     <muxc:NavigationView
         x:Name="NavView"
         IsSettingsVisible="True"
@@ -25,5 +49,65 @@
         </muxc:NavigationView.MenuItems>
 
         <Frame x:Name="ContentFrame" />
+
+        <muxc:NavigationView.PaneHeader>
+            <Button
+                Style="{ThemeResource ButtonRevealStyle}"
+                CornerRadius="0"
+                VerticalAlignment="Stretch"
+                Padding="0"
+                Background="{ThemeResource ButtonBackgroundThemeBrush}">
+
+                <!-- Player-card style -->
+                <Grid>
+                    <Image Height="45">
+                        <Image.Source>
+                            <BitmapImage UriSource="{x:Bind ActiveCharacter.EmblemBackgroundUri, Mode=OneWay}" />
+                        </Image.Source>
+                    </Image>
+
+                    <TextBlock Margin="50,8,0,0" VerticalAlignment="Top" FontSize="16" Text="{x:Bind ActiveCharacter.ClassName, Mode=OneWay}" />
+                </Grid>
+
+                <Button.Flyout>
+                    <Flyout x:Name="CharacterSelectFlyout">
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter">
+                                <Setter Property="Background" Value="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" />
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+
+                        <StackPanel>
+                            <TextBlock Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" Text="Change character" Margin="0,0,0,12" />
+
+                            <muxc:ItemsRepeater ItemsSource="{x:Bind Characters}">
+                                <muxc:ItemsRepeater.ItemTemplate>
+                                    <DataTemplate x:DataType="local:Character">
+                                        <Button
+                                            Style="{ThemeResource ButtonRevealStyle}"
+                                            VerticalAlignment="Stretch"
+                                            CornerRadius="0"
+                                            Background="{ThemeResource ButtonBackgroundThemeBrush}"
+                                            Click="CharacterSelectButtonClicked"
+                                            Tag="{x:Bind CharacterId}"
+                                            Padding="0">
+                                            <Grid>
+                                                <Image Height="45">
+                                                    <Image.Source>
+                                                        <BitmapImage UriSource="{x:Bind EmblemBackgroundUri}" />
+                                                    </Image.Source>
+                                                </Image>
+
+                                                <TextBlock Margin="50,8,0,0" VerticalAlignment="Top" FontSize="16" Text="{x:Bind ClassName}" />
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </muxc:ItemsRepeater.ItemTemplate>
+                            </muxc:ItemsRepeater>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </muxc:NavigationView.PaneHeader>
     </muxc:NavigationView>
 </Page>
