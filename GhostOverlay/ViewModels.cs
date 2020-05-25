@@ -74,6 +74,11 @@ namespace GhostOverlay
         public string ClassName =>
             ClassDefinition?.GenderedClassNamesByGenderHash[CharacterComponent.GenderHash.ToString()];
 
+        public string GenderName => GenderDefinition?.DisplayProperties.Name ?? "Unknown";
+
+        public string RaceName =>
+            RaceDefinition?.GenderedRaceNamesByGenderHash[CharacterComponent.GenderHash.ToString()] ?? "Unknown";
+
         public async Task<DestinyDefinitionsDestinyClassDefinition> PopulateDefinition()
         {
             ClassDefinition = await Definitions.GetClass(CharacterComponent.ClassHash);
@@ -88,7 +93,7 @@ namespace GhostOverlay
 
         public async Task<DestinyDefinitionsDestinyRaceDefinition> PopulateRaceDefinition()
         {
-            RaceDefinition = await Definitions.GetRace(CharacterComponent.GenderHash);
+            RaceDefinition = await Definitions.GetRace(CharacterComponent.RaceHash);
             return RaceDefinition;
         }
 

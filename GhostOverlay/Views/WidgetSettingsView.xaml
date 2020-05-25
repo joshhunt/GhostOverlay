@@ -1,4 +1,4 @@
-<Page
+﻿<Page
     x:Class="GhostOverlay.WidgetSettingsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -17,7 +17,7 @@
             ImageSource="https://bungie.net/common/destiny2_content/icons/df1b08b2a4c9ddfe44f7930505eef6be.jpg"
             x:Key="NavigationViewTopPaneBackground"/>-->
 
-        <x:Double x:Key="NavigationViewTopPaneHeight">45</x:Double>
+        <x:Double x:Key="NavigationViewTopPaneHeight">50</x:Double>
 
         <Style TargetType="Button" x:Key="ButtonStyleLol">
             <Setter Property="Foreground" Value="{ThemeResource NavigationViewItemForeground}" />
@@ -29,9 +29,13 @@
             <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
             <Setter Property="UseSystemFocusVisuals" Value="True" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="TabNavigation" Value="Once"/>
+            <Setter Property="TabNavigation" Value="Once" />
             <!--<contract7Present:Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />-->
         </Style>
+
+        <DataTemplate x:Key="Hello" x:DataType="local:Character">
+            <TextBlock />
+        </DataTemplate>
     </Page.Resources>
 
     <muxc:NavigationView
@@ -58,27 +62,71 @@
                 Padding="0"
                 Background="{ThemeResource ButtonBackgroundThemeBrush}">
 
-                <!-- Player-card style -->
                 <Grid>
-                    <Image Height="45">
+                    <Image Height="50" Opacity="0.95">
                         <Image.Source>
                             <BitmapImage UriSource="{x:Bind ActiveCharacter.EmblemBackgroundUri, Mode=OneWay}" />
                         </Image.Source>
                     </Image>
 
-                    <TextBlock Margin="50,8,0,0" VerticalAlignment="Top" FontSize="16" Text="{x:Bind ActiveCharacter.ClassName, Mode=OneWay}" />
+                    <Grid Margin="50,0,8,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Vertical" 
+                                    VerticalAlignment="Center"
+                                    Grid.Column="0">
+
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="17"
+                                FontWeight="Medium"
+                                Text="{x:Bind ActiveCharacter.ClassName, Mode=OneWay}" />
+
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="14">
+                                <Run Text="{x:Bind ActiveCharacter.RaceName, Mode=OneWay}"></Run>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="25"
+                                Margin="0,-4,2,0"
+                                Foreground="#f5dc56"
+                                FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys"
+                                FontWeight="Medium">&#xE052;
+                            </TextBlock>
+
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="17"
+                                Foreground="#f5dc56"
+                                FontWeight="Medium">
+                                <Run Text="{x:Bind ActiveCharacter.CharacterComponent.Light, Mode=OneWay}"></Run>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <FontIcon Grid.Column="2" FontFamily="Segoe MDL2 Assets" Glyph="&#xE011;" />
+                    </Grid>
                 </Grid>
 
                 <Button.Flyout>
                     <Flyout x:Name="CharacterSelectFlyout">
                         <Flyout.FlyoutPresenterStyle>
                             <Style TargetType="FlyoutPresenter">
-                                <Setter Property="Background" Value="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" />
+                                <Setter Property="Background"
+                                        Value="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" />
                             </Style>
                         </Flyout.FlyoutPresenterStyle>
 
                         <StackPanel>
-                            <TextBlock Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" Text="Change character" Margin="0,0,0,12" />
+                            <TextBlock Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" Text="Change character" />
 
                             <muxc:ItemsRepeater ItemsSource="{x:Bind Characters}">
                                 <muxc:ItemsRepeater.ItemTemplate>
@@ -90,15 +138,58 @@
                                             Background="{ThemeResource ButtonBackgroundThemeBrush}"
                                             Click="CharacterSelectButtonClicked"
                                             Tag="{x:Bind CharacterId}"
+                                            Margin="0,8,0,0"
                                             Padding="0">
+
                                             <Grid>
-                                                <Image Height="45">
+                                                <Image Height="50" Opacity="0.95">
                                                     <Image.Source>
-                                                        <BitmapImage UriSource="{x:Bind EmblemBackgroundUri}" />
+                                                        <BitmapImage UriSource="{x:Bind EmblemBackgroundUri, Mode=OneWay}" />
                                                     </Image.Source>
                                                 </Image>
 
-                                                <TextBlock Margin="50,8,0,0" VerticalAlignment="Top" FontSize="16" Text="{x:Bind ClassName}" />
+                                                <Grid Margin="50,0,8,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Orientation="Vertical" 
+                                                                VerticalAlignment="Center"
+                                                                Grid.Column="0">
+
+                                                        <TextBlock
+                                                            VerticalAlignment="Center"
+                                                            FontSize="16"
+                                                            FontWeight="Medium"
+                                                            Text="{x:Bind ClassName}" />
+
+                                                        <TextBlock
+                                                            VerticalAlignment="Center"
+                                                            FontSize="14">
+                                                            <Run Text="{x:Bind RaceName}"></Run>
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
+                                                        <TextBlock
+                                                            VerticalAlignment="Center"
+                                                            FontSize="25"
+                                                            Margin="0,-4,2,0"
+                                                            Foreground="#f5dc56"
+                                                            FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys"
+                                                            FontWeight="Medium">&#xE052;
+                                                        </TextBlock>
+
+                                                        <TextBlock
+                                                            VerticalAlignment="Center"
+                                                            FontSize="17"
+                                                            Foreground="#f5dc56"
+                                                            FontWeight="Medium">
+                                                            <Run Text="{x:Bind CharacterComponent.Light}"></Run>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </Grid>
                                             </Grid>
                                         </Button>
                                     </DataTemplate>

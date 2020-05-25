@@ -59,6 +59,9 @@ namespace GhostOverlay
 
             eventAggregator.Subscribe(this);
             AppState.Data.ScheduleProfileUpdates();
+
+            UpdateCharacterList();
+            UpdateActiveCharacter();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -113,7 +116,8 @@ namespace GhostOverlay
 
         private void UpdateActiveCharacter()
         {
-            ActiveCharacter = AppState.Data.ActiveCharacter;
+            if (ActiveCharacter != AppState.Data.ActiveCharacter)
+                ActiveCharacter = AppState.Data.ActiveCharacter;
         }
 
         private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
