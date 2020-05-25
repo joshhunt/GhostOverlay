@@ -136,6 +136,12 @@ namespace GhostOverlay
             localSettings.Values[key.ToString()] = value;
         }
 
+        public static void ClearSetting(SettingsKey key)
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values.Remove(key.ToString());
+        }
+
         internal static void SaveTrackedEntries(List<TrackedEntry> trackedEntries)
         {
             var json = JsonConvert.SerializeObject(trackedEntries);

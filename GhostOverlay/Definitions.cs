@@ -25,6 +25,7 @@ namespace GhostOverlay
         private static Task<string> CurrentDownloadingTask;
         public static Task<string> Ready;
         private static string DefaultLanguage = "en";
+        private static int AttemptsToOpen = 0;
 
         public static int HashToDbHash(uint hash)
         {
@@ -53,7 +54,8 @@ namespace GhostOverlay
         public static async Task<string> ActuallyInitializeDatabase()
         {
             var definitionsPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
-            var definitionsExist = !definitionsPath.Equals("@@NotDownloaded") && File.Exists(definitionsPath);
+            Log($"definitionsPath from settings is {definitionsPath}");
+            var definitionsExist = !definitionsPath.Equals(defaultDefinitionsPath) && File.Exists(definitionsPath);
 
             if (!definitionsExist)
             {
@@ -61,17 +63,38 @@ namespace GhostOverlay
                 definitionsPath = await DownloadDefinitionsDatabase();
             }
 
-            Log($"definitionsPath is {definitionsPath}");
+            Log($"definitiosPath is {definitionsPath}");
 
             if (db != null && db.State.HasFlag(ConnectionState.Open))
             {
-                Log($"db is open!");
+                Log("db is already open!!!");
                 db.Close();
                 db = null;
             }
 
             db = new SqliteConnection($"Filename={definitionsPath}");
             await db.OpenAsync();
+            Log("Opened database, going to test it");
+
+            AttemptsToOpen += 1;
+            var databaseWorks = await TestDatabase();
+
+            if (!databaseWorks)
+            {
+                if (AttemptsToOpen < 2)
+                {
+                    Log("FAILED to open definitions database. Going to clear them all and redownload");
+                    ClearAllDefinitions();
+                    AppState.SaveSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
+                    AppState.ClearSetting(SettingsKey.DefinitionsPath);
+
+                    Log("Okay, trying to open/download definitions again");
+                    return await ActuallyInitializeDatabase();
+                }
+
+                Log("Failed to open definitions, giving up.");
+                throw new Exception("Unable to open definitions - it seems corrupt or something?");
+            }
 
             AppState.Data.DefinitionsPath = definitionsPath;
 
@@ -229,7 +252,7 @@ namespace GhostOverlay
 
         public static async void ClearAllDefinitions()
         {
-            db.Close();
+            db?.Close();
             db = default;
 
             var folder = ApplicationData.Current.LocalCacheFolder;
@@ -252,9 +275,27 @@ namespace GhostOverlay
             }
         }
 
-        public static async Task<T> GetDefinition<T>(string command, long hash)
+        public static async Task<bool> TestDatabase()
         {
-            await Ready;
+            try
+            {
+                await GetDefinition<DestinyDefinitionsDestinyClassDefinition>("SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", 2271682572, true); // warlock
+                return true;
+            }
+            catch (Exception e)
+            {
+                Log("Failed to get test value DestinyClassDefinition hash 2271682572 (Warlock)");
+                Debug.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static async Task<T> GetDefinition<T>(string command, long hash, bool skipReady = false)
+        {
+            if (!skipReady)
+            {
+                await Ready;
+            }
 
             var selectCommand = new SqliteCommand(command, db);
             var hashAsInt = Convert.ToUInt32(hash); // TODO: Maybe HashToDbHash can just take long instead?
