@@ -5,13 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using BungieNetApi.Model;
 using Microsoft.Data.Sqlite;
-using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 using Newtonsoft.Json;
 
 namespace GhostOverlay
@@ -117,15 +117,7 @@ namespace GhostOverlay
             Debug.WriteLine("maybe the download finished?");
 
             Debug.WriteLine("Unzipping");
-            try
-            {
-                await Task.Run(() => ZipFile.ExtractToDirectory(destinationFile.Path, appData.LocalCacheFolder.Path));
-            }
-            catch (IOException ext)
-            {
-                Debug.WriteLine("Exception when trying to unzip:");
-                Debug.WriteLine(ext);
-            }
+            await Task.Run(() => ZipFile.ExtractToDirectory(destinationFile.Path, appData.LocalCacheFolder.Path, Encoding.UTF8, true));
 
             var definitionsDbFile = Path.Combine(appData.LocalCacheFolder.Path, $"{baseName}.content");
             Debug.WriteLine($"maybe finished unzipping? {definitionsDbFile}");
