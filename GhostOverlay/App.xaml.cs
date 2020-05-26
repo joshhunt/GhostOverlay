@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Web;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -26,7 +27,7 @@ namespace GhostOverlay
         /// </summary>
         public App()
         {
-            Definitions.InitializeDatabase();
+            Task.Run(Definitions.InitializeDatabase);
             AppState.Data.RestoreBungieTokenDataFromSettings();
             AppState.Data.RestoreTrackedBountiesFromSettings();
 
