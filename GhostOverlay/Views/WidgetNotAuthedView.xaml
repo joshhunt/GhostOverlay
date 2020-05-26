@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Padding="16">
         <TextBlock
             HorizontalAlignment="Center"
             Style="{ThemeResource BaseTextBlockStyle}"
@@ -17,37 +17,24 @@
             TextAlignment="Center"
             TextWrapping="WrapWholeWords" />
 
-        <!--  <TextBlock  -->
-        <!--  MaxWidth="360"  -->
-        <!--  Margin="0,12,0,0"  -->
-        <!--  HorizontalAlignment="Center"  -->
-        <!--  Text="If the first button doesn't work, try the 'Login with Desktop browser' method. I know this is jank!!!"  -->
-        <!--  TextWrapping="WrapWholeWords" />  -->
-
-        <!--  <Button  -->
-        <!--  Margin="0,12,0,0"  -->
-        <!--  HorizontalAlignment="Center"  -->
-        <!--  Click="LoginWithXboxBroker_OnClick"  -->
-        <!--  Content="Login with Bungie" />  -->
-
-        <!--  <Button  -->
-        <!--  Margin="0,12,0,0"  -->
-        <!--  HorizontalAlignment="Center"  -->
-        <!--  Click="LoginWithDesktopBrowser_OnClick"  -->
-        <!--  Content="Login with Bungie (desktop browser)" />  -->
         <Button
             Margin="0,12,0,0"
             HorizontalAlignment="Center"
             Click="LoginWithXboxBroker_OnClick"
             Content="Login with Bungie" />
 
-        <Button
-            x:Name="LoginWithDesktopBrowserButton"
-            Margin="0,24,0,0"
-            Visibility="Collapsed"
-            HorizontalAlignment="Center"
-            Click="LoginWithDesktopBrowser_OnClick"
-            Content="Login with Bungie (old style)" />
+        <StackPanel Margin="0,24,0,0" Name="BrowserLoginStack" Orientation="Vertical" Visibility="Collapsed">
+            <TextBlock TextWrapping="WrapWholeWords" TextAlignment="Center">
+                Looks like there was a problem logging in. Try with your desktop browser?
+            </TextBlock>
+
+            <Button
+                Margin="0,12,0,0"
+                HorizontalAlignment="Center"
+                Click="LoginWithDesktopBrowser_OnClick"
+                Content="Login using desktop browser" />
+        </StackPanel>
+
 
         <StackPanel
             x:Name="AuthWaiting"

@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Web;
 using Windows.Foundation;
@@ -61,7 +63,6 @@ namespace GhostOverlay
         public async void LoginWithXboxBroker_OnClick(object sender, RoutedEventArgs e)
         {
             AuthWaiting.Visibility = Visibility.Visible;
-            LoginWithDesktopBrowserButton.Visibility = Visibility.Visible;
 
             // original bungie redirect url: ghost-overlay:///oauth-return
             var requestUri = new Uri(AppState.bungieApi.GetAuthorisationUrl());
@@ -73,10 +74,6 @@ namespace GhostOverlay
                 callbackUri);
 
             AuthWaiting.Visibility = Visibility.Collapsed;
-
-            Debug.WriteLine("Auth ResponseData: " + result.ResponseData);
-            Debug.WriteLine("Auth ResponseStatus: " + result.ResponseStatus.ToString());
-            Debug.WriteLine("Auth ResponseErrorDetail: " + result.ResponseErrorDetail);
 
             if (result.ResponseStatus == XboxGameBarWebAuthenticationStatus.Success)
             {
@@ -100,6 +97,10 @@ namespace GhostOverlay
                 {
                     throw new Exception("Exchanged code for token, but the TokenData is not valid??");
                 }
+            }
+            else
+            {
+                BrowserLoginStack.Visibility = Visibility.Visible;
             }
         }
 
