@@ -48,7 +48,7 @@
         SelectionChanged="NavView_OnSelectionChanged">
 
         <muxc:NavigationView.MenuItems>
-            <muxc:NavigationViewItem Content="Bounties" Tag="Bounties" />
+            <muxc:NavigationViewItem Content="Pursuits" Tag="Bounties" />
             <muxc:NavigationViewItem Content="Triumphs" Tag="Triumphs" />
         </muxc:NavigationView.MenuItems>
 
@@ -144,7 +144,7 @@
                                             <Grid>
                                                 <Image Height="50" MinWidth="246" Opacity="0.95">
                                                     <Image.Source>
-                                                        <BitmapImage UriSource="{x:Bind EmblemBackgroundUri, Mode=OneWay}" />
+                                                        <BitmapImage UriSource="{x:Bind EmblemBackgroundUri}" />
                                                     </Image.Source>
                                                 </Image>
 
