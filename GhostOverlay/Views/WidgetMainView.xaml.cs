@@ -37,7 +37,7 @@ namespace GhostOverlay
         }
 
         private XboxGameBarWidget widget;
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         private readonly List<ITrackable> Tracked = new List<ITrackable>();
 
         // Timer stuff

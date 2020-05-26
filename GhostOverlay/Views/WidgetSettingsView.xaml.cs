@@ -21,8 +21,9 @@ namespace GhostOverlay
     public sealed partial class WidgetSettingsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
         private XboxGameBarWidget widget;
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         public event PropertyChangedEventHandler PropertyChanged;
+        private static readonly LogFn Log = Logger.MakeLogger("WidgetSettingsView");
 
         private readonly ObservableCollection<Character> Characters = new ObservableCollection<Character>();
 
@@ -135,7 +136,7 @@ namespace GhostOverlay
             switch (selectedView)
             {
                 case "Bounties":
-                    ContentFrame.Navigate(typeof(WidgetSettingsBountiesView), null, args.RecommendedNavigationTransitionInfo);
+                    ContentFrame.Navigate(typeof(BountiesParentView), null, args.RecommendedNavigationTransitionInfo);
                     break;
 
                 case "Triumphs":
@@ -161,11 +162,6 @@ namespace GhostOverlay
             }
         }
 
-        private void Log(string message)
-        {
-            Debug.WriteLine($"[WidgetSettingsView] {message}");
-        }
-
         private void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -175,6 +171,7 @@ namespace GhostOverlay
         {
             if (sender is Button button && button.Tag is long characterId)
             {
+                Log("CharacterSelectButtonClicked set active character");
                 AppState.Data.ActiveCharacter = Characters.FirstOrDefault(v => v.CharacterId == characterId) ?? Characters.First();
                 CharacterSelectFlyout.Hide();
             }

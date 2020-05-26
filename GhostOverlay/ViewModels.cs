@@ -28,6 +28,7 @@ namespace GhostOverlay
 
     public class CommonHelpers
     {
+        public static Uri LocalFallbackIconUri = new Uri("ms-appx:///Assets/QuestTraitIcons/missing_icon.png");
         public static Uri BungieUri(string baseUrl)
         {
             return new Uri($"http://www.bungie.net{baseUrl ?? "/img/misc/missing_icon_d2.png"}");

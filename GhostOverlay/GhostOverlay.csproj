@@ -135,18 +135,20 @@
       <DependentUpon>AppAuthSuccessfulView.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppState.cs" />
-    <Compile Include="BlankPage1.xaml.cs">
-      <DependentUpon>BlankPage1.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Logger.cs" />
+    <Compile Include="Models\ItemTrait.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ITrackable.cs" />
     <Compile Include="Models\TimerViewModel.cs" />
     <Compile Include="Models\Triumph.cs" />
-    <Compile Include="MyEventAggregator.cs" />
+    <Compile Include="WidgetStateChangeNotifier.cs" />
     <Compile Include="TemplatesResourceDictionary.xaml.cs">
       <DependentUpon>TemplatesResourceDictionary.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels.cs" />
+    <Compile Include="Views\BountiesParentView.xaml.cs">
+      <DependentUpon>BountiesParentView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SettingsRootTriumphsView.xaml.cs">
       <DependentUpon>SettingsRootTriumphsView.xaml</DependentUpon>
     </Compile>
@@ -883,6 +885,15 @@
     <Content Include="Assets\LargeTile.scale-150.png" />
     <Content Include="Assets\LargeTile.scale-200.png" />
     <Content Include="Assets\LargeTile.scale-400.png" />
+    <Content Include="Assets\QuestTraitIcons\bounties.png" />
+    <Content Include="Assets\QuestTraitIcons\current_release.png" />
+    <Content Include="Assets\QuestTraitIcons\exotic.png" />
+    <Content Include="Assets\QuestTraitIcons\missing_icon.png" />
+    <Content Include="Assets\QuestTraitIcons\new_light.png" />
+    <Content Include="Assets\QuestTraitIcons\past.png" />
+    <Content Include="Assets\QuestTraitIcons\playlists.png" />
+    <Content Include="Assets\QuestTraitIcons\quests.png" />
+    <Content Include="Assets\QuestTraitIcons\seasonal.png" />
     <Content Include="Assets\SmallTile.scale-100.png" />
     <Content Include="Assets\SmallTile.scale-125.png" />
     <Content Include="Assets\SmallTile.scale-150.png" />
@@ -944,11 +955,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="BlankPage1.xaml">
+    <Page Include="TemplatesResourceDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TemplatesResourceDictionary.xaml">
+    <Page Include="Views\BountiesParentView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

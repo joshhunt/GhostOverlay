@@ -31,7 +31,7 @@ namespace GhostOverlay
 
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
 
         private bool _profileIsUpdating;
         public bool ProfileIsUpdating

@@ -16,7 +16,7 @@ namespace GhostOverlay.Views
     /// </summary>
     public sealed partial class TriumphsListing : Page, ISubscriber<WidgetPropertyChanged>
     {
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
 
         private long presentationNodeHash;
         private readonly RangeObservableCollection<Triumph> triumphs = new RangeObservableCollection<Triumph>();

@@ -32,10 +32,7 @@ namespace GhostOverlay
             return unchecked((int) hash);
         }
 
-        public static void Log(string msg)
-        {
-            Debug.WriteLine($"[Definitions]\t {msg}");
-        }
+        private static readonly LogFn Log = Logger.MakeLogger("Definitions");
 
         public static async void InitializeDatabase()
         {
@@ -290,6 +287,26 @@ namespace GhostOverlay
             }
         }
 
+        public static async Task<List<T>> GetMultipleDefinitions<T>(string command)
+        {
+            await Ready;
+
+            var selectCommand = new SqliteCommand(command, db);
+            var query = await selectCommand.ExecuteReaderAsync();
+
+            if (!query.HasRows) return default;
+
+            var results = new List<T>();
+            while (query.Read())
+            {
+                var json = query.GetString(0);
+                var obj = JsonConvert.DeserializeObject<T>(json);
+                results.Add(obj);
+            }
+
+            return results;
+        }
+
         public static async Task<T> GetDefinition<T>(string command, long hash, bool skipReady = false)
         {
             if (!skipReady)
@@ -352,6 +369,24 @@ namespace GhostOverlay
         {
             return await GetDefinition<DestinyDefinitionsRecordsDestinyRecordDefinition>(
                 "SELECT json FROM DestinyRecordDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsTraitsDestinyTraitDefinition> GetTrait(long hash)
+        {
+            return await GetDefinition<DestinyDefinitionsTraitsDestinyTraitDefinition>(
+                "SELECT json FROM DestinyTraitDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition> GetTraitCategory(long hash)
+        {
+            return await GetDefinition<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition>(
+                "SELECT json FROM DestinyTraitCategoryDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<List<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition>> GetAllTraitCategory()
+        {
+            return await GetMultipleDefinitions<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition> (
+                "SELECT json FROM DestinyTraitCategoryDefinition;");
         }
     }
 }

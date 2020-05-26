@@ -10,7 +10,7 @@ namespace GhostOverlay
         void HandleMessage(TMessage message);
     }
 
-    public class MyEventAggregator
+    public class WidgetStateChangeNotifier
     {
         private static List<Tuple<CoreDispatcher, object>> subscribers = new List<Tuple<CoreDispatcher, object>>();
 

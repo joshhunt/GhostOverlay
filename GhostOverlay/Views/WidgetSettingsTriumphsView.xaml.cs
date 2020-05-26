@@ -12,7 +12,7 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly WidgetStateChangeNotifier notifier = new WidgetStateChangeNotifier();
         public event PropertyChangedEventHandler PropertyChanged;
 
         private readonly RangeObservableCollection<PresentationNode> secondLevelNodes =
@@ -28,7 +28,7 @@ namespace GhostOverlay
 
         private PresentationNode SelectedTopLevelNode
         {
-            get { return _selectedTopLevelNode; }
+            get => _selectedTopLevelNode;
             set
             {
                 _selectedTopLevelNode = value;
@@ -38,7 +38,7 @@ namespace GhostOverlay
 
         private PresentationNode SelectedSecondLevelNode
         {
-            get { return _selectedSecondLevelNode; }
+            get => _selectedSecondLevelNode;
             set
             {
                 _selectedSecondLevelNode = value;
@@ -48,7 +48,7 @@ namespace GhostOverlay
 
         private PresentationNode SelectedThirdLevelNode
         {
-            get { return _selectedThirdLevelNode; }
+            get => _selectedThirdLevelNode;
             set
             {
                 _selectedThirdLevelNode = value;
@@ -73,7 +73,7 @@ namespace GhostOverlay
                 SelectedSecondLevelNode = paramNode;
             }
 
-            eventAggregator.Subscribe(this);
+            notifier.Subscribe(this);
             UpdateViewModel();
         }
 
@@ -93,7 +93,7 @@ namespace GhostOverlay
         {
             Debug.WriteLine("TriumphsView OnNavigatingFrom");
             base.OnNavigatingFrom(e);
-            eventAggregator.Unsubscribe(this);
+            notifier.Unsubscribe(this);
         }
 
         private void UpdateViewModel()

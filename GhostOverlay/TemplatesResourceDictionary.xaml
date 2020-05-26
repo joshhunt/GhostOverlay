@@ -12,6 +12,7 @@
     <local:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
 
     <Style x:Key="ObjectiveListViewStyle" TargetType="ListViewItem">
+
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Padding" Value="0" />
@@ -20,6 +21,14 @@
         <Setter Property="FocusVisualMargin" Value="0" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
         <Setter Property="MinHeight" Value="0" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <ContentPresenter/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <DataTemplate x:Key="BountyCompletedObjectives" x:DataType="models:ITrackable">

@@ -14,7 +14,7 @@ namespace GhostOverlay
     public sealed partial class WidgetSettingsSettingsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
 
         private string _displayName;
         private string DisplayName

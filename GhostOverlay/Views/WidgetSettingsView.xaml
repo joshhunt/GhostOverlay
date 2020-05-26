@@ -63,7 +63,7 @@
                 Background="{ThemeResource ButtonBackgroundThemeBrush}">
 
                 <Grid>
-                    <Image Height="50" Opacity="0.95">
+                    <Image Height="50" MinWidth="246" Opacity="0.95">
                         <Image.Source>
                             <BitmapImage UriSource="{x:Bind ActiveCharacter.EmblemBackgroundUri, Mode=OneWay}" />
                         </Image.Source>
@@ -142,7 +142,7 @@
                                             Padding="0">
 
                                             <Grid>
-                                                <Image Height="50" Opacity="0.95">
+                                                <Image Height="50" MinWidth="246" Opacity="0.95">
                                                     <Image.Source>
                                                         <BitmapImage UriSource="{x:Bind EmblemBackgroundUri, Mode=OneWay}" />
                                                     </Image.Source>

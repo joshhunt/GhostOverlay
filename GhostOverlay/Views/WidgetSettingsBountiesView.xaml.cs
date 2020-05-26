@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
@@ -8,9 +9,12 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsBountiesView : Page, ISubscriber<WidgetPropertyChanged>
     {
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
+        private static readonly LogFn Log = Logger.MakeLogger("WidgetSettingsBountiesView");
+
         private readonly RangeObservableCollection<Item> Bounties = new RangeObservableCollection<Item>();
         private bool viewIsUpdating;
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private ItemTrait selectedTrait;
 
         public WidgetSettingsBountiesView()
         {
@@ -19,13 +23,18 @@ namespace GhostOverlay
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            if (e.Parameter is ItemTrait traitParam)
+            {
+                selectedTrait = traitParam;
+                Log($"navigated to with trait {selectedTrait.TraitId}");
+            }
+
             eventAggregator.Subscribe(this);
             UpdateViewModel();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            Debug.WriteLine("BountiesView OnNavigatingFrom");
             base.OnNavigatingFrom(e);
             eventAggregator.Unsubscribe(this);
         }
@@ -61,10 +70,12 @@ namespace GhostOverlay
 
             Log($"ActiveCharacter {AppState.Data.ActiveCharacter.CharacterId}");
 
-            var bountiesForCharacter = await Item.ItemsFromProfile(profile, AppState.Data.ActiveCharacter);
+            var bountiesForCharacter = (await Item.ItemsFromProfile(profile, AppState.Data.ActiveCharacter))
+                .FindAll(v => (v.Definition?.TraitIds ?? new List<string>()).Contains(selectedTrait?.TraitId))
+                .OrderBy(v => v.SortValue);
 
             Bounties.Clear();
-            Bounties.AddRange(bountiesForCharacter.OrderBy(v => v.SortValue));
+            Bounties.AddRange(bountiesForCharacter);
 
             UpdateSelection();
 
@@ -103,13 +114,6 @@ namespace GhostOverlay
             }
 
             AppState.Data.TrackedEntries = copyOf;
-        }
-
-
-
-        private void Log(string message)
-        {
-            Debug.WriteLine($"[WidgetSettingsBountiesview] {message}");
         }
     }
 }

@@ -24,7 +24,7 @@ namespace GhostOverlay.Views
     /// </summary>
     public sealed partial class SettingsRootTriumphsView : Page, ISubscriber<WidgetPropertyChanged>
     {
-        private readonly MyEventAggregator eventAggregator = new MyEventAggregator();
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         private readonly long rootTriumphsNodeHash = 1024788583;
         private Frame parentFrame;
 
