@@ -10,7 +10,7 @@
 	<Identity
 		Name="WorldClassDevelopmentLtd.GhostOverlay"
 		Publisher="CN=F78EA302-9D46-44EB-A662-246312A8DD23"
-		Version="0.11.57.0" />
+		Version="0.12.58.0" />
 
 	<mp:PhoneIdentity PhoneProductId="5418b76d-6c5b-4248-80e8-ce7760dffff9"
 					  PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
@@ -18,7 +18,7 @@
 	<Properties>
 		<DisplayName>Ghost Overlay</DisplayName>
 		<PublisherDisplayName>World Class Development Ltd</PublisherDisplayName>
-		<Logo>Assets\StoreLogo.png</Logo>
+		<Logo>Assets\AppIcon\StoreLogo.png</Logo>
 	</Properties>
 
 	<Dependencies>
@@ -37,15 +37,14 @@
 					 EntryPoint="GhostOverlay.App">
 			<uap:VisualElements
 				DisplayName="Ghost Overlay"
-				Square150x150Logo="Assets\Square150x150Logo.png"
-				Square44x44Logo="Assets\Square44x44Logo.png"
+				Square150x150Logo="Assets\AppIcon\Square150x150Logo.png"
 				Description="Ghost Overlay"
 				AppListEntry="none"
-				BackgroundColor="transparent">
-				<uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png">
+				BackgroundColor="transparent" Square44x44Logo="Assets\AppIcon\Square44x44Logo.png">
+				<uap:DefaultTile Wide310x150Logo="Assets\AppIcon\Wide310x150Logo.png" Square71x71Logo="Assets\AppIcon\SmallTile.png" Square310x310Logo="Assets\AppIcon\LargeTile.png" ShortName="Ghost">
 				</uap:DefaultTile >
-				<uap:SplashScreen Image="Assets\SplashScreen.png"  BackgroundColor="#13161b"/>
-				<uap:LockScreen BadgeLogo="Assets\BadgeLogo.png"  Notification="badge"/>
+				<uap:SplashScreen Image="Assets\AppIcon\SplashScreen.png"  BackgroundColor="#13161b"/>
+				<uap:LockScreen BadgeLogo="Assets\AppIcon\BadgeLogo.png"  Notification="badge"/>
 			</uap:VisualElements>
 
 			<Extensions>
@@ -55,8 +54,8 @@
 					<uap3:AppExtension Name="microsoft.gameBarUIExtension"
 					                   Id="WidgetMain"
 					                   DisplayName="Ghost Overlay"
-					                   Description="Overlay quest information for Destiny 2"
-					                   PublicFolder="GameBar">
+					                   PublicFolder="GameBarAssets"
+					                   Description="Overlay quest information for Destiny 2">
 						<uap3:Properties>
 							<GameBarWidget Type="Standard">
 								<HomeMenuVisible>true</HomeMenuVisible>
@@ -83,9 +82,9 @@
 				<uap3:Extension Category="windows.appExtension">
 					<uap3:AppExtension Name="microsoft.gameBarUIExtension"
 					                   Id="WidgetMainSettings"
+					                   PublicFolder="GameBarAssets"
 					                   DisplayName="Ghost Overlay Settings"
-					                   Description="Ghost Overlay Settings"
-					                   PublicFolder="GameBar">
+					                   Description="Ghost Overlay Settings">
 						<uap3:Properties>
 							<GameBarWidget Type="Settings">
 								<Window>
