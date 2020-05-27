@@ -174,7 +174,7 @@ namespace GhostOverlay
         {
             var sinceLastUpdate = DateTime.Now - ProfileUpdatedTime;
             if (WidgetsAreVisible && !ProfileIsUpdating && sinceLastUpdate.TotalMilliseconds > ActiveProfileUpdateInterval && ProfileScheduleRequesters > 0)
-            {   
+            {
                 Debug.WriteLine("Visiblity changed, updating profile");
                 _ = UpdateProfile();
             }

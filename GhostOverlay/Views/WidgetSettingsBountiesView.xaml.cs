@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using GhostOverlay.Models;
@@ -68,32 +70,40 @@ namespace GhostOverlay
                 return;
             }
 
-            Log($"ActiveCharacter {AppState.Data.ActiveCharacter.CharacterId}");
-
             var bountiesForCharacter = (await Item.ItemsFromProfile(profile, AppState.Data.ActiveCharacter))
                 .FindAll(v => (v.Definition?.TraitIds ?? new List<string>()).Contains(selectedTrait?.TraitId))
-                .OrderBy(v => v.SortValue);
+                .OrderBy(v => v.SortValue)
+                .ToList();
 
             Bounties.Clear();
             Bounties.AddRange(bountiesForCharacter);
 
-            UpdateSelection();
+            _ = Task.Run(UpdateSelection);
 
             viewIsUpdating = false;
         }
 
-        private void UpdateSelection()
+        private async void UpdateSelection()
         {
-            viewIsUpdating = true;
-            this.BountiesGridView.SelectedItems.Clear();
-            foreach (var bounty in Bounties)
+            // TODO: Figure out why this Delay/Dispatch/Delay is needed to get SelectedItems to stick
+
+            await Task.Delay(1);
+            _ = BountiesGridView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
-                if (AppState.Data.IsTracked(bounty))
+                await Task.Delay(1);
+
+                viewIsUpdating = true;
+                this.BountiesGridView.SelectedItems.Clear();
+                foreach (var bounty in Bounties)
                 {
-                    this.BountiesGridView.SelectedItems.Add(bounty);
+                    if (AppState.Data.IsTracked(bounty))
+                    {
+                        this.BountiesGridView.SelectedItems.Add(bounty);
+                    }
                 }
-            }
-            viewIsUpdating = false;
+
+                viewIsUpdating = false;
+            });
         }
 
         private void SelectedBountiesChanged(object sender, SelectionChangedEventArgs e)

@@ -24,7 +24,7 @@
         HorizontalAlignment="Stretch"
         VerticalAlignment="Top"
         AllowFocusOnInteraction="False"
-        ItemsSource="{x:Bind Bounties}"
+        ItemsSource="{x:Bind Bounties, Mode=OneWay}"
         SelectionChanged="SelectedBountiesChanged"
         SelectionMode="Multiple">
 
