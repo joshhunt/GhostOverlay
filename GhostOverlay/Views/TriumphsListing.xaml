@@ -20,7 +20,7 @@
     </Page.Resources>
 
     <GridView
-        Padding="0,4,0,0"
+        Padding="4"
         x:Name="TriumphsGrid"
         ItemsSource="{x:Bind triumphs}"
         IsItemClickEnabled="True"
@@ -44,7 +44,7 @@
 
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="models:Triumph">
-                <Grid Width="404" MinHeight="120" Padding="12"
+                <Grid Width="400" MinHeight="120"
                       Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}">
 
                     <Grid.ColumnDefinitions>

@@ -19,7 +19,7 @@
     </Page.Resources>
 
     <GridView
-        Padding="8,4,8,0"
+        Padding="4"
         x:Name="BountiesGridView"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Top"
@@ -48,7 +48,7 @@
 
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="models:Item">
-                <Grid Width="375" MinHeight="125"
+                <Grid Width="400" MaxWidth="400" MinHeight="125"
                       Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />

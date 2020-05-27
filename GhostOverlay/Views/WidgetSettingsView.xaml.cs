@@ -49,8 +49,9 @@ namespace GhostOverlay
 
             if (widget != null)
             {
-                widget.MaxWindowSize = new Size(1940, 2000);
-                widget.MinWindowSize = new Size(200, 100);
+                widget.MaxWindowSize = new Size(2000, 2000);
+                widget.MinWindowSize = new Size(715, 200);
+
                 widget.HorizontalResizeSupported = true;
                 widget.VerticalResizeSupported = true;
                 widget.SettingsSupported = false;

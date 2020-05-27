@@ -64,7 +64,7 @@
 
 								<Window>
 									<Size>
-										<Height>300</Height>
+										<Height>500</Height>
 										<Width>380</Width>
 									</Size>
 
@@ -89,8 +89,8 @@
 							<GameBarWidget Type="Settings">
 								<Window>
 									<Size>
-										<Height>1170</Height>
-										<Width>790</Width>
+										<Height>700</Height>
+										<Width>1126</Width>
 									</Size>
 
 									<ResizeSupported>

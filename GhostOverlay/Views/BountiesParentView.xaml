@@ -16,8 +16,9 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel
+            Padding="4"
             Grid.Column="0"
-            Margin="4,8"
+            Margin="0"
             BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
             BorderThickness="0,0,1,0">
 

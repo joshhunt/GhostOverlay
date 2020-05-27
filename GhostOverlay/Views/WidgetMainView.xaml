@@ -137,6 +137,7 @@
                                 Text="{x:Bind Title}" />
 
                             <TextBlock
+                                Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
                                 x:Name="BountyDescriptionLabel"
                                 Margin="0,0,0,6"
                                 HorizontalAlignment="Left"
