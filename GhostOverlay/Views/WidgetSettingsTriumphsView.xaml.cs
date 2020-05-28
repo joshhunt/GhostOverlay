@@ -1,7 +1,9 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using GhostOverlay.Views;
@@ -12,6 +14,7 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
+        private static readonly LogFn Log = Logger.MakeLogger("WidgetSettingsTriumphsView");
         private readonly WidgetStateChangeNotifier notifier = new WidgetStateChangeNotifier();
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -103,9 +106,15 @@ namespace GhostOverlay
 
             if (!AppState.Data.DefinitionsLoaded) return;
 
+            Log("UpdateViewModel");
+
             UpdateSecondLevel();
             UpdateThirdLevel();
             UpdateTriumphsListingView();
+
+            Log($"SelectedTopLevelNode: {SelectedTopLevelNode?.Definition?.DisplayProperties?.Name}");
+            Log($"SelectedSecondLevelNode: {SelectedSecondLevelNode?.Definition?.DisplayProperties?.Name} Contains: {secondLevelNodes.Contains(SelectedSecondLevelNode)}");
+            Log($"SelectedThirdLevelNode: {SelectedThirdLevelNode?.Definition?.DisplayProperties?.Name} Contains: {thirdLevelNodes.Contains(SelectedThirdLevelNode)}");
         }
 
         private async void UpdateSecondLevel()
@@ -137,6 +146,12 @@ namespace GhostOverlay
             {
                 Debug.WriteLine("selectedSecondLevelNode == null - I don't think this should happen?");
                 SelectedSecondLevelNode = secondLevelNodes[0];
+            } else if (!secondLevelNodes.Contains(SelectedSecondLevelNode))
+            {
+                SelectedSecondLevelNode =
+                    secondLevelNodes.FirstOrDefault(v =>
+                        v.PresentationNodeHash == SelectedSecondLevelNode.PresentationNodeHash) ??
+                    secondLevelNodes.First();
             }
         }
 
@@ -166,6 +181,11 @@ namespace GhostOverlay
             if (SelectedThirdLevelNode == null)
             {
                 SelectedThirdLevelNode = thirdLevelNodes[0];
+            } else if (!thirdLevelNodes.Contains(SelectedThirdLevelNode))
+            {
+                SelectedThirdLevelNode = thirdLevelNodes.FirstOrDefault(v =>
+                                             v.PresentationNodeHash == SelectedThirdLevelNode.PresentationNodeHash) ??
+                                         thirdLevelNodes.First();
             }
         }
 

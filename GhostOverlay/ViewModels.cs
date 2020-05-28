@@ -7,7 +7,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Networking;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using GhostOverlay.Models;
 
@@ -32,6 +34,16 @@ namespace GhostOverlay
         public static Uri BungieUri(string baseUrl)
         {
             return new Uri($"http://www.bungie.net{baseUrl ?? "/img/misc/missing_icon_d2.png"}");
+        }
+
+        public static async Task DoSoon(Control control, Action fn)
+        {
+            await Task.Delay(10);
+            await control.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                await Task.Delay(10);
+                fn();
+            });
         }
     }
 

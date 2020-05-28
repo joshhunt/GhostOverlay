@@ -16,6 +16,7 @@ namespace GhostOverlay.Views
     /// </summary>
     public sealed partial class TriumphsListing : Page, ISubscriber<WidgetPropertyChanged>
     {
+        private static readonly LogFn Log = Logger.MakeLogger("TriumphsListing");
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
 
         private long presentationNodeHash;
@@ -43,7 +44,8 @@ namespace GhostOverlay.Views
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            //Debug.WriteLine($"[TriumphsListing] HandleMessage {message}");
+            Log($"HandleMessage {message}");
+
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
@@ -63,14 +65,13 @@ namespace GhostOverlay.Views
 
             if (!AppState.Data.DefinitionsLoaded || profile == null) return;
 
+            viewIsUpdating = true;
             triumphs.Clear();
 
             var presentationNode = await Definitions.GetPresentationNode(presentationNodeHash);
-            Debug.WriteLine($"thirdLevelNode: {presentationNode}");
 
             if (presentationNode == null) return;
 
-            Debug.WriteLine($"thirdLevelNode.hash: {presentationNode.Hash}");
             foreach (var childRecord in presentationNode.Children.Records)
             {
                 var recordDefinition = await Definitions.GetRecord(childRecord.RecordHash);
@@ -96,32 +97,43 @@ namespace GhostOverlay.Views
                 if (triumph.Record != null)
                     triumphs.Add(triumph);
                 else
-                    Debug.WriteLine(
+                    Log(
                         $"triumph {triumph.Definition.DisplayProperties.Name} skipped because its record is missing");
             }
 
-            Debug.WriteLine($"actual triumphs: {triumphs.Count}");
+            viewIsUpdating = false;
+
+            UpdateSelection();
+            Log($"actual triumphs: {triumphs.Count}");
         }
 
         private void UpdateSelection()
         {
-            viewIsUpdating = true;
-
-            TriumphsGrid.SelectedItems.Clear();
-            foreach (var item in triumphs)
+            _ = CommonHelpers.DoSoon(TriumphsGrid, () =>
             {
-                if (item is Triumph triumph && AppState.Data.IsTracked(triumph))
-                {
-                    TriumphsGrid.SelectedItems.Add(item);
-                }
-            }
+                viewIsUpdating = true;
 
-            viewIsUpdating = false;
+                TriumphsGrid.SelectedItems.Clear();
+                Log($"Selecting tracked triumphs:");
+
+                foreach (var item in triumphs)
+                {
+                    if (item is Triumph triumph && AppState.Data.IsTracked(triumph))
+                    {
+                        Log($" - Adding `{triumph.Definition.DisplayProperties.Name}` to Selected triumphs");
+                        TriumphsGrid.SelectedItems.Add(item);
+                    }
+                }
+
+                viewIsUpdating = false;
+            });
         }
 
         private void OnSelectedTriumphsChanged(object sender, SelectionChangedEventArgs e)
         {
+            Log("OnSelectedTriumphsChanged called");
             if (viewIsUpdating) return;
+            Log("  OnSelectedTriumphsChanged running");
 
             var wasChanged = false;
             var copyOf = AppState.Data.TrackedEntries.ToList();
@@ -129,6 +141,7 @@ namespace GhostOverlay.Views
             foreach (var item in e.AddedItems)
                 if (item is Triumph triumph)
                 {
+                    Log($"    adding tracked triumph {triumph.DisplayProperties.Name}");
                     wasChanged = true;
                     var n = TrackedEntry.FromTriumph(triumph);
                     copyOf.Add(n);
@@ -137,11 +150,16 @@ namespace GhostOverlay.Views
             foreach (var item in e.RemovedItems)
                 if (item is Triumph triumph)
                 {
+                    Log($"    removing tracked triumph {triumph.DisplayProperties.Name}");
                     wasChanged = true;
                     copyOf.RemoveAll(v => v.Matches(triumph));
                 }
 
-            if (wasChanged) AppState.Data.TrackedEntries = copyOf;
+            if (wasChanged)
+            {
+                Log("  tracked triumphs were changed.");
+                AppState.Data.TrackedEntries = copyOf;
+            }
         }
     }
 }
