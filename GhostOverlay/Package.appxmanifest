@@ -8,7 +8,7 @@
 	IgnorableNamespaces="uap mp uap3">
 
 	<Identity
-		Name="WorldClassDevelopmentLtd.GhostOverlay"
+		Name="WorldClassDevelopmentLtd.GhostOverlay.Dev"
 		Publisher="CN=F78EA302-9D46-44EB-A662-246312A8DD23"
 		Version="1.0.1.0" />
 
@@ -16,7 +16,7 @@
 					  PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
 	<Properties>
-		<DisplayName>Ghost Overlay</DisplayName>
+		<DisplayName>Ghost Overlay (Dev)</DisplayName>
 		<PublisherDisplayName>World Class Development Ltd</PublisherDisplayName>
 		<Logo>Assets\AppIcon\StoreLogo.png</Logo>
 	</Properties>
@@ -36,7 +36,7 @@
 					 Executable="$targetnametoken$.exe"
 					 EntryPoint="GhostOverlay.App">
 			<uap:VisualElements
-				DisplayName="Ghost Overlay"
+				DisplayName="Ghost Overlay (Dev)"
 				Square150x150Logo="Assets\AppIcon\Square150x150Logo.png"
 				Description="Ghost Overlay"
 				AppListEntry="none"
@@ -53,7 +53,7 @@
 				<uap3:Extension Category="windows.appExtension">
 					<uap3:AppExtension Name="microsoft.gameBarUIExtension"
 					                   Id="WidgetMain"
-					                   DisplayName="Ghost Overlay"
+					                   DisplayName="Ghost Overlay (Dev)"
 					                   PublicFolder="GameBarAssets"
 					                   Description="Overlay quest information for Destiny 2">
 						<uap3:Properties>
@@ -83,7 +83,7 @@
 					<uap3:AppExtension Name="microsoft.gameBarUIExtension"
 					                   Id="WidgetMainSettings"
 					                   PublicFolder="GameBarAssets"
-					                   DisplayName="Ghost Overlay Settings"
+					                   DisplayName="Ghost Overlay Settings (Dev)"
 					                   Description="Ghost Overlay Settings">
 						<uap3:Properties>
 							<GameBarWidget Type="Settings">
@@ -105,7 +105,7 @@
 
 				<uap:Extension Category="windows.protocol">
 					<uap:Protocol Name="ghost-overlay">
-						<uap:DisplayName>Ghost Overlay</uap:DisplayName>
+						<uap:DisplayName>Ghost Overlay (Dev)</uap:DisplayName>
 					</uap:Protocol>
 				</uap:Extension>
 			</Extensions>
