@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using BungieNetApi.Model;
 
 namespace GhostOverlay
 {
@@ -15,6 +15,8 @@ namespace GhostOverlay
     {
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
+        private readonly Logger Log = new Logger("WidgetSettingsSettingsView");
+        private readonly RangeObservableCollection<CommonModelsCoreSetting> Languages = new RangeObservableCollection<CommonModelsCoreSetting>();
 
         private string _displayName;
         private string DisplayName
@@ -23,6 +25,17 @@ namespace GhostOverlay
             set
             {
                 _displayName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private CommonModelsCoreSetting _selectedLanguage;
+        private CommonModelsCoreSetting SelectedLanguage
+        {
+            get => _selectedLanguage;
+            set
+            {
+                _selectedLanguage = value;
                 OnPropertyChanged();
             }
         }
@@ -56,8 +69,10 @@ namespace GhostOverlay
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            _ = AppState.Data.UpdateDestinySettings();
             eventAggregator.Subscribe(this);
             UpdateViewModel();
+            UpdateSelectedLanguage();
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -72,9 +87,20 @@ namespace GhostOverlay
             {
                 case WidgetPropertyChanged.Profile:
                 case WidgetPropertyChanged.DefinitionsPath:
+                case WidgetPropertyChanged.DestinySettings:
                     UpdateViewModel();
                     break;
+
+                case WidgetPropertyChanged.Language:
+                    UpdateSelectedLanguage();
+                    break;
             }
+        }
+
+        private void UpdateSelectedLanguage()
+        {
+            SelectedLanguage = Languages.FirstOrDefault(v => v.Identifier == AppState.Data.Language.Value);
+            Log.Info("SelectedLanguage {SelectedLanguage}", SelectedLanguage);
         }
 
         private void UpdateViewModel()
@@ -82,6 +108,14 @@ namespace GhostOverlay
             if (AppState.Data.DefinitionsPath != null)
             {
                 DefinitionsDbName = Path.GetFileName(AppState.Data.DefinitionsPath);
+            }
+
+            if (AppState.Data.DestinySettings?.Value?.SystemContentLocales != null)
+            {
+                Languages.Clear();
+                Languages.AddRange(AppState.Data.DestinySettings.Value.SystemContentLocales);
+
+                UpdateSelectedLanguage();
             }
 
             var userInfo = AppState.Data.Profile?.Profile?.Data?.UserInfo;
@@ -122,7 +156,7 @@ namespace GhostOverlay
             {
                 case 0: return "None";
                 case 1: return "Xbox";
-                case 2: return "PlayStation";
+                case 2: return "PSN";
                 case 3: return "Steam";
                 case 4: return "Blizzard";
                 case 5: return "Stadia";
@@ -136,6 +170,19 @@ namespace GhostOverlay
         private void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0 && e.AddedItems[0] is CommonModelsCoreSetting added && AppState.Data.Language.Value != added.Identifier)
+            {
+                Log.Info("Changed language to {added}", added.Identifier);
+                LanguageDefinitionsProgressRing.IsActive = true;
+                LanguageComboBox.IsEnabled = false;
+                await AppState.Data.UpdateDefinitionsLanguage(added.Identifier);
+                LanguageComboBox.IsEnabled = true;
+                LanguageDefinitionsProgressRing.IsActive = false;
+            }
         }
     }
 }

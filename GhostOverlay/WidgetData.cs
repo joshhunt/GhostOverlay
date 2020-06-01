@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Windows.Globalization;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
 using Microsoft.AppCenter.Crashes;
@@ -19,13 +20,21 @@ namespace GhostOverlay
         DefinitionsPath,
         ActiveCharacter,
         TokenData,
-        ProfileError
+        ProfileError,
+        DestinySettings,
+        DefinitionsUpdating,
+        Language,
     }
 
     public class WidgetValue<T>
     {
         private T backingValue;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
+
+        public delegate void OnChange(T newValue);
+
+        private readonly OnChange OnChangeFn;
+
 
         public WidgetValue(WidgetPropertyChanged k)
         {
@@ -38,6 +47,13 @@ namespace GhostOverlay
             backingValue = initialValue;
         }
 
+        public WidgetValue(WidgetPropertyChanged k, T initialValue, OnChange onChange)
+        {
+            Key = k;
+            backingValue = initialValue;
+            OnChangeFn = onChange;
+        }
+
         public WidgetPropertyChanged Key { get; set; }
 
         public T Value
@@ -48,6 +64,8 @@ namespace GhostOverlay
                 if (EqualityComparer<T>.Default.Equals(backingValue, value)) return;
 
                 backingValue = value;
+                OnChangeFn?.Invoke(backingValue);
+
                 eventAggregator.Publish(Key);
             }
         }
@@ -68,7 +86,15 @@ namespace GhostOverlay
 
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
 
+        public WidgetValue<CommonModelsCoreSettingsConfiguration> DestinySettings = new WidgetValue<CommonModelsCoreSettingsConfiguration>(WidgetPropertyChanged.DestinySettings);
         public WidgetValue<string> ProfileError = new WidgetValue<string>(WidgetPropertyChanged.ProfileError, "");
+        public WidgetValue<bool> DefinitionsUpdating = new WidgetValue<bool>(WidgetPropertyChanged.DefinitionsUpdating, false);
+
+        public WidgetValue<string> Language = new WidgetValue<string>(WidgetPropertyChanged.Language, "",
+            (newValue) =>
+            {
+                AppState.SaveSetting(SettingsKey.Language, newValue);
+            });
 
         private bool _profileIsUpdating;
         public bool ProfileIsUpdating
@@ -239,18 +265,6 @@ namespace GhostOverlay
             return TrackedEntries.Any(v => v.Matches(triumph));
         }
 
-        public void RestoreTrackedBountiesFromSettings()
-        {
-            TrackedEntries = AppState.GetTrackedEntriesFromSettings();
-            TrackedEntries.RemoveAll(v => v.Hash == 0 && v.InstanceId == 0);
-        }
-
-        public void RestoreBungieTokenDataFromSettings()
-        {
-            TokenData = OAuthToken.RestoreTokenFromSettings();
-            Log.Info("Restored TokenData");
-        }
-
         public void SignOutAndResetAllData()
         {
             CancelAllScheduledProfileUpdates();
@@ -260,6 +274,34 @@ namespace GhostOverlay
             TokenData = new OAuthToken();
 
             AppState.ClearUserSpecificSettings();
+        }
+
+        public void RestoreSettings()
+        {
+            Log.Info("Restoring settings");
+            TokenData = OAuthToken.RestoreTokenFromSettings();
+
+            TrackedEntries = AppState.GetTrackedEntriesFromSettings();
+            TrackedEntries.RemoveAll(v => v.Hash == 0 && v.InstanceId == 0);
+
+            Language.Value = AppState.ReadSetting(SettingsKey.Language, "@@UNSET"); // Default value is set in Definitions
+        }
+
+        public async Task<CommonModelsCoreSettingsConfiguration> UpdateDestinySettings()
+        {
+            DestinySettings.Value = await AppState.bungieApi.GetSettings();
+
+            return DestinySettings.Value;
+        }
+
+        public async Task UpdateDefinitionsLanguage(string newLanguage)
+        {
+            if (newLanguage == Language.Value) return;
+
+            Language.Value = newLanguage;
+            DefinitionsUpdating.Value = true;
+            await Definitions.CheckForLatestDefinitions();
+            DefinitionsUpdating.Value = false;
         }
     }
 }

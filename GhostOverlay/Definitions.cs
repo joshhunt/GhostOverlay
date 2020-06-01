@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.Foundation.Diagnostics;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
+using Windows.System;
 using BungieNetApi.Model;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
@@ -24,7 +25,7 @@ namespace GhostOverlay
         private static bool IsDownloading;
         private static Task<string> CurrentDownloadingTask;
         public static Task<string> Ready;
-        private static string DefaultLanguage = "en";
+        public static string FallbackLanguage = "en";
         private static int AttemptsToOpen = 0;
 
         public static int HashToDbHash(uint hash)
@@ -117,10 +118,61 @@ namespace GhostOverlay
             await OpenOrDownloadDatabase();
         }
 
+        public static List<string> GetSystemLanguages()
+        {
+            var systemLanguages = Windows.System.UserProfile.GlobalizationPreferences.Languages;
+            Log.Info("windows language {lang}", systemLanguages);
+
+            try
+            {
+                return systemLanguages.SelectMany(v =>
+                {
+                    var lang = v.ToLower();
+
+                    Regex re = new Regex(@"^(\w+)-", RegexOptions.IgnoreCase);
+                    var result = re.Match(lang);
+
+                    if (!result.Success)
+                    {
+                        return new List<string> { lang.ToLower() };
+                    }
+
+                    var prefix = result.Groups?[1]?.Captures?[0]?.ToString();
+                    var spread = new List<string> { lang, prefix };
+                    Log.Info("Spread {originalLanguage} to {spreadLanguages}", lang, spread);
+
+                    return spread;
+                }).ToList();
+            }
+            catch (Exception)
+            {
+                return new List<string> { FallbackLanguage };
+            }
+        }
+
         public static async Task<string> FetchLatestDefinitionsPath()
         {
-            var language = AppState.ReadSetting(SettingsKey.Language, DefaultLanguage);
             var manifest = await AppState.bungieApi.GetManifest();
+
+            var language = AppState.Data.Language.Value ?? "@@UNSET";
+            Log.Info("Language from AppState is {language}", language);
+
+            if (!manifest.MobileWorldContentPaths.ContainsKey(language))
+            {
+                Log.Info("Language is not in manifest, so going to find a new one");
+
+                var systemLanguages = GetSystemLanguages();
+                Log.Info("systemLanguages: {languages}", systemLanguages);
+
+                var foundLanguage = systemLanguages.FirstOrDefault(v => manifest.MobileWorldContentPaths.ContainsKey(v));
+                Log.Info("foundLanguage {language}", foundLanguage);
+
+                language = foundLanguage ?? FallbackLanguage;
+                AppState.Data.Language.Value = language;
+            }
+
+            Log.Info("Final language {language}", language);
+
             var remotePath = manifest.MobileWorldContentPaths[language];
             Log.Info("Remote definitions path {remotePath}", remotePath);
 

@@ -152,6 +152,11 @@ namespace GhostOverlay
             return GetBungie<DestinyConfigDestinyManifest>("/Platform/Destiny2/Manifest");
         }
 
+        public Task<CommonModelsCoreSettingsConfiguration> GetSettings()
+        {
+            return GetBungie<CommonModelsCoreSettingsConfiguration>("/Platform/Settings/");
+        }
+
         public async Task<T> GetBungie<T>(string path, bool requireAuth = false)
         {
             Log.Info("REQUEST {path}", path);

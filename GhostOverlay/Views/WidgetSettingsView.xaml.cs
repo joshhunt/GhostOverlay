@@ -81,6 +81,7 @@ namespace GhostOverlay
                     break;
 
                 case WidgetPropertyChanged.Profile:
+                case WidgetPropertyChanged.DefinitionsPath:
                     UpdateCharacterList();
                     break;
 
@@ -112,6 +113,11 @@ namespace GhostOverlay
             if (AppState.Data.ActiveCharacter == null)
             {
                 AppState.Data.ActiveCharacter = Characters.First();
+            }
+            else
+            {
+                AppState.Data.ActiveCharacter =
+                    Characters.FirstOrDefault(v => v.CharacterId == AppState.Data.ActiveCharacter.CharacterId);
             }
         }
 

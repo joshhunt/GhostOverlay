@@ -37,9 +37,8 @@ namespace GhostOverlay
 
             Log.Info("App starting");
 
+            AppState.Data.RestoreSettings();
             Task.Run(Definitions.Initialize);
-            AppState.Data.RestoreBungieTokenDataFromSettings();
-            AppState.Data.RestoreTrackedBountiesFromSettings();
 
             InitializeComponent();
 

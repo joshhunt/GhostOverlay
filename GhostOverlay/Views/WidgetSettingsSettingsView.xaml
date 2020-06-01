@@ -10,6 +10,16 @@
 
     <StackPanel Margin="16,8,16,0">
         <StackPanel>
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Preferences</TextBlock>
+
+
+            <StackPanel Orientation="Horizontal">
+                <ComboBox Name="LanguageComboBox" SelectedItem="{x:Bind SelectedLanguage, Mode=OneWay}" SelectionChanged="Selector_OnSelectionChanged" Margin="0,8,0,0" Header="Language" PlaceholderText="Select a language" Width="200" ItemsSource="{x:Bind Languages, Mode=OneWay}" DisplayMemberPath="DisplayName" />
+                <ProgressRing Margin="8,34,0,0" x:Name="LanguageDefinitionsProgressRing" IsActive="False" VerticalAlignment="Top"></ProgressRing>
+            </StackPanel>   
+        </StackPanel>
+
+        <StackPanel Margin="0,24,0,0">
             <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Bungie account</TextBlock>
             <TextBlock Margin="0,4,0,0"><Run Text="{x:Bind DisplayName, Mode=OneWay}" /> <Run Text="{x:Bind PlatformString, Mode=OneWay}" /></TextBlock>
 

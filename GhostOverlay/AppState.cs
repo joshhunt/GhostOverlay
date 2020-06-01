@@ -116,7 +116,7 @@ namespace GhostOverlay
         public static BungieApi bungieApi = new BungieApi();
         public static WidgetData Data = new WidgetData();
 
-        public static SettingsKey[] UserSpecificSettings = { SettingsKey.AccessToken, SettingsKey.RefreshToken, SettingsKey.AccessTokenExpiration, SettingsKey.RefreshTokenExpiration, SettingsKey.TrackedEntries };
+        public static SettingsKey[] UserSpecificSettings = { SettingsKey.AccessToken, SettingsKey.RefreshToken, SettingsKey.AccessTokenExpiration, SettingsKey.RefreshTokenExpiration, SettingsKey.TrackedEntries, SettingsKey.Language };
 
         public static T ReadSetting<T>(SettingsKey key, T defaultValue)
         {
