@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
+using Microsoft.AppCenter.Crashes;
 
 namespace GhostOverlay
 {
@@ -17,11 +18,45 @@ namespace GhostOverlay
         TrackedItems,
         DefinitionsPath,
         ActiveCharacter,
-        TokenData
+        TokenData,
+        ProfileError
+    }
+
+    public class WidgetValue<T>
+    {
+        private T backingValue;
+        private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
+
+        public WidgetValue(WidgetPropertyChanged k)
+        {
+            Key = k;
+        }
+
+        public WidgetValue(WidgetPropertyChanged k, T initialValue)
+        {
+            Key = k;
+            backingValue = initialValue;
+        }
+
+        public WidgetPropertyChanged Key { get; set; }
+
+        public T Value
+        {
+            get => backingValue;
+            set
+            {
+                if (EqualityComparer<T>.Default.Equals(backingValue, value)) return;
+
+                backingValue = value;
+                eventAggregator.Publish(Key);
+            }
+        }
     }
 
     public class WidgetData
     {
+        private readonly Logger Log = new Logger("WidgetData");
+
         // number of requests to schedule profile updates. 
         public int ProfileScheduleRequesters = 0;
         public static int ActiveProfileUpdateInterval = 15 * 1000;
@@ -32,6 +67,8 @@ namespace GhostOverlay
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
+
+        public WidgetValue<string> ProfileError = new WidgetValue<string>(WidgetPropertyChanged.ProfileError, "");
 
         private bool _profileIsUpdating;
         public bool ProfileIsUpdating
@@ -53,11 +90,11 @@ namespace GhostOverlay
             {
                 if (value?.Equals(_profile) ?? false)
                 {
-                    Debug.WriteLine("New profile is the same, so skipping");
+                    Log.Info("New profile is the same, so skipping");
                     return;
                 }
 
-                Debug.WriteLine("New profile is very different!!!");
+                Log.Info("New profile is very different!!!");
                 _profile = value;
                 ProfileUpdatedTime = DateTime.Now;
                 eventAggregator.Publish(WidgetPropertyChanged.Profile);
@@ -124,18 +161,20 @@ namespace GhostOverlay
             {
                 if (Profile == null)
                 {
-                    Debug.WriteLine("Updating profile, for the first time using GetProfileForCurrentUser");
+                    Log.Info("Updating profile, for the first time using GetProfileForCurrentUser");
                     Profile = await AppState.bungieApi.GetProfileForCurrentUser(AppState.bungieApi.DefaultProfileComponents);
                 }
                 else
                 {
                     Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                    ProfileError.Value = "";
                 }
             }
-            catch (Exception e)
+            catch (Exception err)
             {
-                Debug.WriteLine("Error trying to UpdateProfile:");
-                Debug.WriteLine(e);
+                Log.Error("Error with UpdateProfile", err);
+                Crashes.TrackError(err);
+                ProfileError.Value = err.Message;
             }
             
             ProfileIsUpdating = false;
@@ -144,12 +183,12 @@ namespace GhostOverlay
         public async void ScheduleProfileUpdates()
         {   
             ProfileScheduleRequesters += 1;
-            Debug.WriteLine($"ScheduleProfileUpdates, incrementing to {ProfileScheduleRequesters}");
+            Log.Info("ScheduleProfileUpdates, incrementing to {ProfileScheduleRequesters}", ProfileScheduleRequesters);
 
             if (ProfileScheduleRequesters >= 2)
             {
                 // Someone else has already started the schedule, so can just return
-                Debug.WriteLine("Updates area already happening, so we can return");
+                Log.Info("Updates area already happening, so we can return");
                 await UpdateProfile();
                 return;
             }
@@ -159,7 +198,7 @@ namespace GhostOverlay
                 await UpdateProfile();
 
                 var delay = WidgetsAreVisible ? ActiveProfileUpdateInterval : InactiveProfileUpdateInterval;
-                Debug.WriteLine($"Waiting {delay / 1000}s before fetching profile again");
+                Log.Info("Waiting {delaySeconds}s before fetching profile again", delay / 1000);
                 
                 await Task.Delay(delay);
             }
@@ -175,7 +214,7 @@ namespace GhostOverlay
             var sinceLastUpdate = DateTime.Now - ProfileUpdatedTime;
             if (WidgetsAreVisible && !ProfileIsUpdating && sinceLastUpdate.TotalMilliseconds > ActiveProfileUpdateInterval && ProfileScheduleRequesters > 0)
             {
-                Debug.WriteLine("Visiblity changed, updating profile");
+                Log.Info("Visiblity changed, updating profile");
                 _ = UpdateProfile();
             }
         }
@@ -204,17 +243,12 @@ namespace GhostOverlay
         {
             TrackedEntries = AppState.GetTrackedEntriesFromSettings();
             TrackedEntries.RemoveAll(v => v.Hash == 0 && v.InstanceId == 0);
-
-            foreach (var trackedEntry in TrackedEntries)
-                Debug.WriteLine($"  Restored {trackedEntry}");
         }
 
         public void RestoreBungieTokenDataFromSettings()
         {
             TokenData = OAuthToken.RestoreTokenFromSettings();
-
-            Debug.WriteLine("Restored TokenData:");
-            Debug.WriteLine(TokenData.ToString());
+            Log.Info("Restored TokenData");
         }
 
         public void SignOutAndResetAllData()

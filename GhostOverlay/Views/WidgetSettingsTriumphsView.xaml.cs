@@ -14,7 +14,7 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-        private static readonly LogFn Log = Logger.MakeLogger("WidgetSettingsTriumphsView");
+        private static readonly Logger Log = new Logger("WidgetSettingsTriumphsView");
         private readonly WidgetStateChangeNotifier notifier = new WidgetStateChangeNotifier();
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -82,7 +82,6 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            //Debug.WriteLine($"[WidgetSettingsTriumphsView] HandleMessage {message}");
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
@@ -94,7 +93,6 @@ namespace GhostOverlay
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            Debug.WriteLine("TriumphsView OnNavigatingFrom");
             base.OnNavigatingFrom(e);
             notifier.Unsubscribe(this);
         }
@@ -106,15 +104,15 @@ namespace GhostOverlay
 
             if (!AppState.Data.DefinitionsLoaded) return;
 
-            Log("UpdateViewModel");
+            Log.Info("UpdateViewModel");
 
             UpdateSecondLevel();
             UpdateThirdLevel();
             UpdateTriumphsListingView();
 
-            Log($"SelectedTopLevelNode: {SelectedTopLevelNode?.Definition?.DisplayProperties?.Name}");
-            Log($"SelectedSecondLevelNode: {SelectedSecondLevelNode?.Definition?.DisplayProperties?.Name} Contains: {secondLevelNodes.Contains(SelectedSecondLevelNode)}");
-            Log($"SelectedThirdLevelNode: {SelectedThirdLevelNode?.Definition?.DisplayProperties?.Name} Contains: {thirdLevelNodes.Contains(SelectedThirdLevelNode)}");
+            Log.Info($"SelectedTopLevelNode: {SelectedTopLevelNode?.Definition?.DisplayProperties?.Name}");
+            Log.Info($"SelectedSecondLevelNode: {SelectedSecondLevelNode?.Definition?.DisplayProperties?.Name} Contains: {secondLevelNodes.Contains(SelectedSecondLevelNode)}");
+            Log.Info($"SelectedThirdLevelNode: {SelectedThirdLevelNode?.Definition?.DisplayProperties?.Name} Contains: {thirdLevelNodes.Contains(SelectedThirdLevelNode)}");
         }
 
         private async void UpdateSecondLevel()
@@ -144,7 +142,6 @@ namespace GhostOverlay
             // Second, select a current item
             if (SelectedSecondLevelNode == null)
             {
-                Debug.WriteLine("selectedSecondLevelNode == null - I don't think this should happen?");
                 SelectedSecondLevelNode = secondLevelNodes[0];
             } else if (!secondLevelNodes.Contains(SelectedSecondLevelNode))
             {
@@ -162,7 +159,6 @@ namespace GhostOverlay
 
             if (SelectedSecondLevelNode == null)
             {
-                Debug.WriteLine("In UpdateThirdLevel, secondLevelNode really shouldnt be null");
                 return;
             }
 

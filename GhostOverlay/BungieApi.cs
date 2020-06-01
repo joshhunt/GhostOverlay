@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using BungieNetApi.Model;
+using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -83,6 +84,8 @@ namespace GhostOverlay
 
     public class BungieApi
     {
+        private readonly Logger Log = new Logger("BungieApi");
+
         // Loaded from Configuration.resw by the constructor
         private readonly string apiKey;
 
@@ -127,14 +130,19 @@ namespace GhostOverlay
             DestinyComponent[] components)
         {
             var membershipData = await GetMembershipsForCurrentUser();
+
             var user = membershipData.DestinyMemberships.Find(p =>
                 p.MembershipId == membershipData.PrimaryMembershipId);
 
             if (user == null)
             {
-                Debug.WriteLine("TODO: Unable to find primary membership, so just returning the 0th one");
+                Log.Info("Unable to find primary membership, so just returning the 0th one.");
+                Log.Debug(membershipData.ToJson());
+
                 user = membershipData.DestinyMemberships[0];
             }
+
+            Log.Info("Returning primary membership {MembershipType}:{MembershipId}", user.MembershipType, user.MembershipId);
 
             return await GetProfile(user.MembershipType, user.MembershipId, components, true);
         }
@@ -146,7 +154,7 @@ namespace GhostOverlay
 
         public async Task<T> GetBungie<T>(string path, bool requireAuth = false)
         {
-            Debug.WriteLine($"REQUEST {path}");
+            Log.Info("REQUEST {path}", path);
             var request = new RestRequest(path);
 
             if (AppState.Data.TokenData != null && AppState.Data.TokenData.RefreshTokenIsValid()) await EnsureTokenDataIsValid();
@@ -182,13 +190,13 @@ namespace GhostOverlay
         {
             if (AppState.Data.TokenData == null)
             {
-                Debug.WriteLine("ERROR: TokenData is null");
+                Log.Info("ERROR: TokenData is null");
                 throw new BungieApiException("TokenData is null when attempted to refresh it");
             }
 
             if (AppState.Data.TokenData.IsValid() != true)
             {
-                Debug.WriteLine("ERROR: TokenData is not valid");
+                Log.Info("ERROR: TokenData is not valid");
                 throw new BungieApiException("TokenData is not valid when attempted to refresh it");
             }
 
@@ -196,10 +204,9 @@ namespace GhostOverlay
 
             if (AppState.Data.TokenData.RefreshTokenIsValid())
             {
-                Debug.WriteLine("Need to refresh access token!");
+                Log.Info("Need to refresh access token!");
                 await RefreshOAuthAccessToken();
-                Debug.WriteLine("Successfully refreshed token. New TokenData:");
-                Debug.WriteLine(AppState.Data.TokenData);
+                Log.Info("Successfully refreshed token.");
                 return true;
             }
 
@@ -212,7 +219,7 @@ namespace GhostOverlay
             if (AppState.Data.TokenData == null || AppState.Data.TokenData.RefreshTokenIsValid() != true)
             {
                 // TODO: throw exception?
-                Debug.WriteLine("ERROR: have no valid refresh token to use to refresh");
+                Log.Info("ERROR: have no valid refresh token to use to refresh");
                 return;
             }
 

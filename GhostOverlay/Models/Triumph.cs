@@ -49,7 +49,6 @@ namespace GhostOverlay.Models
 
                 if (record != null)
                 {
-                    Debug.WriteLine($"Found triumph {triumphHash} in character {characterId}");
                     break;
                 };
             }

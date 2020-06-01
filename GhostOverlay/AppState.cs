@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using Windows.Storage;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
+using Microsoft.AppCenter.Ingestion.Models;
 using Newtonsoft.Json;
 
 namespace GhostOverlay
@@ -110,13 +111,12 @@ namespace GhostOverlay
 
     public static class AppState
     {
+        private static readonly Logger Log = new Logger("AppState");
+
         public static BungieApi bungieApi = new BungieApi();
         public static WidgetData Data = new WidgetData();
 
         public static SettingsKey[] UserSpecificSettings = { SettingsKey.AccessToken, SettingsKey.RefreshToken, SettingsKey.AccessTokenExpiration, SettingsKey.RefreshTokenExpiration, SettingsKey.TrackedEntries };
-
-        [Obsolete("Use AppState.Widgetdata.TokenData instead.")]
-        public static OAuthToken TokenData { get; set; }
 
         public static T ReadSetting<T>(SettingsKey key, T defaultValue)
         {
@@ -145,14 +145,15 @@ namespace GhostOverlay
         internal static void SaveTrackedEntries(List<TrackedEntry> trackedEntries)
         {
             var json = JsonConvert.SerializeObject(trackedEntries);
-            Debug.WriteLine($"Actually saving setting {trackedEntries.Count} entries");
+            Log.Info("Saving {trackedEntriesCount} tracked entries", trackedEntries.Count);
             SaveSetting(SettingsKey.TrackedEntries, json);
         }
 
         public static List<TrackedEntry> GetTrackedEntriesFromSettings()
         {
             var json = ReadSetting(SettingsKey.TrackedEntries, "[]");
-            Debug.WriteLine($"Restored {json}");
+            Log.Info("Restored tracked entries json");
+            Log.Debug("JSON: {json}", json);
             return JsonConvert.DeserializeObject<List<TrackedEntry>>(json);
         }
 

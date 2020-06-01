@@ -18,6 +18,8 @@ namespace GhostOverlay
     /// </summary>
     public sealed partial class WidgetNotAuthedView : Page
     {
+        private readonly Logger Log = new Logger("WidgetNotAuthedView");
+
         private XboxGameBarWidget widget = null;
         private XboxGameBarWebAuthenticationBroker gameBarWebAuth;
 
@@ -33,11 +35,11 @@ namespace GhostOverlay
 
             if (widget == null)
             {
-                Debug.WriteLine("Widget parameter is null");
+                Log.Info("Widget parameter is null");
                 return;
             }
 
-            Debug.WriteLine("WidgetMainView OnNavigatedTo setting widget settings");
+            Log.Info("WidgetMainView OnNavigatedTo setting widget settings");
             widget.MaxWindowSize = new Size(1500, 1500);
             widget.MinWindowSize = new Size(200, 100);
             widget.HorizontalResizeSupported = true;
@@ -56,7 +58,7 @@ namespace GhostOverlay
             }
             else
             {
-                Debug.WriteLine("TODO: Failed to launch Bungie auth page");
+                Log.Error("TODO: Failed to launch Bungie auth page");
             } 
         }
 
@@ -77,17 +79,15 @@ namespace GhostOverlay
 
             if (result.ResponseStatus == XboxGameBarWebAuthenticationStatus.Success)
             {
-                Debug.WriteLine($"Auth has returned successfully with data {result.ResponseData}");
+                Log.Error($"Auth broker has returned successfully with data {result.ResponseData}");
 
                 var responseUri = new Uri(result.ResponseData);
                 var parsed = HttpUtility.ParseQueryString(responseUri.Query);
                 var authCode = parsed["code"];
 
-                Debug.WriteLine($"authCode: {authCode}");
-
                 await AppState.bungieApi.GetOAuthAccessToken(authCode);
 
-                Debug.WriteLine($"New token data: {AppState.Data.TokenData}");
+                Log.Info("New token data (its there, trust me)");
 
                 if (AppState.Data.TokenData.IsValid())
                 {

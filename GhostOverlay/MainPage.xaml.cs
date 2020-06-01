@@ -13,14 +13,11 @@ namespace GhostOverlay
         public MainPage()
         {
             this.InitializeComponent();
-            Debug.WriteLine("MainPage is running!");
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs ev)
         {
             base.OnNavigatedTo(ev);
-
-            Debug.WriteLine("MainPage OnNavigatedTo");
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)

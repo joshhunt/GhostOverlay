@@ -4,11 +4,15 @@ using System.Threading.Tasks;
 using System.Web;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Resources;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.Gaming.XboxGameBar;
+using Microsoft.AppCenter.Crashes;
 
 namespace GhostOverlay
 {
@@ -17,6 +21,7 @@ namespace GhostOverlay
     /// </summary>
     sealed partial class App : Application
     {
+        private readonly Logger Log = new Logger("App");
         private Frame appRootFrame;
         private XboxGameBarWidget widgetMain;
         private XboxGameBarWidget widgetMainSettings;
@@ -27,7 +32,12 @@ namespace GhostOverlay
         /// </summary>
         public App()
         {
-            Task.Run(Definitions.InitializeDatabase);
+            var resources = new ResourceLoader("Configuration");
+            AppCenter.Start(resources.GetString("AppCenterSecret"), typeof(Analytics), typeof(Crashes));
+
+            Log.Info("App starting");
+
+            Task.Run(Definitions.Initialize);
             AppState.Data.RestoreBungieTokenDataFromSettings();
             AppState.Data.RestoreTrackedBountiesFromSettings();
 
@@ -38,12 +48,12 @@ namespace GhostOverlay
 
         protected override void OnActivated(IActivatedEventArgs args)
         {
-            Debug.WriteLine("OnActivated");
+            Log.Info("OnActivated");
             if (args.Kind != ActivationKind.Protocol) return;
 
             var protocolArgs = args as IProtocolActivatedEventArgs;
             var scheme = protocolArgs?.Uri?.Scheme ?? "";
-            Debug.WriteLine($"app was activated with scheme {scheme}");
+            Log.Info("Activated with scheme {scheme}", scheme);
 
             switch (scheme)
             {
@@ -64,19 +74,19 @@ namespace GhostOverlay
                     break;
 
                 default:
-                    Debug.WriteLine("App was activated with unknown scheme");
+                    Log.Error("App was activated with unknown scheme");
                     break;
             }
         }
 
         private void HandleGameBarWidgetActivation(IActivatedEventArgs args)
         {
-            Debug.WriteLine("HandleGameBarWidgetActivation");
+            Log.Info("HandleGameBarWidgetActivation");
             var widgetArgs = args as XboxGameBarWidgetActivatedEventArgs;
 
             if (widgetArgs == null || !widgetArgs.IsLaunchActivation) return;
 
-            Debug.WriteLine($"\n*** Game bar widget activation for {widgetArgs.AppExtensionId} ***");
+            Log.Info("Game bar widget activation for {widgetExtensionId}", widgetArgs.AppExtensionId);
 
             var widgetRootFrame = new Frame();
             widgetRootFrame.NavigationFailed += OnNavigationFailed;
@@ -125,13 +135,17 @@ namespace GhostOverlay
 
         private async void HandleAuthCode(string authCode)
         {
-            Debug.WriteLine($"handling auth code {authCode}");
+            Log.Info($"Handling auth code");
             await AppState.bungieApi.GetOAuthAccessToken(authCode);
 
-            Debug.WriteLine($"saved access token?: {AppState.Data.TokenData}");
+            Log.Info($"GetOAuthAccessToken returned");
 
             if (AppState.Data.TokenData.IsValid() != true)
+            {
+                // TODO: Navigate to an error page
+                Log.Error("Exchanged code for token, but the TokenData is not valid");
                 throw new Exception("Exchanged code for token, but the TokenData is not valid??");
+            }
 
             appRootFrame?.Navigate(typeof(AppAuthSuccessfulView));
         }
@@ -155,8 +169,6 @@ namespace GhostOverlay
             // Do not repeat app initialization when the Window already has content,
             if (appRootFrame == null)
             {
-                Debug.WriteLine("App root frame is null, making a new one");
-
                 // Create a Frame to act as the navigation context and navigate to the first page
                 appRootFrame = new Frame();
                 appRootFrame.NavigationFailed += OnNavigationFailed;
@@ -181,14 +193,8 @@ namespace GhostOverlay
 
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            Debug.WriteLine("OnLaunched");
-
+            Log.Info("OnLaunched");
             LaunchMainApp();
-
-            if (e.PrelaunchActivated)
-            {
-                Debug.WriteLine("PrelaunchActivated was true, i wonder if we needed to do something different here?");
-            }
         }
 
         private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
@@ -198,7 +204,6 @@ namespace GhostOverlay
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            Debug.WriteLine("OnSuspending");
             var deferral = e.SuspendingOperation.GetDeferral();
 
             widgetMainSettings = null;

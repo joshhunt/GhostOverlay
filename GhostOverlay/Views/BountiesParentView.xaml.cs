@@ -18,7 +18,7 @@ namespace GhostOverlay.Views
     /// </summary>
     public sealed partial class BountiesParentView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-        private static readonly LogFn Log = Logger.MakeLogger("BountiesParentView");
+        private static readonly Logger Log = new Logger("BountiesParentView");
         private static readonly string[] IgnoreTraits = {"item_type.bounty"};
 
         private static readonly List<string> TraitOrder = new List<string>

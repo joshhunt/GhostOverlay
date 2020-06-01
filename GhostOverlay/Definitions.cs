@@ -32,46 +32,48 @@ namespace GhostOverlay
             return unchecked((int) hash);
         }
 
-        private static readonly LogFn Log = Logger.MakeLogger("Definitions");
+        private static readonly Logger Log = new Logger("Definitions");
 
-        public static async void InitializeDatabase()
+        public static async void Initialize()
         {
-            Log("InitializeDatabase");
+            Log.Info("Initialize");
 
-            Ready = ActuallyInitializeDatabase();
-            Log("Called ActuallyInitializeDatabase");
+            Ready = OpenOrDownloadDatabase();
+            Log.Info("Called OpenOrDownloadDatabase");
 
             await Ready;
-            Log("Awaited Ready - should be good now");
+            Log.Info("Awaited Ready - should be good now");
 
             _ = CheckForLatestDefinitions();
-            Log("Called CheckForLatestDefinitions");
         }
 
-        public static async Task<string> ActuallyInitializeDatabase()
+        public static async Task<string> OpenOrDownloadDatabase()
         {
+            Log.Info("OpenOrDownloadDatabase attempt {AttemptsToOpen}", AttemptsToOpen);
+
             var definitionsPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
-            Log($"definitionsPath from settings is {definitionsPath}");
+            Log.Info("definitionsPath settings value: {definitionsPath}", definitionsPath);
+
             var definitionsExist = !definitionsPath.Equals(defaultDefinitionsPath) && File.Exists(definitionsPath);
 
             if (!definitionsExist)
             {
-                Log("Definitions don't exist, need to download!");
+                Log.Info("Definitions don't exist, need to download!");
                 definitionsPath = await DownloadDefinitionsDatabase();
             }
 
-            Log($"definitiosPath is {definitionsPath}");
+            Log.Info("Final definitions path: {definitionsPath}", definitionsPath);
 
             if (db != null && db.State.HasFlag(ConnectionState.Open))
             {
-                Log("db is already open!!!");
+                Log.Info("db is already open, closing it");
                 db.Close();
                 db = null;
             }
 
             db = new SqliteConnection($"Filename={definitionsPath}");
             await db.OpenAsync();
-            Log("Opened database, going to test it");
+            Log.Info("Opened database, going to test it");
 
             AttemptsToOpen += 1;
             var databaseWorks = await TestDatabase();
@@ -80,22 +82,22 @@ namespace GhostOverlay
             {
                 if (AttemptsToOpen < 2)
                 {
-                    Log("FAILED to open definitions database. Going to clear them all and redownload");
+                    Log.Info("FAILED to open definitions database. Going to clear them all and redownload");
                     ClearAllDefinitions();
                     AppState.SaveSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
                     AppState.ClearSetting(SettingsKey.DefinitionsPath);
 
-                    Log("Okay, trying to open/download definitions again");
-                    return await ActuallyInitializeDatabase();
+                    Log.Info("Okay, trying to open/download definitions again");
+                    return await OpenOrDownloadDatabase();
                 }
 
-                Log("Failed to open definitions, giving up.");
+                Log.Info("Failed to open definitions, giving up.");
                 throw new Exception("Unable to open definitions - it seems corrupt or something?");
             }
 
             AppState.Data.DefinitionsPath = definitionsPath;
 
-            Log("Cleaning up old definitions");
+            Log.Info("Cleaning up old definitions");
             CleanUpDownloadedDefinitions(definitionsPath);
 
             return definitionsPath;
@@ -105,24 +107,22 @@ namespace GhostOverlay
         {
             if (await IsDefinitionsLatest())
             {
-                Log("CheckForLatestDefinitions, definitions are latest");
+                Log.Info("CheckForLatestDefinitions, definitions are latest");
                 return;
             }
 
-            Log("CheckForLatestDefinitions, definitions are NOT latest, so DOWNLOADING");
+            Log.Info("CheckForLatestDefinitions, definitions are NOT latest, so DOWNLOADING");
             await DownloadDefinitionsDatabase();
 
-            await ActuallyInitializeDatabase();
+            await OpenOrDownloadDatabase();
         }
 
         public static async Task<string> FetchLatestDefinitionsPath()
         {
             var language = AppState.ReadSetting(SettingsKey.Language, DefaultLanguage);
-            Log($"language: {language}");
             var manifest = await AppState.bungieApi.GetManifest();
-            Log("*** got manifest back");
             var remotePath = manifest.MobileWorldContentPaths[language];
-            Log($"*** remotePath {remotePath}");
+            Log.Info("Remote definitions path {remotePath}", remotePath);
 
             return $"https://www.bungie.net{remotePath}";
         }
@@ -131,18 +131,18 @@ namespace GhostOverlay
         {
             if (IsDownloading)
             {
-                Log("Already downloading, returning previous Task");
+                Log.Info("Already downloading, returning previous Task");
                 return await CurrentDownloadingTask;
             }
 
-            Log("Downloading new definitions, new task");
+            Log.Info("Downloading new definitions, new task");
             IsDownloading = true;
             CurrentDownloadingTask = DownloadDefinitionsDatabaseWork();
             await CurrentDownloadingTask;
-            Log("Done downloading");
+            Log.Info("Done downloading");
             IsDownloading = false;
 
-            Log("Done downloading - returning await again");
+            Log.Info("Done downloading - returning await again");
             return await CurrentDownloadingTask;
         }
 
@@ -151,68 +151,67 @@ namespace GhostOverlay
             var appData = ApplicationData.Current;
             var urlString = await FetchLatestDefinitionsPath();
 
-            Log($"urlString: {urlString}");
+            Log.Info("urlString: {urlString}", urlString);
 
             // TODO: check to see if it's already downloaded?
 
             var source = new Uri(urlString);
-            Log($"source {source}");
+            Log.Info("source {source}", source);
 
             var baseName = Path.GetFileNameWithoutExtension(urlString);
             var destFileName = $"{baseName}.zip";
             var destinationFile =
                 await appData.LocalCacheFolder.CreateFileAsync(destFileName, CreationCollisionOption.ReplaceExisting);
 
-            Log($"Downloading {source} to {destinationFile.Path}");
+            Log.Info("Downloading {sourceUrl} to {destinationPath}", source, destinationFile.Path);
 
             var downloader = new BackgroundDownloader();
             var download = downloader.CreateDownload(source, destinationFile);
 
             await download.StartAsync();
 
-            Log("maybe the download finished?");
-
-            Log("Unzipping");
+            Log.Info("Download finished, unzipping");
             await Task.Run(() => ZipFile.ExtractToDirectory(destinationFile.Path, appData.LocalCacheFolder.Path, Encoding.UTF8, true));
 
             var definitionsDbFile = Path.Combine(appData.LocalCacheFolder.Path, $"{baseName}.content");
-            Log($"maybe finished unzipping? {definitionsDbFile}");
+            Log.Info("Finished unzipping {definitionsDbFile}", definitionsDbFile);
 
-            if (!File.Exists(definitionsDbFile)) Log("Handle the definitions not existing?");
+            if (!File.Exists(definitionsDbFile))
+            {
+                Log.Error("Database does not exist at the expected location");
+            }
 
             AppState.SaveSetting(SettingsKey.DefinitionsPath, definitionsDbFile);
 
-            Log($"All finished, definitions at {definitionsDbFile}");
+            Log.Info("All finished, definitions at {definitionsDbFile}", definitionsDbFile);
 
             return definitionsDbFile;
         }
 
         private static async Task<bool> IsDefinitionsLatest()
         {
-            Log("IsDefinitionsLatest");
+            Log.Info("IsDefinitionsLatest");
 
             var currentPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
-            Log($"currentPath: {currentPath}");
+            Log.Info($"currentPath: {currentPath}");
 
             if (currentPath.Equals("@@NotDownloaded"))
             {
-                Log($"returning early");
+                Log.Info($"returning early");
                 return false;
             }
 
-            Log("*** About to FetchLatestDefinitionsPath");
             var latestRemotePath = await FetchLatestDefinitionsPath();
-            Log("*** Finished  FetchLatestDefinitionsPath");
-            Log($"latestRemotePath: {latestRemotePath}");
+            Log.Info($"latestRemotePath: {latestRemotePath}");
 
             var currentBathPath = Path.GetFileNameWithoutExtension(currentPath);
             var latestBasePath = Path.GetFileNameWithoutExtension(latestRemotePath);
 
-            Log($"currentBathPath: {currentBathPath}");
-            Log($"latestBasePath: {latestBasePath}");
+            Log.Info("currentBathPath {currentBathPath}", currentBathPath);
+            Log.Info("latestBasePath {latestBasePath}", latestBasePath);
 
             var isLatest = currentBathPath == latestBasePath;
-            Log($"isLatest: {isLatest}");
+            Log.Info($"isLatest: {isLatest}");
 
             return isLatest;
         }
@@ -235,13 +234,12 @@ namespace GhostOverlay
             {
                 try
                 {
-                    Log($"Deleting {storageFile.Path}");
+                    Log.Info($"Deleting {storageFile.Path}");
                     await storageFile.DeleteAsync();
                 }
-                catch (Exception e)
+                catch (Exception err)
                 {
-                    Log("Unable to clean up definition:");
-                    Debug.WriteLine(e);
+                    Log.Error("Unable to clean up definition", err);
                 }
                 
             }
@@ -260,13 +258,12 @@ namespace GhostOverlay
             {
                 try
                 {
-                    Log($"Deleting {storageFile.Path}");
+                    Log.Info($"Deleting {storageFile.Path}");
                     await storageFile.DeleteAsync();
                 }
-                catch (Exception e)
+                catch (Exception err)
                 {
-                    Log("Unable to clean up definition:");
-                    Debug.WriteLine(e);
+                    Log.Error("Unable to clean up definition", err);
                 }
 
             }
@@ -274,15 +271,22 @@ namespace GhostOverlay
 
         public static async Task<bool> TestDatabase()
         {
+            var querySql = "SELECT json FROM DestinyClassDefinition WHERE id = @Hash;";
+            var queryHash = 2271682572; // warlock
+
             try
             {
-                await GetDefinition<DestinyDefinitionsDestinyClassDefinition>("SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", 2271682572, true); // warlock
+                var result = await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(querySql, queryHash, true); 
+
+                if (result == null)
+                {
+                    throw new Exception("Test query was successful, but it returned null");
+                }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception err)
             {
-                Log("Failed to get test value DestinyClassDefinition hash 2271682572 (Warlock)");
-                Debug.WriteLine(e);
+                Log.Error($"TestDatabase with query {querySql} and hash {queryHash} failed", err);
                 return false;
             }
         }

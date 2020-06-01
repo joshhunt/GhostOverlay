@@ -12,7 +12,7 @@ namespace GhostOverlay
     public sealed partial class WidgetSettingsBountiesView : Page, ISubscriber<WidgetPropertyChanged>
     {
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
-        private static readonly LogFn Log = Logger.MakeLogger("WidgetSettingsBountiesView");
+        private static readonly Logger Log = new Logger("WidgetSettingsBountiesView");
 
         private readonly RangeObservableCollection<Item> Bounties = new RangeObservableCollection<Item>();
         private bool viewIsUpdating;
@@ -28,7 +28,7 @@ namespace GhostOverlay
             if (e.Parameter is ItemTrait traitParam)
             {
                 selectedTrait = traitParam;
-                Log($"navigated to with trait {selectedTrait.TraitId}");
+                Log.Info($"navigated to with trait {selectedTrait.TraitId}");
             }
 
             eventAggregator.Subscribe(this);
@@ -43,7 +43,7 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Log($"HandleMessage {message}");
+            Log.Info($"HandleMessage {message}");
 
             switch (message)
             {

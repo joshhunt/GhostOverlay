@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.AppCenter.Ingestion.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -52,8 +53,6 @@ namespace GhostOverlay.Views
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            //Debug.WriteLine($"[SettingsRootTriumphsView] HandleMessage {message}");
-
             switch (message) 
             {
                 case WidgetPropertyChanged.DefinitionsPath:

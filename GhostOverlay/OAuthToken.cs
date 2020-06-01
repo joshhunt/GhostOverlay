@@ -40,8 +40,6 @@ namespace GhostOverlay
             var accessTokenExpiration = AppState.ReadSetting(SettingsKey.AccessTokenExpiration, DefaultExpirationTime);
             var refreshTokenExpiration = AppState.ReadSetting(SettingsKey.RefreshTokenExpiration, DefaultExpirationTime);
 
-            Debug.WriteLine($"restored access token {accessToken}");
-
             var tokenData = new OAuthToken
             {
                 Version = version,

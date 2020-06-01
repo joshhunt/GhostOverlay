@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.Gaming.XboxGameBar;
 using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 using Microsoft.Toolkit.Uwp.UI.Extensions;
@@ -35,6 +36,8 @@ namespace GhostOverlay
             ProfileError,
             DefinitionsLoading
         }
+
+        private readonly Logger Log = new Logger("WidgetMainView");
 
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
@@ -350,7 +353,6 @@ namespace GhostOverlay
 
         private async void Widget_SettingsClicked(XboxGameBarWidget sender, object args)
         {
-            Log("Tryna open settings");
             await widget.ActivateSettingsAsync();
         }
 
@@ -385,11 +387,6 @@ namespace GhostOverlay
         private void ClearAllItems_OnClick(object sender, RoutedEventArgs e)
         {
             AppState.Data.TrackedEntries = new List<TrackedEntry>();
-        }
-
-        private void Log(string message)
-        {
-            Debug.WriteLine($"[WidgetMainView] {message}");
         }
     }
 }

@@ -23,7 +23,7 @@ namespace GhostOverlay
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         public event PropertyChangedEventHandler PropertyChanged;
-        private static readonly LogFn Log = Logger.MakeLogger("WidgetSettingsView");
+        private static readonly Logger Log = new Logger("WidgetSettingsView");
 
         private readonly ObservableCollection<Character> Characters = new ObservableCollection<Character>();
 
@@ -74,7 +74,6 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            //Debug.WriteLine($"[WidgetSettingsView] HandleMessage {message}");
             switch (message)
             {
                 case WidgetPropertyChanged.TokenData:
@@ -172,7 +171,7 @@ namespace GhostOverlay
         {
             if (sender is Button button && button.Tag is long characterId)
             {
-                Log("CharacterSelectButtonClicked set active character");
+                Log.Info("CharacterSelectButtonClicked set active character");
                 AppState.Data.ActiveCharacter = Characters.FirstOrDefault(v => v.CharacterId == characterId) ?? Characters.First();
                 CharacterSelectFlyout.Hide();
             }
