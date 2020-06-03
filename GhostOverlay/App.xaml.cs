@@ -35,7 +35,7 @@ namespace GhostOverlay
             var resources = new ResourceLoader("Configuration");
             AppCenter.Start(resources.GetString("AppCenterSecret"), typeof(Analytics), typeof(Crashes));
 
-            Log.Info("App starting");
+            //Log.Info("App starting");
 
             AppState.Data.RestoreSettings();
             Task.Run(Definitions.Initialize);
