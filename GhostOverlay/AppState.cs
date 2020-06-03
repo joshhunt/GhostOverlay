@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using Windows.Storage;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
-using Microsoft.AppCenter.Ingestion.Models;
 using Newtonsoft.Json;
 
 namespace GhostOverlay

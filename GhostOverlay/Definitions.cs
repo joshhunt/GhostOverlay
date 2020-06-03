@@ -12,6 +12,7 @@ using Windows.Foundation.Diagnostics;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI.Shell;
 using BungieNetApi.Model;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
@@ -35,7 +36,7 @@ namespace GhostOverlay
 
         private static readonly Logger Log = new Logger("Definitions");
 
-        public static async void Initialize()
+        public static async Task Initialize()
         {
             Log.Info("Initialize");
 

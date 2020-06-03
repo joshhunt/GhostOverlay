@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using BungieNetApi.Model;
-using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using RestSharp;
 

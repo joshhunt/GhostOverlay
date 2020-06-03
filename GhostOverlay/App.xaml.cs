@@ -9,10 +9,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
 using Microsoft.Gaming.XboxGameBar;
-using Microsoft.AppCenter.Crashes;
 
 namespace GhostOverlay
 {
@@ -32,22 +29,17 @@ namespace GhostOverlay
         /// </summary>
         public App()
         {
-            var resources = new ResourceLoader("Configuration");
-            AppCenter.Start(resources.GetString("AppCenterSecret"), typeof(Analytics), typeof(Crashes));
-
-            //Log.Info("App starting");
+            InitializeComponent();
+            Suspending += OnSuspending;
 
             AppState.Data.RestoreSettings();
             Task.Run(Definitions.Initialize);
-
-            InitializeComponent();
-
-            Suspending += OnSuspending;
         }
 
         protected override void OnActivated(IActivatedEventArgs args)
         {
             Log.Info("OnActivated");
+            
             if (args.Kind != ActivationKind.Protocol) return;
 
             var protocolArgs = args as IProtocolActivatedEventArgs;

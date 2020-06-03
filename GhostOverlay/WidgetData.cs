@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Windows.Globalization;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
-using Microsoft.AppCenter.Crashes;
 
 namespace GhostOverlay
 {
@@ -199,7 +198,6 @@ namespace GhostOverlay
             catch (Exception err)
             {
                 Log.Error("Error with UpdateProfile", err);
-                Crashes.TrackError(err);
                 ProfileError.Value = err.Message;
             }
             
