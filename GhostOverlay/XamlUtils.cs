@@ -104,55 +104,15 @@ namespace GhostOverlay
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var icons = new[]
-            {
-                ("[Grenade Launcher]", "", 5924951L),
-                ("[Sniper Rifle]", "", 27869698L),
-                ("[Grenade]", "", 45245118L),
-                ("[Hand Cannon]", "", 53304862L),
-                ("[Void]", "", 54906502L),
-                ("[Auto Rifle]", "", 60057218L),
-                ("[Fusion Rifle]", "", 120861495L),
-                ("[Kill]", "", 130479533L),
-                ("[SMG]", "", 218704521L),
-                ("[Arc]", "", 232832120L),
-                ("[Headshot]", "", 234754498L),
-                ("[Scout Rifle]", "", 236969823L),
-                ("[Rocket Launcher]", "", 238063032L),
-                ("[Shotgun]", "", 258599004L),
-                ("[Hunter: Arcstrider Super]", "", 269520342L),
-                ("[Small Blocker]", "", 276438067L),
-                ("[Sidearm]", "", 299893109L),
-                ("[Solar]", "", 312507792L),
-                ("[Melee]", "", 314405660L),
-                ("[Pulse Rifle]", "", 420092262L),
-                ("[Sword]", "", 989767424L),
-                ("[Titan: Sentinel Super]", "", 1043633269L),
-                ("[Bow]", "", 1093443739L),
-                ("[Warlock: Dawnblade Super]", "", 1363382181L),
-                ("[Trace Rifle]", "", 1375652735L),
-                ("[Linear Fusion Rifle]", "", 1448686440L),
-                ("[Machine Gun]", "", 1452824294L),
-                ("[Hunter: Gunslinger Super]", "", 1633845729L),
-                ("[Warlock: Voidwalker Super]", "", 1733112051L),
-                ("[Large Blocker]", "", 2031240843L),
-                ("", "", 2258101260L),
-                ("[Hunter: Nightstalker Super]", "", 2904388000L),
-                ("[Titan: Sunbreaker Super]", "", 2905697046L),
-                ("[Titan: Striker Super]", "", 2975056954L),
-                ("[Medium Blocker]", "", 3792840449L),
-                ("[Quest]", "", 3915460773L),
-                ("", "", 4231452845L)
-            };
+            var lang = AppState.Data.Language.Value ?? Definitions.FallbackLanguage;
 
-            
-
-            if (value is string)
+            if (value is string text && Definitions.IconData.ContainsKey(lang))
             {
-                var text = (string)value;
-                foreach (var icon in icons)
+                var iconDataForLanguage = Definitions.IconData[lang];
+
+                foreach (var icon in iconDataForLanguage)
                 {
-                    text = text.Replace(icon.Item1, icon.Item2);
+                    text = text.Replace(icon[0], icon[1]);
                 }
 
                 return text;

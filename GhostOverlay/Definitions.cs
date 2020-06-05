@@ -18,9 +18,12 @@ using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 
 namespace GhostOverlay
-{
+{   
     public static class Definitions
     {
+        private static readonly Uri IconDataRemoteUrl =
+            new Uri("https://raw.githubusercontent.com/joshhunt/ghost-site/master/generated-data/icons-by-label.json");
+
         private static readonly string defaultDefinitionsPath = "@@NotDownloaded";
         private static SqliteConnection db;
         private static bool IsDownloading;
@@ -28,6 +31,7 @@ namespace GhostOverlay
         public static Task<string> Ready;
         public static string FallbackLanguage = "en";
         private static int AttemptsToOpen = 0;
+        public static Dictionary<string, List<List<string>>> IconData = new Dictionary<string, List<List<string>>>();
 
         public static int HashToDbHash(uint hash)
         {
@@ -96,6 +100,9 @@ namespace GhostOverlay
                 Log.Info("Failed to open definitions, giving up.");
                 throw new Exception("Unable to open definitions - it seems corrupt or something?");
             }
+
+            Log.Info("Init icon data");
+            InitializeIconData();
 
             AppState.Data.DefinitionsPath = definitionsPath;
 
@@ -343,6 +350,44 @@ namespace GhostOverlay
                 return false;
             }
         }
+
+        private static async void InitializeIconData()
+        {
+            var appData = ApplicationData.Current;
+            var iconDataFilePath = Path.Combine(appData.LocalCacheFolder.Path, "iconData.json");
+
+            if (File.Exists(iconDataFilePath))
+            {
+                await ReadIconData(iconDataFilePath);
+            }
+
+            var newIconDataFile = await appData.LocalCacheFolder.CreateFileAsync("iconData.json", CreationCollisionOption.ReplaceExisting);
+
+            try
+            {
+                var downloader = new BackgroundDownloader();
+                var download = downloader.CreateDownload(IconDataRemoteUrl, newIconDataFile);
+                await download.StartAsync();
+
+                await ReadIconData(iconDataFilePath);
+            }
+            catch (Exception err)
+            {
+                Log.Error("Error trying to fetch new icon data", err);
+            }
+        }
+
+        private static async Task ReadIconData(string iconDataFilePath)
+        {
+            Log.Info("Reading icon data from {iconDataFilePath}", iconDataFilePath);
+
+            // This should run after definitions init, so language is set properly
+            var fileString = await File.ReadAllTextAsync(iconDataFilePath);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, List<List<string>>>>(fileString);
+
+            IconData = data;
+        }
+
 
         public static async Task<List<T>> GetMultipleDefinitions<T>(string command)
         {

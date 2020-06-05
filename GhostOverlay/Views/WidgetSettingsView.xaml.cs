@@ -45,17 +45,26 @@ namespace GhostOverlay
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            Log.Info("OnNavigatedTo");
             widget = e.Parameter as XboxGameBarWidget;
 
             if (widget != null)
             {
+                Log.Info("widget not null, setting MaxWindowSize");
                 widget.MaxWindowSize = new Size(2000, 2000);
+
+                Log.Info("widget not null, setting MinWindowSize");
                 widget.MinWindowSize = new Size(715, 200);
 
+                Log.Info("widget not null, setting supported resize stuff");
                 widget.HorizontalResizeSupported = true;
                 widget.VerticalResizeSupported = true;
+
+                Log.Info("widget not null, setting SettingsSupported");
                 widget.SettingsSupported = false;
             }
+
+            Log.Info("Done with Widget stuff, onto view init");
 
             NavView.SelectedItem = NavView.MenuItems[0];
 
@@ -64,6 +73,8 @@ namespace GhostOverlay
 
             UpdateCharacterList();
             UpdateActiveCharacter();
+
+            Log.Info("OnNavigatedTo complete");
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)

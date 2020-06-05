@@ -44,9 +44,11 @@ namespace GhostOverlay
             widget.MinWindowSize = new Size(200, 100);
             widget.HorizontalResizeSupported = true;
             widget.VerticalResizeSupported = true;
+
+            WaitForAuth();
         }
 
-        public async void LoginWithDesktopBrowser_OnClick(object sender, RoutedEventArgs e)
+        private async Task LoginWithDesktop()
         {
             var urlBungieAuth = new Uri(AppState.bungieApi.GetAuthorisationUrl());
             var success = await Windows.System.Launcher.LaunchUriAsync(urlBungieAuth);
@@ -54,12 +56,16 @@ namespace GhostOverlay
             if (success)
             {
                 AuthWaiting.Visibility = Visibility.Visible;
-                WaitForAuth();
             }
             else
             {
                 Log.Error("TODO: Failed to launch Bungie auth page");
-            } 
+            }
+        }
+
+        public async void LoginWithDesktopBrowser_OnClick(object sender, RoutedEventArgs e)
+        {
+            await LoginWithDesktop();
         }
 
         public async void LoginWithXboxBroker_OnClick(object sender, RoutedEventArgs e)
@@ -70,10 +76,21 @@ namespace GhostOverlay
             var requestUri = new Uri(AppState.bungieApi.GetAuthorisationUrl());
             var callbackUri = new Uri("https://destiny.report/ghost-auth-return");
 
-            XboxGameBarWebAuthenticationResult result = await gameBarWebAuth.AuthenticateAsync(
-                XboxGameBarWebAuthenticationOptions.None,
-                requestUri,
-                callbackUri);
+            XboxGameBarWebAuthenticationResult result;
+
+            try
+            {
+                result = await gameBarWebAuth.AuthenticateAsync(
+                    XboxGameBarWebAuthenticationOptions.None,
+                    requestUri,
+                    callbackUri);
+            }
+            catch (Exception err)
+            {
+                Log.Error("Game Bar Auth Broker failed", err);
+                _ = LoginWithDesktop();
+                return;
+            }
 
             AuthWaiting.Visibility = Visibility.Collapsed;
 
