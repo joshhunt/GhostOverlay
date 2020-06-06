@@ -16,6 +16,7 @@ namespace GhostOverlay.Models
         {
             {"inventory_filtering.quest", "All Quests"},
             {"inventory_filtering.bounty", "Bounties"},
+            {"inventory_filtering.quest.featured", "Featured Quests"},
         };
 
         private static readonly Dictionary<string, Uri> CustomIcons = new Dictionary<string, Uri>
@@ -23,6 +24,7 @@ namespace GhostOverlay.Models
             {"inventory_filtering.bounty", new Uri("ms-appx:///Assets/QuestTraitIcons/bounties.png")},
             {"inventory_filtering.quest", new Uri("ms-appx:///Assets/QuestTraitIcons/quests.png")},
             {"quest.new_light", new Uri("ms-appx:///Assets/QuestTraitIcons/new_light.png")},
+            {"inventory_filtering.quest.featured", new Uri("ms-appx:///Assets/QuestTraitIcons/new_light.png")},
             {"quest.current_release", new Uri("ms-appx:///Assets/QuestTraitIcons/current_release.png")},
             {"quest.seasonal", new Uri("ms-appx:///Assets/QuestTraitIcons/seasonal.png")},
             {"quest.playlists", new Uri("ms-appx:///Assets/QuestTraitIcons/playlists.png")},
