@@ -105,7 +105,8 @@ namespace GhostOverlay
         AuthTokenVersion,
         Language,
         DefinitionsPath,
-        TrackedEntries
+        TrackedEntries,
+        AuthedBungieMembershipId
     }
 
     public static class AppState
@@ -115,7 +116,7 @@ namespace GhostOverlay
         public static BungieApi bungieApi = new BungieApi();
         public static WidgetData Data = new WidgetData();
 
-        public static SettingsKey[] UserSpecificSettings = { SettingsKey.AccessToken, SettingsKey.RefreshToken, SettingsKey.AccessTokenExpiration, SettingsKey.RefreshTokenExpiration, SettingsKey.TrackedEntries, SettingsKey.Language };
+        public static SettingsKey[] UserSpecificSettings = { SettingsKey.AccessToken, SettingsKey.RefreshToken, SettingsKey.AccessTokenExpiration, SettingsKey.RefreshTokenExpiration, SettingsKey.TrackedEntries, SettingsKey.AuthedBungieMembershipId, SettingsKey.Language };
 
         public static T ReadSetting<T>(SettingsKey key, T defaultValue)
         {
@@ -155,9 +156,6 @@ namespace GhostOverlay
             Log.Debug("JSON: {json}", json);
             return JsonConvert.DeserializeObject<List<TrackedEntry>>(json);
         }
-
-        [Obsolete("Use AppState.Widgetdata.RestoreBungieTokenDataFromSettings instead.")]
-        public static void RestoreBungieTokenDataFromSettings() {}
 
         public static void ClearUserSpecificSettings()
         {

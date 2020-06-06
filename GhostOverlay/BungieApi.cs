@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
@@ -8,6 +9,7 @@ using Windows.ApplicationModel.Resources;
 using BungieNetApi.Model;
 using Newtonsoft.Json;
 using RestSharp;
+using RestSharp.Validation;
 
 namespace GhostOverlay
 {
@@ -120,26 +122,33 @@ namespace GhostOverlay
                 $"Platform/Destiny2/{membershipType}/Profile/{membershipId}/?components={componentsStr}", requireAuth);
         }
 
-        public async Task<UserUserMembershipData> GetMembershipsForCurrentUser()
+        public async Task<DestinyResponsesDestinyLinkedProfilesResponse> GetLinkedProfiles()
         {
-            return await GetBungie<UserUserMembershipData>("/Platform/User/GetMembershipsForCurrentUser/", true);
+            // If the user's saved access token doesn't have a BungieMembershipId yet,
+            // this will effectively upgrade it to one that does :) :) :) 
+            await EnsureTokenDataIsValid();
+
+            if (AppState.Data.TokenData.BungieMembershipId == null)
+            {
+                throw new Exception("TokenData somehow lacks a BungieMembershipId. This is very bad.");
+            }
+
+            return await GetBungie<DestinyResponsesDestinyLinkedProfilesResponse>($"/Platform/Destiny2/254/Profile/{AppState.Data.TokenData.BungieMembershipId}/LinkedProfiles/", true);
         }
 
         public async Task<DestinyResponsesDestinyProfileResponse> GetProfileForCurrentUser(
             DestinyComponent[] components)
         {
-            var membershipData = await GetMembershipsForCurrentUser();
+            var linkedProfiles = await GetLinkedProfiles();
+            var memberships = linkedProfiles.Profiles.OrderByDescending(v => v.DateLastPlayed).ToList();
 
-            var user = membershipData.DestinyMemberships.Find(p =>
-                p.MembershipId == membershipData.PrimaryMembershipId);
-
-            if (user == null)
+            Log.Info("Linked memberships:");
+            foreach (var ship in memberships)
             {
-                Log.Info("Unable to find primary membership, so just returning the 0th one.");
-                Log.Debug(membershipData.ToJson());
-
-                user = membershipData.DestinyMemberships[0];
+                Log.Info("  ship {type}:{id}", ship.MembershipType, ship.MembershipId);
             }
+
+            var user = memberships[0];
 
             Log.Info("Returning primary membership {MembershipType}:{MembershipId}", user.MembershipType, user.MembershipId);
 
@@ -204,6 +213,17 @@ namespace GhostOverlay
                 throw new BungieApiException("TokenData is not valid when attempted to refresh it");
             }
 
+            if (
+                (AppState.Data.TokenData.BungieMembershipId == null ||
+                 AppState.Data.TokenData.BungieMembershipId.Length <= 1) &&
+                AppState.Data.TokenData.RefreshTokenIsValid())
+            {
+                Log.Info("Token lacks BungieMembershipId");
+                await RefreshOAuthAccessToken();
+                Log.Info("Successfully refreshed token.");
+                return true;
+            }
+
             if (AppState.Data.TokenData.AccessTokenIsValid()) return true;
 
             if (AppState.Data.TokenData.RefreshTokenIsValid())
@@ -220,6 +240,7 @@ namespace GhostOverlay
 
         public async Task RefreshOAuthAccessToken()
         {
+            Log.Info("RefreshOAuthAccessToken");
             if (AppState.Data.TokenData == null || AppState.Data.TokenData.RefreshTokenIsValid() != true)
             {
                 // TODO: throw exception?
@@ -235,13 +256,15 @@ namespace GhostOverlay
             request.AddHeader("Authorization", $"Basic {auth}");
             var data = await client.PostAsync<BungieOAuthTokenResponse>(request);
 
-            AppState.Data.TokenData = new OAuthToken(data.access_token, data.refresh_token,
-                data.expires_in, data.refresh_expires_in, AppState.Data.TokenData.Version);
+            Log.Info("auth membershipID {membershipId}", data.membership_id);
+
+            AppState.Data.TokenData = new OAuthToken(data, AppState.Data.TokenData.Version);
             AppState.Data.TokenData.SaveToSettings();
         }
 
         public async Task GetOAuthAccessToken(string authCode)
         {
+            Log.Info("GetOAuthAccessToken");
             var request = new RestRequest("/Platform/App/OAuth/Token/", DataFormat.Json);
             request.AddParameter("application/x-www-form-urlencoded; charset=utf-8",
                 $"grant_type=authorization_code&code={authCode}", ParameterType.RequestBody);
@@ -250,9 +273,9 @@ namespace GhostOverlay
             request.AddHeader("Authorization", $"Basic {auth}");
             var data = await client.PostAsync<BungieOAuthTokenResponse>(request);
 
-            AppState.Data.TokenData = new OAuthToken(data.access_token, data.refresh_token,
-                data.expires_in, data.refresh_expires_in, OAuthToken.CurrentVersion);
+            Log.Info("auth membershipID {membershipId}", data.membership_id);
 
+            AppState.Data.TokenData = new OAuthToken(data, OAuthToken.CurrentVersion);
             AppState.Data.TokenData.SaveToSettings();
         }
 
