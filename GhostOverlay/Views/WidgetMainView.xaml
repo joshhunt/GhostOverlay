@@ -9,6 +9,7 @@
     xmlns:media="using:Microsoft.Toolkit.Uwp.UI.Media"
     xmlns:models="using:GhostOverlay.Models"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    x:Name="WidgetPage"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 
