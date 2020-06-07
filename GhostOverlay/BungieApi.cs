@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
+using Windows.UI.Text;
 using BungieNetApi.Model;
 using Newtonsoft.Json;
 using RestSharp;
@@ -44,6 +45,15 @@ namespace GhostOverlay
         public string refresh_token { get; set; }
         public int refresh_expires_in { get; set; }
         public string membership_id { get; set; }
+    }
+
+    [Flags]
+    public enum DestinyItemState
+    {
+        None = 0,
+        Locked = 1,
+        Tracked = 2,
+        Masterwork = 4,
     }
 
     public enum DestinyComponent
@@ -94,10 +104,13 @@ namespace GhostOverlay
         private readonly string clientId;
         private readonly string clientSecret;
 
+        private static readonly long BucketShips = 284967655;
+        private static readonly long BucketSparrows = 2025709351;
+
         public readonly DestinyComponent[] DefaultProfileComponents =
         {
             DestinyComponent.Profiles, DestinyComponent.ProfileInventories, DestinyComponent.Characters,
-            DestinyComponent.CharacterInventories, DestinyComponent.ItemInstances, DestinyComponent.ItemObjectives,
+            DestinyComponent.CharacterInventories, DestinyComponent.CharacterEquipment, DestinyComponent.ItemInstances, DestinyComponent.ItemObjectives,
             DestinyComponent.Records
         };
 
@@ -136,6 +149,85 @@ namespace GhostOverlay
             return await GetBungie<DestinyResponsesDestinyLinkedProfilesResponse>($"/Platform/Destiny2/254/Profile/{AppState.Data.TokenData.BungieMembershipId}/LinkedProfiles/", true);
         }
 
+        private (string characterId, DestinyEntitiesItemsDestinyItemComponent item) FindItemToLock(
+            DestinyResponsesDestinyProfileResponse profile)
+        {
+            string selectedCharacterId = default;
+            DestinyEntitiesItemsDestinyItemComponent selectedItem = default;
+
+            foreach (var (characterId, characterInventory) in profile.CharacterEquipment.Data)
+            {
+                foreach (var item in characterInventory.Items)
+                {
+                    if (item.ItemInstanceId != null && item.ItemInstanceId != 0 && (item.BucketHash == BucketShips ||
+                                                                                    item.BucketHash == BucketSparrows))
+                    {
+                        selectedCharacterId = characterId;
+                        selectedItem = item;
+                        break;
+                    }
+                }
+
+                if (selectedCharacterId != null)
+                {
+                    break;
+                }
+            }
+
+            return (characterId: selectedCharacterId, item: selectedItem);
+        }
+
+        private class SetLockStatePayload
+        {
+            [JsonProperty("state")]
+            public bool State { get; set; }
+
+            [JsonProperty("itemId")]
+            public long ItemId { get; set; }
+
+            [JsonProperty("characterId")]
+            public string CharacterId { get; set; }
+
+            [JsonProperty("membershipType")]
+            public int MembershipType { get; set; }
+        }
+
+        public async Task CacheBust(DestinyResponsesDestinyProfileResponse profile, Func<Task> fn)
+        {
+            var (characterId, item) = FindItemToLock(profile);
+            var itemState = (DestinyItemState) (item?.State ?? 0);
+            var itemIsLocked = itemState == DestinyItemState.Locked;
+
+            if (item != null)
+            {
+                Log.Info("Found item to toggle lock state, character ID {characterId}, {itemHash}:{itemInstanceId}. locked state:{locked}", characterId, item.ItemHash, item.ItemInstanceId, itemIsLocked);
+
+                await SetLockState(itemIsLocked, item.ItemInstanceId, characterId,
+                    profile.Profile.Data.UserInfo.MembershipType);
+            }
+
+            Log.Info("running fn()");
+            await fn();
+
+            //if (item != null)
+            //{
+            //    Log.Info("Reverting lock state now");
+
+            //    await SetLockState(itemIsLocked, item.ItemInstanceId, characterId,
+            //        profile.Profile.Data.UserInfo.MembershipType);
+            //}
+        }
+
+        private async Task SetLockState(bool itemState, long itemItemInstanceId, string characterId, int membershipType)
+        {
+            var payload = new SetLockStatePayload() { State = itemState, ItemId = itemItemInstanceId, CharacterId = characterId, MembershipType = membershipType};
+
+            Log.Info("Setting locked state to {locked} on item {itemId}", itemState, itemItemInstanceId);
+
+            await GetBungie<int>("/Platform/Destiny2/Actions/Items/SetLockState/", requireAuth: true,
+                method: Method.POST, body: payload);
+        }
+
         public async Task<DestinyResponsesDestinyProfileResponse> GetProfileForCurrentUser(
             DestinyComponent[] components)
         {
@@ -165,10 +257,15 @@ namespace GhostOverlay
             return GetBungie<CommonModelsCoreSettingsConfiguration>("/Platform/Settings/");
         }
 
-        public async Task<T> GetBungie<T>(string path, bool requireAuth = false)
+        public async Task<T> GetBungie<T>(string path, bool requireAuth = false, Method method = Method.GET, object body = default)
         {
             Log.Info("REQUEST {path}", path);
-            var request = new RestRequest(path);
+            var request = new RestRequest(path) {Method = method};
+
+            if (body != null)
+            {
+                request.AddJsonBody(body);
+            }
 
             if (AppState.Data.TokenData != null && AppState.Data.TokenData.RefreshTokenIsValid()) await EnsureTokenDataIsValid();
 
@@ -196,6 +293,7 @@ namespace GhostOverlay
 
             if (data.Response == null) throw new BungieApiException("API did not return JSON");
 
+            Log.Debug("RESPONSE {ErrorStatus}, {Message}", data.ErrorStatus, data.Message);
             return data.Response;
         }
 

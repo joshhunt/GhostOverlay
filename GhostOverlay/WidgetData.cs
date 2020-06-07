@@ -23,6 +23,7 @@ namespace GhostOverlay
         DestinySettings,
         DefinitionsUpdating,
         Language,
+        BustProfileRequests
     }
 
     public class WidgetValue<T>
@@ -88,6 +89,7 @@ namespace GhostOverlay
         public WidgetValue<CommonModelsCoreSettingsConfiguration> DestinySettings = new WidgetValue<CommonModelsCoreSettingsConfiguration>(WidgetPropertyChanged.DestinySettings);
         public WidgetValue<string> ProfileError = new WidgetValue<string>(WidgetPropertyChanged.ProfileError, "");
         public WidgetValue<bool> DefinitionsUpdating = new WidgetValue<bool>(WidgetPropertyChanged.DefinitionsUpdating, false);
+        public WidgetValue<bool> BustProfileRequests = new WidgetValue<bool>(WidgetPropertyChanged.BustProfileRequests, false);
 
         public WidgetValue<string> Language = new WidgetValue<string>(WidgetPropertyChanged.Language, "",
             (newValue) =>
@@ -180,6 +182,7 @@ namespace GhostOverlay
 
         public async Task UpdateProfile()
         {
+            Log.Info("-----");
             ProfileIsUpdating = true;
 
             try
@@ -191,7 +194,11 @@ namespace GhostOverlay
                 }
                 else
                 {
-                    Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                    await AppState.bungieApi.CacheBust(Profile, async () =>
+                    {
+                        Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                    });
+
                     ProfileError.Value = "";
                 }
             }

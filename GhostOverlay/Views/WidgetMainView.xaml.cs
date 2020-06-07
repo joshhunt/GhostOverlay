@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
@@ -31,6 +34,17 @@ namespace GhostOverlay
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         private readonly List<ITrackable> Tracked = new List<ITrackable>();
+
+        private bool _isBustingProfileRequests;
+        private bool IsBustingProfileRequests
+        {
+            get => _isBustingProfileRequests;
+            set
+            {
+                _isBustingProfileRequests = value;
+                OnPropertyChanged();
+            }
+        }
 
         // Timer stuff
         private DispatcherTimer timer;
@@ -57,18 +71,12 @@ namespace GhostOverlay
         public WidgetMainView()
         {
             InitializeComponent();
-
             this.DataContext = this;
         }
 
         private void timer_Tick(object sender, object e)
         {
             RaisePropertyChanged("SinceProfileUpdate");
-        }
-
-        private void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -105,8 +113,6 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            //Log($"HandleMessage {message}");
-
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
@@ -122,7 +128,16 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.TokenData:
                     CheckAuth();
                     break;
+
+                case WidgetPropertyChanged.BustProfileRequests:
+                    UpdateBustProfileIndicator();
+                    break;
             }
+        }
+
+        private void UpdateBustProfileIndicator()
+        {
+            IsBustingProfileRequests = AppState.Data.BustProfileRequests.Value;
         }
 
         private void CheckAuth()
@@ -376,6 +391,43 @@ namespace GhostOverlay
         private void ClearAllItems_OnClick(object sender, RoutedEventArgs e)
         {
             AppState.Data.TrackedEntries = new List<TrackedEntry>();
+        }
+
+        private void UIElement_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            Log.Info("double tapped");
+            AppState.Data.BustProfileRequests.Value = !AppState.Data.BustProfileRequests.Value;
+        }
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private int konamiPosition = 0;
+        private VirtualKey[] konamiKeys = { VirtualKey.Up, VirtualKey.Up, VirtualKey.Down, VirtualKey.Down, VirtualKey.Left, VirtualKey.Right, VirtualKey.Left, VirtualKey.Right, VirtualKey.B, VirtualKey.A, VirtualKey.Enter };
+
+        private void Grid_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (konamiKeys.Contains(e.Key))
+            {
+                if (e.Key == konamiKeys[konamiPosition])
+                    konamiPosition += 1;
+                else
+                    konamiPosition = 0;
+
+                if (konamiPosition == konamiKeys.Length)
+                {
+                    konamiPosition = 0;
+                    Log.Info("Toggling bust profile mode");
+                    AppState.Data.BustProfileRequests.Value = !AppState.Data.BustProfileRequests.Value;
+                }
+            }
         }
     }
 }
