@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -202,6 +203,8 @@ namespace GhostOverlay
 
         private void UpdateFromProfile()
         {
+            Log.Info("UpdateFromProfile");
+
             var profile = AppState.Data.Profile;
 
             if (profile?.CharacterInventories?.Data == null)
@@ -224,13 +227,22 @@ namespace GhostOverlay
 
         private async void UpdateTracked()
         {
+            Log.Info("UpdateTracked");
+
             var profile = AppState.Data.Profile;
             var characters = new Dictionary<long, Character>();
             var toCleanup = new List<TrackedEntry>();
+            var TrackedEntriesCopyOf = AppState.Data.TrackedEntries.ToList();
 
             Tracked.Clear();
 
-            foreach (var trackedEntry in AppState.Data.TrackedEntries)
+            Log.Info("Tracked items:");
+            foreach (var dataTrackedEntry in TrackedEntriesCopyOf)
+            {
+                Log.Info("    {item}", dataTrackedEntry);
+            }
+
+            foreach (var trackedEntry in TrackedEntriesCopyOf)
             {
                 ITrackable trackable = default;
 
@@ -243,12 +255,22 @@ namespace GhostOverlay
                     case TrackedEntryType.Item:
                         trackable = await ItemFromTrackedEntry(trackedEntry, profile, characters);
                         break;
+
+                    case TrackedEntryType.DynamicTrackable:
+                        Log.Info("  found a DynamicTrackable");
+                        trackable = await DynamicTrackableFromTrackedEntry(trackedEntry, profile);
+                        break;
                 }
 
-                if (trackable?.Objectives != null && trackable.Objectives.Count > 0)
+                if (trackable != null && (trackable is DynamicTrackable ||
+                                          (trackable.Objectives != null && trackable.Objectives.Count > 0)))
                     Tracked.Add(trackable);
-                else
+                else if (trackedEntry.Type != TrackedEntryType.DynamicTrackable)
+                {
+                    Log.Info("remove {trackedEntry}", trackedEntry);
                     toCleanup.Add(trackedEntry);
+                }
+                    
             }
 
             AppState.Data.TrackedEntries.RemoveAll(toCleanup.Contains);
@@ -262,6 +284,20 @@ namespace GhostOverlay
 
             SetVisualState(Tracked.Count == 0 ? VisualState.Empty : VisualState.None);
             TrackedBountiesCollection.Source = groupedBounties;
+        }
+
+        private async Task<DynamicTrackable> DynamicTrackableFromTrackedEntry(TrackedEntry trackedEntry, DestinyResponsesDestinyProfileResponse profile)
+        {
+            switch (trackedEntry.DynamicTrackableType)
+            {
+                case DynamicTrackableType.CrucibleMap:
+                    Log.Info("  Dynamic trackable is a DynamicTrackableType.CrucibleMap");
+                    var crucibleMapTracker = await CrucibleMapTrackable.CreateFromProfile(profile);
+                    Log.Info("  crucibleMapTracker: {crucibleMapTracker}", crucibleMapTracker);
+                    return crucibleMapTracker;
+            }
+
+            return default;
         }
 
         private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile, Dictionary<long, Character>  characters)
@@ -317,7 +353,6 @@ namespace GhostOverlay
             return bounty;
         }
 
-        
 
         private async Task<Triumph> TriumphFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile)
         {
@@ -393,12 +428,6 @@ namespace GhostOverlay
             AppState.Data.TrackedEntries = new List<TrackedEntry>();
         }
 
-        private void UIElement_OnDoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            Log.Info("double tapped");
-            AppState.Data.BustProfileRequests.Value = !AppState.Data.BustProfileRequests.Value;
-        }
-
         private void RaisePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -429,5 +458,30 @@ namespace GhostOverlay
                 }
             }
         }
+
+        private async void ForceRefresh_OnClick(object sender, RoutedEventArgs e)
+        {
+            await AppState.Data.ForceProfileUpdate();
+        }
+    }
+
+    public class TrackablesTemplateSelector : DataTemplateSelector
+    {
+        public DataTemplate CrucibleMapTemplate { get; set; }
+        public DataTemplate TrackableEntryTemplate { get; set; }
+
+        protected override DataTemplate SelectTemplateCore(object item)
+        {
+            if (item is CrucibleMapTrackable)
+                return CrucibleMapTemplate;
+
+            return TrackableEntryTemplate;
+        }
+
+        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        {
+            return SelectTemplateCore(item);
+        }
+
     }
 }

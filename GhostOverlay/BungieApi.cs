@@ -109,9 +109,7 @@ namespace GhostOverlay
 
         public readonly DestinyComponent[] DefaultProfileComponents =
         {
-            DestinyComponent.Profiles, DestinyComponent.ProfileInventories, DestinyComponent.Characters,
-            DestinyComponent.CharacterInventories, DestinyComponent.CharacterEquipment, DestinyComponent.ItemInstances, DestinyComponent.ItemObjectives,
-            DestinyComponent.Records
+            DestinyComponent.Profiles, DestinyComponent.ProfileInventories, DestinyComponent.Characters, DestinyComponent.CharacterInventories, DestinyComponent.CharacterEquipment, DestinyComponent.ItemInstances, DestinyComponent.ItemObjectives, DestinyComponent.Records, DestinyComponent.CharacterActivities
         };
 
         public BungieApi()

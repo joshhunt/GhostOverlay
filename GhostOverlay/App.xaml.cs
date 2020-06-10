@@ -34,6 +34,7 @@ namespace GhostOverlay
 
             AppState.Data.RestoreSettings();
             Task.Run(Definitions.Initialize);
+            Task.Run(AppState.RemoteConfigInstance.LoadRemoteConfig);
         }
 
         protected override void OnActivated(IActivatedEventArgs args)
@@ -109,7 +110,7 @@ namespace GhostOverlay
                 );
 
                 Window.Current.Closed += WidgetMainSettingsWindow_Closed;
-                widgetMainSettings.VisibleChanged += AnyWidget_VisibleChanged;
+                //widgetMainSettings.VisibleChanged += AnyWidget_VisibleChanged;
 
                 widgetRootFrame.Navigate(typeof(WidgetSettingsView), widgetMainSettings);
             }
@@ -119,8 +120,7 @@ namespace GhostOverlay
 
         private void AnyWidget_VisibleChanged(XboxGameBarWidget sender, object args)
         {
-            AppState.Data.WidgetsAreVisible = (widgetMain?.Visible ?? false) ||
-                                                    (widgetMainSettings?.Visible ?? false);
+            AppState.Data.WidgetsAreVisible = (widgetMain?.Visible ?? false);
             AppState.Data.WidgetVisibilityChanged();
         }
 

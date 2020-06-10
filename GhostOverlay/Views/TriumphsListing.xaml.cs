@@ -75,6 +75,11 @@ namespace GhostOverlay.Views
             foreach (var childRecord in presentationNode.Children.Records)
             {
                 var recordDefinition = await Definitions.GetRecord(childRecord.RecordHash);
+                if (recordDefinition.Redacted)
+                {
+                    continue;
+                }
+
                 var triumph = new Triumph
                 {
                     Definition = recordDefinition,

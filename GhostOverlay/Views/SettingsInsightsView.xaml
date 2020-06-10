@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="GhostOverlay.Views.SettingsInsightsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:GhostOverlay.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <GridView
+        x:Name="ItemsGridView"
+        Padding="4"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Top"
+        SelectionChanged="SelectionChanged"
+        SelectionMode="Multiple">
+
+        <GridView.ItemContainerStyle>
+            <Style TargetType="GridViewItem">
+                <Setter Property="VerticalContentAlignment" Value="Top" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Margin" Value="4" />
+            </Style>
+        </GridView.ItemContainerStyle>
+
+        <GridViewItem x:Name="CrucibleMapGridViewItem" Tag="CrucibleMap" Width="400" MaxWidth="400" MinHeight="125" Padding="8">
+            <StackPanel>
+                <TextBlock TextWrapping="Wrap" FontWeight="Medium">Upcoming Activity</TextBlock>
+                <TextBlock TextWrapping="Wrap">Preview the Crucible map or strike as you're loading into it, before it appears in game.</TextBlock>
+            </StackPanel>
+        </GridViewItem>
+    </GridView>
+</Page>

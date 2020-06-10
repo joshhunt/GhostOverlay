@@ -20,6 +20,114 @@
             </ResourceDictionary.MergedDictionaries>
 
             <CollectionViewSource x:Name="TrackedBountiesCollection" IsSourceGrouped="True" />
+
+            <DataTemplate x:Key="CrucibleMapTemplate" x:DataType="models:CrucibleMapTrackable">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="15"
+                        FontWeight="Medium"
+                        Margin="0,0,0,4"
+                        Style="{ThemeResource BaseTextBlockStyle}">Current Activity</TextBlock>
+                    <Grid Visibility="{x:Bind isInActivity}">
+                        <Image>
+                            <Image.Source>
+                                <BitmapImage UriSource="{x:Bind PGCRImageUri}"></BitmapImage>
+                            </Image.Source>
+                        </Image>
+
+                        <Grid Background="#80000000" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+                        </Grid>
+
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Medium" FontSize="20" Text="{x:Bind CurrentActivityDefinition.DisplayProperties.Name}"></TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" Text="{x:Bind CurrentActivityModeDefinition.DisplayProperties.Name}"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Visibility="{x:Bind isNotInActivity}">
+                        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+                            <TextBlock FontWeight="SemiBold">Not currently in an activity</TextBlock>
+                            <TextBlock>Refresh when you're flying in to update</TextBlock>
+                            <Button Margin="0,8,0,0" Click="ForceRefresh_OnClick">Refresh</Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </DataTemplate>
+
+            <DataTemplate x:DataType="models:ITrackable" x:Key="TrackableEntryTemplate">
+                <Grid
+                    Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}"
+                    ToolTipService.ToolTip="{x:Bind DisplayProperties.Description}">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Untrack" Icon="Unpin" Click="UntrackItem_OnClick"
+                                            Tag="{x:Bind TrackedEntry}" />
+
+                            <MenuFlyoutItem Text="Clear all tracked items" Icon="Delete" Click="ClearAllItems_OnClick"
+                                            Tag="{x:Bind TrackedEntry}" />
+
+                            <MenuFlyoutSeparator/>
+
+                            <MenuFlyoutItem Text="Force Refresh" Icon="Refresh" Click="ForceRefresh_OnClick"
+                                            Tag="{x:Bind TrackedEntry}" />
+                        </MenuFlyout>
+                    </Grid.ContextFlyout>
+
+                    <ContentControl
+                        Grid.Row="0"
+                        Grid.Column="0" ContentTemplate="{StaticResource BountyIcon}" />
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        HorizontalAlignment="Stretch">
+
+                        <TextBlock
+                            Margin="0,0,0,0"
+                            HorizontalAlignment="Left"
+                            FontSize="15"
+                            FontWeight="Medium"
+                            Style="{ThemeResource BaseTextBlockStyle}"
+                            Text="{x:Bind Title}" />
+
+                        <TextBlock
+                            Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
+                            x:Name="BountyDescriptionLabel"
+                            Margin="0,0,0,6"
+                            HorizontalAlignment="Left"
+                            MaxLines="2"
+                            Style="{ThemeResource BodyTextBlockStyle}"
+                            Text="{x:Bind DisplayProperties.Description}"
+                            TextTrimming="WordEllipsis"
+                            TextWrapping="WrapWholeWords" />
+
+                        <ListView
+                            Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
+                            IsItemClickEnabled="False"
+                            IsHitTestVisible="False"
+                            ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                            ItemTemplate="{StaticResource ObjectiveTemplate}"
+                            ItemsSource="{x:Bind Objectives}"
+                            SelectionMode="None" />
+
+                        <ContentControl ContentTemplate="{StaticResource BountyCompletedObjectives}"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+
+            <local:TrackablesTemplateSelector x:Key="TrackablesTemplateSelector"
+                                              CrucibleMapTemplate="{StaticResource CrucibleMapTemplate}"
+                                              TrackableEntryTemplate="{StaticResource TrackableEntryTemplate}">
+            </local:TrackablesTemplateSelector>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -64,6 +172,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
             ItemsSource="{Binding Source={StaticResource TrackedBountiesCollection}}"
+            ItemTemplateSelector="{StaticResource TrackablesTemplateSelector}"
             SelectionMode="None">
 
             <ListView.ItemContainerStyle>
@@ -96,73 +205,6 @@
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </ListView.GroupStyle>
-
-            <ListView.ItemTemplate>
-
-                <DataTemplate x:DataType="models:ITrackable">
-                    <Grid
-                        Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}"
-                        ToolTipService.ToolTip="{x:Bind DisplayProperties.Description}">
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Grid.ContextFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Text="Untrack" Icon="Unpin" Click="UntrackItem_OnClick"
-                                                Tag="{x:Bind TrackedEntry}" />
-
-                                <MenuFlyoutItem Text="Clear all tracked items" Icon="Delete" Click="ClearAllItems_OnClick"
-                                                Tag="{x:Bind TrackedEntry}" />
-                            </MenuFlyout>
-                        </Grid.ContextFlyout>
-
-                        <ContentControl
-                            Grid.Row="0"
-                            Grid.Column="0" ContentTemplate="{StaticResource BountyIcon}" />
-
-                        <StackPanel
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="12,0,0,0"
-                            HorizontalAlignment="Stretch">
-
-                            <TextBlock
-                                Margin="0,0,0,0"
-                                HorizontalAlignment="Left"
-                                FontSize="15"
-                                FontWeight="Medium"
-                                Style="{ThemeResource BaseTextBlockStyle}"
-                                Text="{x:Bind Title}" />
-
-                            <TextBlock
-                                Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
-                                x:Name="BountyDescriptionLabel"
-                                Margin="0,0,0,6"
-                                HorizontalAlignment="Left"
-                                MaxLines="2"
-                                Style="{ThemeResource BodyTextBlockStyle}"
-                                Text="{x:Bind DisplayProperties.Description}"
-                                TextTrimming="WordEllipsis"
-                                TextWrapping="WrapWholeWords" />
-
-                            <ListView
-                                Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
-                                IsItemClickEnabled="False"
-                                IsHitTestVisible="False"
-                                ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
-                                ItemTemplate="{StaticResource ObjectiveTemplate}"
-                                ItemsSource="{x:Bind Objectives}"
-                                SelectionMode="None" />
-
-                            <ContentControl ContentTemplate="{StaticResource BountyCompletedObjectives}"
-                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
         </ListView>
 
         <StackPanel x:Name="ProfileUpdatesPanel" Visibility="Collapsed" IsHitTestVisible="False"
@@ -170,7 +212,8 @@
             <StackPanel Orientation="Horizontal">
                 <ProgressRing x:Name="ProfileUpdatingProgressRing" Margin="0,0,10,0" />
 
-                <TextBlock Visibility="{x:Bind IsBustingProfileRequests, Mode=OneWay}" Margin="0,0,5,0" FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys">
+                <TextBlock Visibility="{x:Bind IsBustingProfileRequests, Mode=OneWay}" Margin="0,0,5,0"
+                           FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys">
                     &#xE071;
                 </TextBlock>
 

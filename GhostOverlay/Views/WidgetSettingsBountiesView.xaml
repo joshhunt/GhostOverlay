@@ -36,16 +36,6 @@
             </Style>
         </GridView.ItemContainerStyle>
 
-        <GridView.GroupStyle>
-            <GroupStyle>
-                <GroupStyle.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Key.ClassName}" />
-                    </DataTemplate>
-                </GroupStyle.HeaderTemplate>
-            </GroupStyle>
-        </GridView.GroupStyle>
-
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="models:Item">
                 <Grid Width="400" MaxWidth="400" MinHeight="125"

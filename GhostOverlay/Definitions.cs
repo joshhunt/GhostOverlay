@@ -490,5 +490,17 @@ namespace GhostOverlay
             return await GetMultipleDefinitions<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition> (
                 "SELECT json FROM DestinyTraitCategoryDefinition;");
         }
+
+        public static async Task<DestinyDefinitionsDestinyActivityDefinition> GetActivity(long hash)
+        {
+            return await GetDefinition<DestinyDefinitionsDestinyActivityDefinition>(
+                "SELECT json FROM DestinyActivityDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsDestinyActivityModeDefinition> GetActivityMode(long hash)
+        {
+            return await GetDefinition<DestinyDefinitionsDestinyActivityModeDefinition>(
+                "SELECT json FROM DestinyActivityModeDefinition WHERE id = @Hash;", hash);
+        }
     }
 }

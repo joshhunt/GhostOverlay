@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Globalization;
 using BungieNetApi.Model;
@@ -80,7 +81,9 @@ namespace GhostOverlay
         public static int ActiveProfileUpdateInterval = 15 * 1000;
         public static int InactiveProfileUpdateInterval = 60 * 1000;
         public DateTime ProfileUpdatedTime = DateTime.MinValue;
+        public DateTime LastProfileBustTime = DateTime.MinValue;
         public bool WidgetsAreVisible { get; set; }
+        public int NumberOfSameProfileUpdates = 0;
 
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
@@ -117,11 +120,13 @@ namespace GhostOverlay
             {
                 if (value?.Equals(_profile) ?? false)
                 {
+                    NumberOfSameProfileUpdates += 1;
                     Log.Info("New profile is the same, so skipping");
                     return;
                 }
 
                 Log.Info("New profile is very different!!!");
+                NumberOfSameProfileUpdates = 0;
                 _profile = value;
                 ProfileUpdatedTime = DateTime.Now;
                 eventAggregator.Publish(WidgetPropertyChanged.Profile);
@@ -179,8 +184,9 @@ namespace GhostOverlay
                 eventAggregator.Publish(WidgetPropertyChanged.TokenData);
             }
         }
-
-        public async Task UpdateProfile()
+        
+        private Task UpdateProfileTask;
+        public async Task UpdateProfileWork()
         {
             Log.Info("-----");
             ProfileIsUpdating = true;
@@ -194,10 +200,32 @@ namespace GhostOverlay
                 }
                 else
                 {
-                    await AppState.bungieApi.CacheBust(Profile, async () =>
+                    var crucibleMapTracker = TrackedEntries.FirstOrDefault(v =>
+                        v.Type == TrackedEntryType.DynamicTrackable &&
+                        v.DynamicTrackableType == DynamicTrackableType.CrucibleMap);
+                    var crucibleMapTrackerActive = crucibleMapTracker != null;
+
+                    var shouldBustProfile = BustProfileRequests.Value || (AppState.RemoteConfig.CrucibleMapTrackerAutoProfileBust && crucibleMapTrackerActive);
+
+                    Log.Info("shouldBustProfile: {shouldBustProfile}, NumberOfSameProfileUpdates: {NumberOfSameProfileUpdates}", shouldBustProfile, NumberOfSameProfileUpdates);
+
+                    if (shouldBustProfile && NumberOfSameProfileUpdates >= 3)
+                    {
+                        shouldBustProfile = false;
+                        Log.Info("NumberOfSameProfileUpdates is too high, setting shouldBustProfile back to false;");
+                    }
+
+                    if (shouldBustProfile)
+                    {
+                        await AppState.bungieApi.CacheBust(Profile, async () =>
+                        {
+                            Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                        });
+                    }
+                    else
                     {
                         Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
-                    });
+                    }
 
                     ProfileError.Value = "";
                 }
@@ -209,6 +237,21 @@ namespace GhostOverlay
             }
             
             ProfileIsUpdating = false;
+        }
+
+        public Task UpdateProfile()
+        {
+            Log.Info("UpdateProfileTask.Status {status}", UpdateProfileTask?.Status);
+
+            if (UpdateProfileTask != null && UpdateProfileTask.Status == TaskStatus.Running)
+            {
+                Log.Info("Profile already updating, returning Task");
+                return UpdateProfileTask;
+            }
+
+            UpdateProfileTask = UpdateProfileWork();
+
+            return UpdateProfileTask;
         }
 
         public async void ScheduleProfileUpdates()
@@ -243,7 +286,8 @@ namespace GhostOverlay
         public void WidgetVisibilityChanged()
         {
             var sinceLastUpdate = DateTime.Now - ProfileUpdatedTime;
-            if (WidgetsAreVisible && !ProfileIsUpdating && sinceLastUpdate.TotalMilliseconds > ActiveProfileUpdateInterval && ProfileScheduleRequesters > 0)
+            if (WidgetsAreVisible && !ProfileIsUpdating &&
+                (sinceLastUpdate.TotalMilliseconds > ActiveProfileUpdateInterval) && (ProfileScheduleRequesters > 0))
             {
                 Log.Info("Visiblity changed, updating profile");
                 _ = UpdateProfile();
@@ -307,6 +351,16 @@ namespace GhostOverlay
             DefinitionsUpdating.Value = true;
             await Definitions.CheckForLatestDefinitions();
             DefinitionsUpdating.Value = false;
+        }
+
+        public async Task ForceProfileUpdate()
+        {
+            ProfileIsUpdating = true;
+            await AppState.bungieApi.CacheBust(Profile, async () =>
+            {
+                Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+            });
+            ProfileIsUpdating = false;
         }
     }
 }

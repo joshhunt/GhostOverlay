@@ -13,11 +13,13 @@ namespace GhostOverlay
     {
         Item = 0,
         Record = 1,
+        DynamicTrackable = 2,
     }
 
     public class TrackedEntry
     {
         [JsonProperty("h")] public long Hash;
+        [JsonProperty("d")] public DynamicTrackableType DynamicTrackableType;
         [JsonProperty("i")] public long InstanceId;
         [JsonProperty("o")] public long OwnerId;
         [JsonProperty("t")] public TrackedEntryType Type;
@@ -49,6 +51,11 @@ namespace GhostOverlay
                    OwnerId == item.OwnerCharacter.CharacterComponent.CharacterId;
         }
 
+        public bool Matches(DynamicTrackableType dynamicTrackableType)
+        {
+            return Type == TrackedEntryType.DynamicTrackable && DynamicTrackableType == dynamicTrackableType;
+        }
+
         public bool Matches(Triumph triumph)
         {
             return Type == TrackedEntryType.Record && Hash == triumph.Hash;
@@ -56,7 +63,7 @@ namespace GhostOverlay
 
         public override string ToString()
         {
-            return $"TrackedEntry(Type: {Type}, Hash: {Hash}, InstanceId: {InstanceId}, OwnerId: {OwnerId})";
+            return $"TrackedEntry(Type: {Type}, Hash: {Hash}, InstanceId: {InstanceId}, OwnerId: {OwnerId}, DynamicTrackableType: {DynamicTrackableType})";
         }
 
         public override bool Equals(object obj)
@@ -79,6 +86,10 @@ namespace GhostOverlay
                 (
                     OwnerId == input?.OwnerId ||
                     OwnerId.Equals(input?.OwnerId)
+                ) &&
+                (
+                    DynamicTrackableType == input?.DynamicTrackableType ||
+                    DynamicTrackableType.Equals(input?.DynamicTrackableType)
                 );
         }
 
@@ -91,8 +102,18 @@ namespace GhostOverlay
                 hashCode = hashCode + 59 + Hash.GetHashCode();
                 hashCode = hashCode + 59 + InstanceId.GetHashCode();
                 hashCode = hashCode + 59 + OwnerId.GetHashCode();
+                hashCode = hashCode + 59 + DynamicTrackableType.GetHashCode();
                 return hashCode;
             }
+        }
+
+        public static TrackedEntry FromDynamicTrackableType(DynamicTrackableType type)
+        {
+            return new TrackedEntry
+            {
+                Type = TrackedEntryType.DynamicTrackable,
+                DynamicTrackableType = type
+            };
         }
     }
 
@@ -115,6 +136,8 @@ namespace GhostOverlay
 
         public static BungieApi bungieApi = new BungieApi();
         public static WidgetData Data = new WidgetData();
+        public static readonly RemoteConfig RemoteConfigInstance = new RemoteConfig();
+        public static RemoteConfigValues RemoteConfig => RemoteConfigInstance.Values;
 
         public static SettingsKey[] UserSpecificSettings = { SettingsKey.AccessToken, SettingsKey.RefreshToken, SettingsKey.AccessTokenExpiration, SettingsKey.RefreshTokenExpiration, SettingsKey.TrackedEntries, SettingsKey.AuthedBungieMembershipId, SettingsKey.Language };
 

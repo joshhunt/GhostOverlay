@@ -159,6 +159,10 @@ namespace GhostOverlay
                 case "Triumphs":
                     ContentFrame.Navigate(typeof(SettingsRootTriumphsView), ContentFrame, args.RecommendedNavigationTransitionInfo);
                     break;
+
+                case "Insights":
+                    ContentFrame.Navigate(typeof(SettingsInsightsView), ContentFrame, args.RecommendedNavigationTransitionInfo);
+                    break;
             }
         }
 

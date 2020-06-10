@@ -42,6 +42,7 @@
         <muxc:NavigationView.MenuItems>
             <muxc:NavigationViewItem Content="Pursuits" Tag="Bounties" />
             <muxc:NavigationViewItem Content="Triumphs" Tag="Triumphs" />
+            <muxc:NavigationViewItem Content="Insights" Tag="Insights" />
         </muxc:NavigationView.MenuItems>
 
         <Frame x:Name="ContentFrame" />

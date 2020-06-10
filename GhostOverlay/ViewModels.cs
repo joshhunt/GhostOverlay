@@ -30,10 +30,13 @@ namespace GhostOverlay
 
     public class CommonHelpers
     {
+        public static readonly string FallbackPGCRImagePath = "/img/theme/destiny/bgs/pgcrs/placeholder.jpg";
+        public static readonly string FallbackIconImagePath = "/img/misc/missing_icon_d2.png";
+
         public static Uri LocalFallbackIconUri = new Uri("ms-appx:///Assets/QuestTraitIcons/missing_icon.png");
-        public static Uri BungieUri(string baseUrl)
+        public static Uri BungieUri(string baseUrl, string fallbackPath = default)
         {
-            return new Uri($"http://www.bungie.net{baseUrl ?? "/img/misc/missing_icon_d2.png"}");
+            return new Uri($"http://www.bungie.net{baseUrl ?? fallbackPath ?? FallbackIconImagePath}");
         }
 
         public static async Task DoSoon(Control control, Action fn)

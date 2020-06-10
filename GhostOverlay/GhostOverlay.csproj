@@ -19,7 +19,7 @@
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>False</GenerateTestArtifacts>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
@@ -136,11 +136,16 @@
     </Compile>
     <Compile Include="AppState.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Models\DynamicTrackable.cs" />
     <Compile Include="Models\ItemTrait.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ITrackable.cs" />
+    <Compile Include="Models\RemoteConfig.cs" />
     <Compile Include="Models\TimerViewModel.cs" />
     <Compile Include="Models\Triumph.cs" />
+    <Compile Include="Views\SettingsInsightsView.xaml.cs">
+      <DependentUpon>SettingsInsightsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WidgetStateChangeNotifier.cs" />
     <Compile Include="TemplatesResourceDictionary.xaml.cs">
       <DependentUpon>TemplatesResourceDictionary.xaml</DependentUpon>
@@ -968,6 +973,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\BountiesParentView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsInsightsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
