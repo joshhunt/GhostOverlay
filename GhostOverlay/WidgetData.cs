@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Globalization;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
+using DayOfWeek = System.DayOfWeek;
 
 namespace GhostOverlay
 {
@@ -185,10 +186,9 @@ namespace GhostOverlay
             }
         }
         
-        private Task UpdateProfileTask;
-        public async Task UpdateProfileWork()
+        public async Task UpdateProfile()
         {
-            Log.Info("-----");
+            Log.Info("----- UpdateProfile");
             ProfileIsUpdating = true;
 
             try
@@ -239,21 +239,6 @@ namespace GhostOverlay
             ProfileIsUpdating = false;
         }
 
-        public Task UpdateProfile()
-        {
-            Log.Info("UpdateProfileTask.Status {status}", UpdateProfileTask?.Status);
-
-            if (UpdateProfileTask != null && UpdateProfileTask.Status == TaskStatus.Running)
-            {
-                Log.Info("Profile already updating, returning Task");
-                return UpdateProfileTask;
-            }
-
-            UpdateProfileTask = UpdateProfileWork();
-
-            return UpdateProfileTask;
-        }
-
         public async void ScheduleProfileUpdates()
         {   
             ProfileScheduleRequesters += 1;
@@ -262,7 +247,7 @@ namespace GhostOverlay
             if (ProfileScheduleRequesters >= 2)
             {
                 // Someone else has already started the schedule, so can just return
-                Log.Info("Updates area already happening, so we can return");
+                Log.Info("Updates already happening, so we can return");
                 await UpdateProfile();
                 return;
             }
@@ -271,7 +256,7 @@ namespace GhostOverlay
             {
                 await UpdateProfile();
 
-                var delay = WidgetsAreVisible ? ActiveProfileUpdateInterval : InactiveProfileUpdateInterval;
+                var delay = (WidgetsAreVisible && NumberOfSameProfileUpdates < 10) ? ActiveProfileUpdateInterval : InactiveProfileUpdateInterval;
                 Log.Info("Waiting {delaySeconds}s before fetching profile again", delay / 1000);
                 
                 await Task.Delay(delay);

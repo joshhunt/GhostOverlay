@@ -12,11 +12,19 @@
         <StackPanel>
             <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Preferences</TextBlock>
 
-
             <StackPanel Orientation="Horizontal">
                 <ComboBox Name="LanguageComboBox" SelectedItem="{x:Bind SelectedLanguage, Mode=OneWay}" SelectionChanged="Selector_OnSelectionChanged" Margin="0,8,0,0" Header="Language" PlaceholderText="Select a language" Width="200" ItemsSource="{x:Bind Languages, Mode=OneWay}" DisplayMemberPath="DisplayName" />
                 <ProgressRing Margin="8,34,0,0" x:Name="LanguageDefinitionsProgressRing" IsActive="False" VerticalAlignment="Top"></ProgressRing>
-            </StackPanel>   
+            </StackPanel>
+
+            <TextBlock FontSize="15"
+                       FontWeight="Medium"
+                       Margin="0,16,0,4">
+                Widget Transparency
+            </TextBlock>
+            <TextBlock>
+                Set the pinned widget transparency in Xbox Game Bar settings, under Personalisation.
+            </TextBlock>
         </StackPanel>
 
         <StackPanel Margin="0,24,0,0">

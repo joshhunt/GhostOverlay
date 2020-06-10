@@ -22,7 +22,7 @@ namespace GhostOverlay.Models
         public Uri ImageUri => new Uri($"https://www.bungie.net{DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
         public TrackedEntry TrackedEntry { get; set; }
 
-        public string SortValue => "000";
+        public abstract string SortValue { get; }
         public abstract string GroupByKey { get; }
     }
 
@@ -43,6 +43,7 @@ namespace GhostOverlay.Models
         public Character OwnerCharacter;
 
         public override string GroupByKey => OwnerCharacter?.ClassName ?? "Insights";
+        public override string SortValue => isInActivity ? "AAA" : "XXXXXXXXXXXXXX";
 
         public async Task PopulateDefinitions()
         {

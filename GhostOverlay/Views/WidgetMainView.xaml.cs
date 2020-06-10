@@ -429,7 +429,7 @@ namespace GhostOverlay
             {
                 if (WidgetPage.Background != null)
                 {
-                    //WidgetPage.Background.Opacity = widget.RequestedOpacity;
+                    WidgetPage.Background.Opacity = widget.RequestedOpacity;
                 }
             });
         }
