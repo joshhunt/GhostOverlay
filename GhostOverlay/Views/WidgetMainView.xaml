@@ -10,6 +10,7 @@
     xmlns:models="using:GhostOverlay.Models"
     KeyUp="Grid_KeyUp"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    x:Name="WidgetPage"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
 

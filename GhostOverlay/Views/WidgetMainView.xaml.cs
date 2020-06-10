@@ -92,6 +92,9 @@ namespace GhostOverlay
                 widget.VerticalResizeSupported = true;
                 widget.SettingsSupported = true;
                 widget.SettingsClicked += Widget_SettingsClicked;
+
+                widget.RequestedOpacityChanged += Widget_RequestedOpacityChanged;
+                _ = SetWidgetOpacity();
             }
 
             SetVisualState(VisualState.InitialProfileLoad);
@@ -411,6 +414,24 @@ namespace GhostOverlay
             appWindowContentFrame.Navigate(typeof(WidgetSettingsView));
             ElementCompositionPreview.SetAppWindowContent(appWindow, appWindowContentFrame);
             await appWindow.TryShowAsync();
+        }
+
+        private async void Widget_RequestedOpacityChanged(XboxGameBarWidget sender, object args)
+        {
+            await SetWidgetOpacity();
+        }
+
+        public async Task SetWidgetOpacity()
+        {
+            Log.Info("Setting opacity {opacity}", widget.RequestedOpacity);
+
+            await WidgetPage.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                if (WidgetPage.Background != null)
+                {
+                    //WidgetPage.Background.Opacity = widget.RequestedOpacity;
+                }
+            });
         }
 
         private void UntrackItem_OnClick(object sender, RoutedEventArgs e)
