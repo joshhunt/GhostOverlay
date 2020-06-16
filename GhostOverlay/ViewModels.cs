@@ -83,7 +83,7 @@ namespace GhostOverlay
         public DestinyDefinitionsDestinyGenderDefinition GenderDefinition { get; set; }
         public DestinyDefinitionsDestinyRaceDefinition RaceDefinition { get; set; }
 
-        public Uri EmblemBackgroundUri => CommonHelpers.BungieUri(CharacterComponent?.EmblemBackgroundPath);
+        public Uri EmblemBackgroundUri => CommonHelpers.BungieUri(CharacterComponent?.EmblemBackgroundPath, "/common/destiny2_content/icons/9dc4f3283ee9f9fc3d3499e9f9f1756c.jpg");
 
         public long CharacterId => CharacterComponent?.CharacterId ?? 0;
 
