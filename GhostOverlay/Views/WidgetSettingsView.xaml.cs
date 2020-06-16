@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using BungieNetApi.Model;
 using Microsoft.Gaming.XboxGameBar;
 using GhostOverlay.Views;
 using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
@@ -104,7 +105,8 @@ namespace GhostOverlay
 
         private async void UpdateCharacterList()
         {
-            var charactersData = AppState.Data.Profile?.Characters.Data;
+            var profile = AppState.Data.Profile;
+            var charactersData = profile?.Characters.Data;
             if (charactersData == null) return;
 
             Characters.Clear();
@@ -121,15 +123,23 @@ namespace GhostOverlay
                 Characters.Add(newCharacter);
             }
 
-            if (AppState.Data.ActiveCharacter == null)
+            var activeCharacterId = AppState.Data.ActiveCharacter?.CharacterId;
+
+            if (activeCharacterId == null)
             {
-                AppState.Data.ActiveCharacter = Characters.First();
+                DateTime activityStart = DateTime.MinValue;
+
+                foreach (var (characterId, activitiesComponent) in profile.CharacterActivities.Data)
+                {
+                    if (activitiesComponent.CurrentActivityHash != 0 && activitiesComponent.DateActivityStarted > activityStart)
+                    {
+                        activeCharacterId = long.Parse(characterId);
+                        activityStart = activitiesComponent.DateActivityStarted;
+                    }
+                }
             }
-            else
-            {
-                AppState.Data.ActiveCharacter =
-                    Characters.FirstOrDefault(v => v.CharacterId == AppState.Data.ActiveCharacter.CharacterId);
-            }
+
+            AppState.Data.ActiveCharacter = Characters.FirstOrDefault(v => v.CharacterId == activeCharacterId) ?? Characters.First();
         }
 
         private void UpdateActiveCharacter()
