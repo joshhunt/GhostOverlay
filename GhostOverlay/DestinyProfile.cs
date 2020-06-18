@@ -126,5 +126,22 @@ namespace GhostOverlay
         {
             yield break;
         }
+
+        public static BungieApiResponse<object> ToSimple<T>(BungieApiResponse<T> data)
+        {
+            var simpleData = new BungieApiResponse<object>()
+            {
+                Response = data.Response,
+                ErrorCode = data.ErrorCode,
+                ThrottleSeconds = data.ThrottleSeconds,
+                ErrorStatus = data.ErrorStatus,
+                Message = data.Message,
+                MessageData = data.MessageData,
+                DetailedErrorTrace = data.DetailedErrorTrace,
+
+            };
+
+            return simpleData;
+        }
     }
 }

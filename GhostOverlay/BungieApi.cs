@@ -17,6 +17,8 @@ namespace GhostOverlay
     [Serializable]
     public class BungieApiException : Exception
     {
+        public BungieApiResponse<object> Response;
+
         public BungieApiException()
         {
         }
@@ -29,12 +31,14 @@ namespace GhostOverlay
         {
         }
 
-        // A constructor is needed for serialization when an
         // exception propagates from a remoting server to the client. 
         protected BungieApiException(SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }
+
+        public string RequestPath { get; set; }
+        public RestRequest Request { get; set; }
     }
 
     public class BungieOAuthTokenResponse
@@ -190,7 +194,7 @@ namespace GhostOverlay
             public int MembershipType { get; set; }
         }
 
-        public async Task CacheBust(DestinyResponsesDestinyProfileResponse profile, Func<Task> fn)
+        public async Task CacheBust(DestinyResponsesDestinyProfileResponse profile)
         {
             var (characterId, item) = FindItemToLock(profile);
             var itemState = (DestinyItemState) (item?.State ?? 0);
@@ -200,20 +204,16 @@ namespace GhostOverlay
             {
                 Log.Info("Found item to toggle lock state, character ID {characterId}, {itemHash}:{itemInstanceId}. locked state:{locked}", characterId, item.ItemHash, item.ItemInstanceId, itemIsLocked);
 
-                await SetLockState(itemIsLocked, item.ItemInstanceId, characterId,
-                    profile.Profile.Data.UserInfo.MembershipType);
+                try
+                {
+                    await SetLockState(itemIsLocked, item.ItemInstanceId, characterId,
+                        profile.Profile.Data.UserInfo.MembershipType);
+                }
+                catch (Exception err)
+                {
+                    Log.Error("Error busting profile cache, silently ignoring {Error}", err);
+                }
             }
-
-            Log.Info("running fn()");
-            await fn();
-
-            //if (item != null)
-            //{
-            //    Log.Info("Reverting lock state now");
-
-            //    await SetLockState(itemIsLocked, item.ItemInstanceId, characterId,
-            //        profile.Profile.Data.UserInfo.MembershipType);
-            //}
         }
 
         private async Task SetLockState(bool itemState, long itemItemInstanceId, string characterId, int membershipType)
@@ -257,7 +257,7 @@ namespace GhostOverlay
 
         public async Task<T> GetBungie<T>(string path, bool requireAuth = false, Method method = Method.GET, object body = default)
         {
-            Log.Info("REQUEST {path}", path);
+            Log.Debug("REQUEST {path}", path);
             var request = new RestRequest(path) {Method = method};
 
             if (body != null)
@@ -285,13 +285,23 @@ namespace GhostOverlay
                 throw new BungieApiException("API did not return JSON");
 
             var data = JsonConvert.DeserializeObject<BungieApiResponse<T>>(response.Content);
+            Log.Debug("RESPONSE {Path} {ErrorStatus}, {Message}", path, data.ErrorStatus, data.Message);
 
             if (data.ErrorStatus.Equals("Success") != true)
-                throw new BungieApiException($"Bungie API Error {data.ErrorStatus}: {data.Message}");
+            {
+                Log.Info("setting exception fields");
+                var err = new BungieApiException($"Bungie API Error {data.ErrorStatus}: {data.Message}")
+                {
+                    Response = BungieApiResponse<T>.ToSimple(data),
+                    RequestPath = path,
+                    Request = request
+                };
 
-            if (data.Response == null) throw new BungieApiException("API did not return JSON");
+                throw err;
+            }
 
-            Log.Debug("RESPONSE {ErrorStatus}, {Message}", data.ErrorStatus, data.Message);
+            if (data.Response == null) throw new BungieApiException("API did not return a response body");
+            
             return data.Response;
         }
 

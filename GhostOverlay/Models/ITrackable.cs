@@ -17,5 +17,6 @@ namespace GhostOverlay.Models
         Uri ImageUri { get; }
         TrackedEntry TrackedEntry { get; set; }
         string SortValue { get; }
+        string Subtitle { get; }
     }
 }

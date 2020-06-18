@@ -47,6 +47,17 @@ namespace GhostOverlay
             }
         }
 
+        private string _errorMessage;
+        private string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Timer stuff
         private DispatcherTimer timer;
         public event PropertyChangedEventHandler PropertyChanged;
@@ -131,14 +142,24 @@ namespace GhostOverlay
                     break;
 
                 case WidgetPropertyChanged.BustProfileRequests:
-                    UpdateBustProfileIndicator();
+                case WidgetPropertyChanged.ProfileError:
+                    UpdateMiscViewItems();
                     break;
             }
         }
 
-        private void UpdateBustProfileIndicator()
+        private void UpdateMiscViewItems()
         {
-            IsBustingProfileRequests = AppState.Data.BustProfileRequests.Value;
+            if (AppState.Data.BustProfileRequests.Value != IsBustingProfileRequests)
+            {
+                IsBustingProfileRequests = AppState.Data.BustProfileRequests.Value;
+            }
+
+            if (AppState.Data.ProfileError.Value != ErrorMessage)
+            {
+                ErrorMessage = AppState.Data.ProfileError.Value;
+                ErrorOverlay.Visibility = !string.IsNullOrEmpty(ErrorMessage) ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void CheckAuth()

@@ -5,11 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:GhostOverlay"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:interop="using:Windows.UI.Xaml.Interop"
-    xmlns:media="using:Microsoft.Toolkit.Uwp.UI.Media"
     xmlns:models="using:GhostOverlay.Models"
     KeyUp="Grid_KeyUp"
-    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     x:Name="WidgetPage"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     mc:Ignorable="d">
@@ -93,11 +90,10 @@
 
                         <TextBlock
                             Margin="0,0,0,0"
-                            HorizontalAlignment="Left"
-                            FontSize="15"
-                            FontWeight="Medium"
-                            Style="{ThemeResource BaseTextBlockStyle}"
-                            Text="{x:Bind Title}" />
+                            TextTrimming="WordEllipsis"
+                            HorizontalAlignment="Left">
+                            <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="15"></Run>
+                        </TextBlock>
 
                         <TextBlock
                             Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
@@ -224,6 +220,16 @@
                     <Run>ago</Run>
                 </TextBlock>
             </StackPanel>
+        </StackPanel>
+
+        <StackPanel
+            Padding="16"
+            Background="#f44336"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Stretch"
+            x:Name="ErrorOverlay"
+            Visibility="Collapsed">
+            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Center" Text="{x:Bind ErrorMessage, Mode=OneWay}" />
         </StackPanel>
     </Grid>
 </Page>

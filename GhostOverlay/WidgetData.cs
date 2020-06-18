@@ -91,9 +91,9 @@ namespace GhostOverlay
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
 
         public WidgetValue<CommonModelsCoreSettingsConfiguration> DestinySettings = new WidgetValue<CommonModelsCoreSettingsConfiguration>(WidgetPropertyChanged.DestinySettings);
-        public WidgetValue<string> ProfileError = new WidgetValue<string>(WidgetPropertyChanged.ProfileError, "");
         public WidgetValue<bool> DefinitionsUpdating = new WidgetValue<bool>(WidgetPropertyChanged.DefinitionsUpdating, false);
         public WidgetValue<bool> BustProfileRequests = new WidgetValue<bool>(WidgetPropertyChanged.BustProfileRequests, false);
+        public WidgetValue<string> ProfileError = new WidgetValue<string>(WidgetPropertyChanged.ProfileError);
 
         public WidgetValue<string> Language = new WidgetValue<string>(WidgetPropertyChanged.Language, "",
             (newValue) =>
@@ -130,6 +130,7 @@ namespace GhostOverlay
                 NumberOfSameProfileUpdates = 0;
                 _profile = value;
                 ProfileUpdatedTime = DateTime.Now;
+                ProfileError.Value = null;
                 eventAggregator.Publish(WidgetPropertyChanged.Profile);
             }
         }
@@ -217,10 +218,8 @@ namespace GhostOverlay
 
                     if (shouldBustProfile)
                     {
-                        await AppState.bungieApi.CacheBust(Profile, async () =>
-                        {
-                            Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
-                        });
+                        await AppState.bungieApi.CacheBust(Profile);
+                        Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
                     }
                     else
                     {
@@ -232,11 +231,29 @@ namespace GhostOverlay
             }
             catch (Exception err)
             {
-                Log.Error("Error with UpdateProfile", err);
-                ProfileError.Value = err.Message;
+                HandleProfileError(err);
             }
             
             ProfileIsUpdating = false;
+        }
+
+        private void HandleProfileError(Exception err)
+        {
+            Log.Error("Error with UpdateProfile {err}", err);
+
+            if (err is BungieApiException bungieError)
+            {
+                if (bungieError.Response != null)
+                {
+                    ProfileError.Value = $"Bungie API Error: {bungieError.Response.Message}";
+                    return;
+                }
+
+                ProfileError.Value = $"Unknown API Error: {bungieError.Message}";
+                return;
+            }
+
+            ProfileError.Value = $"Unknown Error: {err.Message}";
         }
 
         public async void ScheduleProfileUpdates()
@@ -341,10 +358,17 @@ namespace GhostOverlay
         public async Task ForceProfileUpdate()
         {
             ProfileIsUpdating = true;
-            await AppState.bungieApi.CacheBust(Profile, async () =>
+
+            try
             {
+                await AppState.bungieApi.CacheBust(Profile);
                 Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
-            });
+            }
+            catch (Exception err)
+            {
+                HandleProfileError(err);
+            }
+
             ProfileIsUpdating = false;
         }
     }

@@ -23,6 +23,7 @@ namespace GhostOverlay.Models
         public TrackedEntry TrackedEntry { get; set; }
 
         public abstract string SortValue { get; }
+        public string Subtitle => "";
         public abstract string GroupByKey { get; }
     }
 

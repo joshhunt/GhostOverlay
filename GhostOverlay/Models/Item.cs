@@ -48,6 +48,8 @@ namespace GhostOverlay.Models
             }
         }
 
+        public string Subtitle => Definition?.ItemTypeDisplayName ?? "Pursuit";
+
         public async Task<DestinyDefinitionsDestinyInventoryItemDefinition> PopulateDefinition()
         {
             Definition = await Definitions.GetInventoryItem(ItemHash);

@@ -20,6 +20,7 @@ namespace GhostOverlay.Models
         public string GroupByKey => "Triumphs";
 
         public string SortValue => (IsCompleted ? "xxx_completed" : "");
+        public string Subtitle => "Triumph";
 
         public string Title => Definition?.DisplayProperties?.Name ?? "No name";
         public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
