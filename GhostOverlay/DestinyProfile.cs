@@ -127,7 +127,7 @@ namespace GhostOverlay
             yield break;
         }
 
-        public static BungieApiResponse<object> ToSimple<T>(BungieApiResponse<T> data)
+        public static BungieApiResponse<object> ToSimple<TT>(BungieApiResponse<TT> data)
         {
             var simpleData = new BungieApiResponse<object>()
             {
