@@ -3,7 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:GhostOverlay"
-    xmlns:models="using:GhostOverlay.Models">
+    xmlns:models="using:GhostOverlay.Models"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters">
+
+    <converters:BoolToObjectConverter x:Key="VisibleWhenTrueConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+    <converters:BoolToObjectConverter x:Key="VisibleWhenFalseConverter" TrueValue="Collapsed" FalseValue="Visible"/>
 
     <local:NumberFormatterConverter x:Key="NumberFormatterConverter" />
     <local:DestinySymbolConverter x:Key="DestinySymbolConverter" />
@@ -72,6 +76,7 @@
         <Canvas
             Width="48"
             Height="48">
+
             <Image
                 Width="48"
                 Height="48"
@@ -102,6 +107,7 @@
         <StackPanel Margin="0,0,0,0">
             <Grid
                 Opacity="{x:Bind Progress.Complete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -112,14 +118,23 @@
                     Width="20"
                     Height="20"
                     Margin="0,0,6,0"
+                    Visibility="{x:Bind Progress.Complete, Converter={StaticResource VisibleWhenFalseConverter}}"
                     Fill="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
+
+                <Rectangle
+                    Grid.Column="0"
+                    Width="20"
+                    Height="20"
+                    Margin="0,0,6,0"
+                    Visibility="{x:Bind Progress.Complete, Converter={StaticResource VisibleWhenTrueConverter}}"
+                    Fill="#FF5DA46A" />
 
                 <ProgressBar
                     Grid.Column="1"
                     Height="20"
                     CornerRadius="0"
                     Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
-                    Foreground="{x:Bind Progress.Complete, Converter={StaticResource BooleanBrushConverter}, ConverterParameter=#00589864|#FF5DA46A}"
+                    Foreground="#FF5DA46A"
                     Value="{x:Bind CompletionPercent}" />
 
                 <Grid Grid.Column="1" Margin="6,1,6,0">
@@ -128,7 +143,8 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.ColumnSpan="2"
+                    <TextBlock Grid.ColumnSpan="1"
+                               TextTrimming="CharacterEllipsis"
                                Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
                                FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
 
@@ -139,6 +155,29 @@
                     </TextBlock>
                 </Grid>
             </Grid>
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TrackableBody" x:DataType="models:ITrackable">
+        <StackPanel>
+            <TextBlock
+                Margin="0,0,0,0"
+                TextTrimming="WordEllipsis"
+                HorizontalAlignment="Left">
+                <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="15"></Run>
+                <Run Text="&#8203;//" FontSize="14" Foreground="#c2c2c2"></Run>
+                <Run Text="{x:Bind Subtitle}" FontSize="14" Foreground="#c2c2c2"></Run>
+            </TextBlock>
+
+            <TextBlock
+                Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
+                Margin="0,0,0,6"
+                HorizontalAlignment="Left"
+                MaxLines="2"
+                Style="{ThemeResource BodyTextBlockStyle}"
+                Text="{x:Bind DisplayProperties.Description}"
+                TextTrimming="WordEllipsis"
+                TextWrapping="WrapWholeWords" />
         </StackPanel>
     </DataTemplate>
 

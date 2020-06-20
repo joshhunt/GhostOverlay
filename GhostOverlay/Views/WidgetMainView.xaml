@@ -88,23 +88,8 @@
                         Margin="12,0,0,0"
                         HorizontalAlignment="Stretch">
 
-                        <TextBlock
-                            Margin="0,0,0,0"
-                            TextTrimming="WordEllipsis"
-                            HorizontalAlignment="Left">
-                            <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="15"></Run>
-                        </TextBlock>
-
-                        <TextBlock
-                            Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
-                            x:Name="BountyDescriptionLabel"
-                            Margin="0,0,0,6"
-                            HorizontalAlignment="Left"
-                            MaxLines="2"
-                            Style="{ThemeResource BodyTextBlockStyle}"
-                            Text="{x:Bind DisplayProperties.Description}"
-                            TextTrimming="WordEllipsis"
-                            TextWrapping="WrapWholeWords" />
+                        <ContentControl ContentTemplate="{StaticResource TrackableBody}"
+                                        HorizontalAlignment="Stretch" />
 
                         <ListView
                             Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
