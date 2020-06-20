@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Globalization;
+using Windows.System.Threading;
+using Windows.UI.Core;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
 using DayOfWeek = System.DayOfWeek;
@@ -77,14 +79,18 @@ namespace GhostOverlay
     {
         private readonly Logger Log = new Logger("WidgetData");
 
+        public static double ActiveProfileUpdateSeconds = 15;
+        public static double InactiveProfileUpdateSeconds = 60;
+
         // number of requests to schedule profile updates. 
         public int ProfileScheduleRequesters = 0;
-        public static int ActiveProfileUpdateInterval = 15 * 1000;
-        public static int InactiveProfileUpdateInterval = 60 * 1000;
         public DateTime ProfileUpdatedTime = DateTime.MinValue;
         public DateTime LastProfileBustTime = DateTime.MinValue;
         public bool WidgetsAreVisible { get; set; }
         public int NumberOfSameProfileUpdates = 0;
+
+        public TimeSpan UpdateProfileInterval;
+        public ThreadPoolTimer UpdateProfileTimer;
 
         public bool DefinitionsLoaded => DefinitionsPath != null && DefinitionsPath.Length > 5;
 
@@ -94,6 +100,8 @@ namespace GhostOverlay
         public WidgetValue<bool> DefinitionsUpdating = new WidgetValue<bool>(WidgetPropertyChanged.DefinitionsUpdating, false);
         public WidgetValue<bool> BustProfileRequests = new WidgetValue<bool>(WidgetPropertyChanged.BustProfileRequests, false);
         public WidgetValue<string> ProfileError = new WidgetValue<string>(WidgetPropertyChanged.ProfileError);
+
+        public bool CrucibleMapIsTracked => TrackedEntries.Any(v => v.Type == TrackedEntryType.DynamicTrackable && v.DynamicTrackableType == DynamicTrackableType.CrucibleMap);
 
         public WidgetValue<string> Language = new WidgetValue<string>(WidgetPropertyChanged.Language, "",
             (newValue) =>
@@ -201,31 +209,17 @@ namespace GhostOverlay
                 }
                 else
                 {
-                    var crucibleMapTracker = TrackedEntries.FirstOrDefault(v =>
-                        v.Type == TrackedEntryType.DynamicTrackable &&
-                        v.DynamicTrackableType == DynamicTrackableType.CrucibleMap);
-                    var crucibleMapTrackerActive = crucibleMapTracker != null;
-
-                    var shouldBustProfile = BustProfileRequests.Value || (AppState.RemoteConfig.CrucibleMapTrackerAutoProfileBust && crucibleMapTrackerActive);
-
+                    var shouldBustProfile = (BustProfileRequests.Value ||
+                                             (AppState.RemoteConfig.CrucibleMapTrackerAutoProfileBust &&
+                                              CrucibleMapIsTracked)) && NumberOfSameProfileUpdates < 3;
                     Log.Info("shouldBustProfile: {shouldBustProfile}, NumberOfSameProfileUpdates: {NumberOfSameProfileUpdates}", shouldBustProfile, NumberOfSameProfileUpdates);
-
-                    if (shouldBustProfile && NumberOfSameProfileUpdates >= 3)
-                    {
-                        shouldBustProfile = false;
-                        Log.Info("NumberOfSameProfileUpdates is too high, setting shouldBustProfile back to false;");
-                    }
 
                     if (shouldBustProfile)
                     {
                         await AppState.bungieApi.CacheBust(Profile);
-                        Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
-                    }
-                    else
-                    {
-                        Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
                     }
 
+                    Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
                     ProfileError.Value = "";
                 }
             }
@@ -269,27 +263,48 @@ namespace GhostOverlay
                 return;
             }
 
-            while (ProfileScheduleRequesters > 0)
-            {
-                await UpdateProfile();
+            Log.Info("Running initial Update Profile");
+            await UpdateProfile();
 
-                var delay = (WidgetsAreVisible && NumberOfSameProfileUpdates < 10) ? ActiveProfileUpdateInterval : InactiveProfileUpdateInterval;
-                Log.Info("Waiting {delaySeconds}s before fetching profile again", delay / 1000);
-                
-                await Task.Delay(delay);
+            UpdateProfileInterval = TimeSpan.FromSeconds(ActiveProfileUpdateSeconds);
+            UpdateProfileTimer = ThreadPoolTimer.CreatePeriodicTimer(OnProfileUpdateTimerInvocation, UpdateProfileInterval, OnProfileUpdateTimerCancellation);
+        }
+
+        public async void OnProfileUpdateTimerInvocation(ThreadPoolTimer timer)
+        {
+            await UpdateProfile();
+
+            var delay = (WidgetsAreVisible && NumberOfSameProfileUpdates < 5) ? ActiveProfileUpdateSeconds : InactiveProfileUpdateSeconds;
+            Log.Info("Waiting {delaySeconds}s before fetching profile again", delay);
+
+            if (Math.Abs(delay - timer.Period.TotalSeconds) > 5)
+            {
+                Log.Info("Timer period {period}s does not match the calculated delay {delay}s. Cancelling periodic timer, and a new one should be made", timer.Period.TotalMilliseconds, delay);
+                UpdateProfileInterval = TimeSpan.FromSeconds(delay);
+                timer.Cancel();
+            }
+        }
+
+        public void OnProfileUpdateTimerCancellation(ThreadPoolTimer timer)
+        {
+            if (ProfileScheduleRequesters > 0)
+            {
+                Log.Info("Creating new periodic timer in cancellation fn for {period}s", UpdateProfileInterval.TotalMilliseconds);
+                UpdateProfileTimer = ThreadPoolTimer.CreatePeriodicTimer(OnProfileUpdateTimerInvocation, UpdateProfileInterval, OnProfileUpdateTimerCancellation);
             }
         }
 
         public void CancelAllScheduledProfileUpdates()
         {
             ProfileScheduleRequesters = 0;
+            UpdateProfileTimer.Cancel();
         }
 
         public void WidgetVisibilityChanged()
         {
             var sinceLastUpdate = DateTime.Now - ProfileUpdatedTime;
             if (WidgetsAreVisible && !ProfileIsUpdating &&
-                (sinceLastUpdate.TotalMilliseconds > ActiveProfileUpdateInterval) && (ProfileScheduleRequesters > 0))
+                (sinceLastUpdate.TotalSeconds > ActiveProfileUpdateSeconds) && (ProfileScheduleRequesters > 0))
             {
                 Log.Info("Visiblity changed, updating profile");
                 _ = UpdateProfile();
@@ -304,6 +319,7 @@ namespace GhostOverlay
             }
 
             ProfileScheduleRequesters -= 1;
+            UpdateProfileTimer.Cancel();
         }
 
         public bool IsTracked(Item item)
