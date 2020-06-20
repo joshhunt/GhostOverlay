@@ -114,7 +114,6 @@
     </Page.Resources>
 
     <Grid>
-
         <StackPanel
             x:Name="EmptyState"
             HorizontalAlignment="Center"

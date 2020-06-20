@@ -3,7 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     RequestedTheme="Dark"
-    xmlns:local="using:GhostOverlay">
+    xmlns:local="using:GhostOverlay"
+    xmlns:system="using:System">
 
     <Application.Resources>
         <ResourceDictionary>

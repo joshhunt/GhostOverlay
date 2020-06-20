@@ -6,8 +6,11 @@
     xmlns:models="using:GhostOverlay.Models"
     xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters">
 
-    <converters:BoolToObjectConverter x:Key="VisibleWhenTrueConverter" TrueValue="Visible" FalseValue="Collapsed"/>
-    <converters:BoolToObjectConverter x:Key="VisibleWhenFalseConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+    <converters:BoolToObjectConverter x:Key="BoolToCompletedColorConverter" TrueValue="#FF5DA46A"
+                                      FalseValue="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
+    <converters:BoolToObjectConverter x:Key="VisibleWhenTrueConverter" TrueValue="Visible" FalseValue="Collapsed" />
+    <converters:BoolToObjectConverter x:Key="VisibleWhenFalseConverter" TrueValue="Collapsed" FalseValue="Visible" />
+    <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
 
     <local:NumberFormatterConverter x:Key="NumberFormatterConverter" />
     <local:DestinySymbolConverter x:Key="DestinySymbolConverter" />
@@ -29,7 +32,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <ContentPresenter/>
+                    <ContentPresenter />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -73,40 +76,91 @@
     </DataTemplate>
 
     <DataTemplate x:Key="BountyIcon" x:DataType="models:ITrackable">
-        <Canvas
-            Width="48"
-            Height="48">
+        <UserControl>
+            <Canvas
+                x:Name="TrackableIconCanvas"
+                Width="32"
+                Height="32">
 
-            <Image
-                Width="48"
-                Height="48"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState>
+                            <VisualState.StateTriggers>
+                                <AdaptiveTrigger MinWindowWidth="340" />
+                            </VisualState.StateTriggers>
 
-                <Image.Source>
-                    <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
-                </Image.Source>
-            </Image>
+                            <VisualState.Setters>
+                                <Setter Target="TrackableIconCanvas.Width" Value="48" />
+                                <Setter Target="TrackableIconCanvas.Height" Value="48" />
+                                <Setter Target="TrackableIconImage.Width" Value="48" />
+                                <Setter Target="TrackableIconImage.Height" Value="48" />
 
-            <Rectangle
-                Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}}"
-                Canvas.Top="0" Canvas.Left="0"
-                Width="48"
-                StrokeThickness="2"
-                Opacity="1"
-                Height="48" Stroke="#ffC19954" />
+                                <Setter Target="TrackableIconOutline.Width" Value="48" />
+                                <Setter Target="TrackableIconOutline.Height" Value="48" />
 
-            <Polygon
-                Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}}"
-                Opacity="1"
-                Canvas.Top="23" Canvas.Left="23" Points="0,25 25,25, 25,0" Fill="#ffC19954" />
-        </Canvas>
+                                <Setter Target="TrackableIconTriangle.(Canvas.Top)" Value="23" />
+                                <Setter Target="TrackableIconTriangle.(Canvas.Left)" Value="23" />
+                                <Setter Target="TrackableIconTriangle.Points" Value="0,25 25,25, 25,0" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <Image
+                    x:Name="TrackableIconImage"
+                    Width="32"
+                    Height="32"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+
+                    <Image.Source>
+                        <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                    </Image.Source>
+                </Image>
+
+                <Rectangle
+                    x:Name="TrackableIconOutline"
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}}"
+                    Canvas.Top="0" Canvas.Left="0"
+                    Width="32"
+                    StrokeThickness="2"
+                    Opacity="1"
+                    Height="32" Stroke="#ffC19954" />
+
+                <Polygon
+                    x:Name="TrackableIconTriangle"
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}}"
+                    Opacity="1"
+                    Canvas.Top="15" Canvas.Left="15" Points="0,17 17,17, 17,0" Fill="#ffC19954" />
+            </Canvas>
+        </UserControl>
     </DataTemplate>
 
     <DataTemplate x:Key="ObjectiveTemplate" x:DataType="local:Objective">
-        <StackPanel Margin="0,0,0,0">
+        <UserControl>
             <Grid
                 Opacity="{x:Bind Progress.Complete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
+
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState>
+                            <VisualState.StateTriggers>
+                                <AdaptiveTrigger MinWindowWidth="340" />
+                            </VisualState.StateTriggers>
+
+                            <VisualState.Setters>
+                                <Setter Target="ObjectiveCompletonMarker.Visibility" Value="Visible" />
+
+                                <Setter Target="ObjectiveDescription.FontSize" Value="14" />
+                                <Setter Target="ObjectiveProgress.FontSize" Value="14" />
+
+                                <Setter Target="ObjectiveProgressBar.Height" Value="20" />
+
+                                <Setter Target="ObjectiveText.Margin" Value="6,1,6,0" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -114,71 +168,100 @@
                 </Grid.ColumnDefinitions>
 
                 <Rectangle
+                    x:Name="ObjectiveCompletonMarker"
                     Grid.Column="0"
                     Width="20"
                     Height="20"
                     Margin="0,0,6,0"
-                    Visibility="{x:Bind Progress.Complete, Converter={StaticResource VisibleWhenFalseConverter}}"
-                    Fill="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
-
-                <Rectangle
-                    Grid.Column="0"
-                    Width="20"
-                    Height="20"
-                    Margin="0,0,6,0"
-                    Visibility="{x:Bind Progress.Complete, Converter={StaticResource VisibleWhenTrueConverter}}"
-                    Fill="#FF5DA46A" />
+                    Visibility="Collapsed"
+                    Fill="{x:Bind Progress.Complete, Converter={StaticResource BoolToCompletedColorConverter}}" />
 
                 <ProgressBar
+                    x:Name="ObjectiveProgressBar"
                     Grid.Column="1"
-                    Height="20"
+                    Height="18"
                     CornerRadius="0"
                     Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
                     Foreground="#FF5DA46A"
                     Value="{x:Bind CompletionPercent}" />
 
-                <Grid Grid.Column="1" Margin="6,1,6,0">
+                <Grid Grid.Column="1" Margin="6,0,6,0" x:Name="ObjectiveText">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.ColumnSpan="1"
+                               x:Name="ObjectiveDescription"
+                               FontSize="13"
                                TextTrimming="CharacterEllipsis"
                                Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
                                FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
 
-                    <TextBlock Grid.Column="1">
+                    <TextBlock Grid.Column="1" 
+                               x:Name="ObjectiveProgress"
+                               FontSize="13">
                         <Run Text="{x:Bind Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
                         <Run Text="/" />
-                        <Run Text="{x:Bind Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
+                        <Run
+                            Text="{x:Bind Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
                     </TextBlock>
                 </Grid>
             </Grid>
-        </StackPanel>
+        </UserControl>
     </DataTemplate>
 
     <DataTemplate x:Key="TrackableBody" x:DataType="models:ITrackable">
-        <StackPanel>
-            <TextBlock
-                Margin="0,0,0,0"
-                TextTrimming="WordEllipsis"
-                HorizontalAlignment="Left">
-                <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="15"></Run>
-                <Run Text="&#8203;//" FontSize="14" Foreground="#c2c2c2"></Run>
-                <Run Text="{x:Bind Subtitle}" FontSize="14" Foreground="#c2c2c2"></Run>
-            </TextBlock>
+        <UserControl>
+            <StackPanel>
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup>
+                        <VisualState>
+                            <VisualState.StateTriggers>
+                                <AdaptiveTrigger MinWindowWidth="340" />
+                            </VisualState.StateTriggers>
 
-            <TextBlock
-                Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
-                Margin="0,0,0,6"
-                HorizontalAlignment="Left"
-                MaxLines="2"
-                Style="{ThemeResource BodyTextBlockStyle}"
-                Text="{x:Bind DisplayProperties.Description}"
-                TextTrimming="WordEllipsis"
-                TextWrapping="WrapWholeWords" />
-        </StackPanel>
+                            <VisualState.Setters>
+                                <Setter Target="TrackableBodyTitleSmall.Visibility" Value="Collapsed" />
+                                <Setter Target="TrackableBodyTitleLarge.Visibility" Value="Visible" />
+
+                                <Setter Target="TrackableBodyDescription.FontSize" Value="14" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+
+                <TextBlock
+                    x:Name="TrackableBodyTitleSmall"
+                    Margin="0,0,0,0"
+                    TextTrimming="CharacterEllipsis"
+                    HorizontalAlignment="Left">
+                        <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="14" />
+                </TextBlock>
+
+                <TextBlock
+                    x:Name="TrackableBodyTitleLarge"
+                    Visibility="Collapsed"
+                    Margin="0,0,0,0"
+                    TextTrimming="CharacterEllipsis"
+                    HorizontalAlignment="Left">
+                    <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="15" />
+                    <Run Text="&#8203;//" FontSize="14" Foreground="#c2c2c2" />
+                    <Run Text="{x:Bind Subtitle}" FontSize="14" Foreground="#c2c2c2" />
+                </TextBlock>
+
+                <TextBlock
+                    x:Name="TrackableBodyDescription"
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenFalseConverter}}"
+                    Margin="0,0,0,6"
+                    HorizontalAlignment="Left"
+                    FontSize="13"
+                    MaxLines="2"
+                    Text="{x:Bind DisplayProperties.Description}"
+                    TextTrimming="WordEllipsis"
+                    TextWrapping="WrapWholeWords" />
+            </StackPanel>
+        </UserControl>
     </DataTemplate>
 
 </ResourceDictionary>
