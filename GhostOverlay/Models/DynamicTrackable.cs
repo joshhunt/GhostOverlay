@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
@@ -21,10 +23,17 @@ namespace GhostOverlay.Models
         public string Title { get; set; }
         public Uri ImageUri => new Uri($"https://www.bungie.net{DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
         public TrackedEntry TrackedEntry { get; set; }
+        public bool ShowDescription => true;
 
         public abstract string SortValue { get; }
         public string Subtitle => "";
         public abstract string GroupByKey { get; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void NotifyPropertyChanged(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     class CrucibleMapTrackable : DynamicTrackable

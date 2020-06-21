@@ -23,6 +23,7 @@ namespace GhostOverlay
         [JsonProperty("i")] public long InstanceId;
         [JsonProperty("o")] public long OwnerId;
         [JsonProperty("t")] public TrackedEntryType Type;
+        [JsonProperty("s")] public bool ShowDescription;
 
         public static TrackedEntry FromItem(Item item)
         {
@@ -127,7 +128,8 @@ namespace GhostOverlay
         Language,
         DefinitionsPath,
         TrackedEntries,
-        AuthedBungieMembershipId
+        AuthedBungieMembershipId,
+        ShowDescriptions
     }
 
     public static class AppState
@@ -157,6 +159,7 @@ namespace GhostOverlay
         {
             var localSettings = ApplicationData.Current.LocalSettings;
             localSettings.Values[key.ToString()] = value;
+            Log.Info("Saved {a} as {b}", key.ToString(), value);
         }
 
         public static void ClearSetting(SettingsKey key)

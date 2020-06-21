@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using BungieNetApi.Model;
 
 namespace GhostOverlay.Models
 {
-    interface ITrackable
+    interface ITrackable : INotifyPropertyChanged
     {
         bool IsCompleted { get; }
         string GroupByKey { get; }
@@ -18,5 +19,7 @@ namespace GhostOverlay.Models
         TrackedEntry TrackedEntry { get; set; }
         string SortValue { get; }
         string Subtitle { get; }
+        bool ShowDescription { get; }
+        void NotifyPropertyChanged(string fieldName);
     }
 }

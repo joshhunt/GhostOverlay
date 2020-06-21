@@ -16,6 +16,8 @@
                 <ComboBox Name="LanguageComboBox" SelectedItem="{x:Bind SelectedLanguage, Mode=OneWay}" SelectionChanged="Selector_OnSelectionChanged" Margin="0,8,0,0" Header="Language" PlaceholderText="Select a language" Width="200" ItemsSource="{x:Bind Languages, Mode=OneWay}" DisplayMemberPath="DisplayName" />
                 <ProgressRing Margin="8,34,0,0" x:Name="LanguageDefinitionsProgressRing" IsActive="False" VerticalAlignment="Top"></ProgressRing>
             </StackPanel>
+
+            <CheckBox x:Name="ShowDescriptionsCheckbox" Margin="0,16,0,0" Content="Show descriptions for Pursuits and Triumphs" Checked="ShowDescriptionsToggled" Unchecked="ShowDescriptionsToggled" />
         </StackPanel>
 
         <StackPanel Margin="0,24,0,0">

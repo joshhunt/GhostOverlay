@@ -65,6 +65,9 @@
 
                     <Grid.ContextFlyout>
                         <MenuFlyout>
+                            <MenuFlyoutItem Text="Toggle description" Icon="More" Click="ShowDescription_OnClick"
+                                            Tag="{x:Bind TrackedEntry}" />
+
                             <MenuFlyoutItem Text="Untrack" Icon="Unpin" Click="UntrackItem_OnClick"
                                             Tag="{x:Bind TrackedEntry}" />
 

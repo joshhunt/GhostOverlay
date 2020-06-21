@@ -88,6 +88,7 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.Profile:
                 case WidgetPropertyChanged.DefinitionsPath:
                 case WidgetPropertyChanged.DestinySettings:
+                case WidgetPropertyChanged.ShowDescriptions:
                     UpdateViewModel();
                     break;
 
@@ -105,6 +106,8 @@ namespace GhostOverlay
 
         private void UpdateViewModel()
         {
+            ShowDescriptionsCheckbox.IsChecked = AppState.Data.ShowDescriptions.Value;
+
             if (AppState.Data.DefinitionsPath != null)
             {
                 DefinitionsDbName = Path.GetFileName(AppState.Data.DefinitionsPath);
@@ -183,6 +186,12 @@ namespace GhostOverlay
                 LanguageComboBox.IsEnabled = true;
                 LanguageDefinitionsProgressRing.IsActive = false;
             }
+        }
+
+        private void ShowDescriptionsToggled(object sender, RoutedEventArgs e)
+        {
+            AppState.Data.ShowDescriptions.Value = ((CheckBox) e.OriginalSource)?.IsChecked ?? false;
+            Log.Info("AppState.Data.ShowDescriptions.Value to {v}", AppState.Data.ShowDescriptions.Value);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.System;
@@ -130,6 +131,7 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.Profile:
                 case WidgetPropertyChanged.DefinitionsPath:
                 case WidgetPropertyChanged.TrackedItems:
+                case WidgetPropertyChanged.ShowDescriptions:
                     UpdateFromProfile();
                     break;
 
@@ -483,6 +485,23 @@ namespace GhostOverlay
         private async void ForceRefresh_OnClick(object sender, RoutedEventArgs e)
         {
             await AppState.Data.ForceProfileUpdate();
+        }
+
+        private void ShowDescription_OnClick(object sender, RoutedEventArgs e)
+        {
+            var button = sender as MenuFlyoutItem;
+
+            if (button.Tag is TrackedEntry trackedEntry)
+            {
+                var item = Tracked.FirstOrDefault(v => v.TrackedEntry == trackedEntry);
+
+                if (item != null)
+                {
+                    trackedEntry.ShowDescription = !(trackedEntry.ShowDescription);
+                    item.NotifyPropertyChanged("ShowDescription");
+                    AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
+                }
+            }
         }
     }
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
@@ -25,6 +27,9 @@ namespace GhostOverlay.Models
         public List<Objective> Objectives { get; set; }
         public Character OwnerCharacter;
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
+
+        public bool ShowDescription =>
+            !IsCompleted && ((TrackedEntry?.ShowDescription ?? true) || AppState.Data.ShowDescriptions.Value);
 
         public string GroupByKey => OwnerCharacter.ClassName;
 
@@ -145,6 +150,13 @@ namespace GhostOverlay.Models
             //}
 
             return bounties;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void NotifyPropertyChanged(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

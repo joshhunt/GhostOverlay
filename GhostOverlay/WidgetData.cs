@@ -27,7 +27,8 @@ namespace GhostOverlay
         DestinySettings,
         DefinitionsUpdating,
         Language,
-        BustProfileRequests
+        BustProfileRequests,
+        ShowDescriptions
     }
 
     public class WidgetValue<T>
@@ -107,6 +108,12 @@ namespace GhostOverlay
             (newValue) =>
             {
                 AppState.SaveSetting(SettingsKey.Language, newValue);
+            });
+
+        public WidgetValue<bool> ShowDescriptions = new WidgetValue<bool>(WidgetPropertyChanged.ShowDescriptions, true,
+            (newValue) =>
+            {
+                AppState.SaveSetting(SettingsKey.ShowDescriptions, newValue);
             });
 
         private bool _profileIsUpdating;
@@ -194,7 +201,7 @@ namespace GhostOverlay
                 eventAggregator.Publish(WidgetPropertyChanged.TokenData);
             }
         }
-        
+
         public async Task UpdateProfile()
         {
             Log.Info("----- UpdateProfile");
@@ -352,6 +359,8 @@ namespace GhostOverlay
             TrackedEntries.RemoveAll(v => v.Hash == 0 && v.InstanceId == 0);
 
             Language.Value = AppState.ReadSetting(SettingsKey.Language, "@@UNSET"); // Default value is set in Definitions
+
+            ShowDescriptions.Value = AppState.ReadSetting(SettingsKey.ShowDescriptions, true);
         }
 
         public async Task<CommonModelsCoreSettingsConfiguration> UpdateDestinySettings()

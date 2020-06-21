@@ -252,7 +252,7 @@
 
                 <TextBlock
                     x:Name="TrackableBodyDescription"
-                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenFalseConverter}}"
+                    Visibility="{x:Bind ShowDescription, Mode=OneWay, Converter={StaticResource VisibleWhenTrueConverter}}"
                     Margin="0,0,0,6"
                     HorizontalAlignment="Left"
                     FontSize="13"

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
@@ -18,6 +19,9 @@ namespace GhostOverlay.Models
 
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
         public string GroupByKey => "Triumphs";
+
+        public bool ShowDescription =>
+            !IsCompleted && (TrackedEntry.ShowDescription || AppState.Data.ShowDescriptions.Value);
 
         public string SortValue => (IsCompleted ? "xxx_completed" : "");
         public string Subtitle => "Triumph";
@@ -56,6 +60,13 @@ namespace GhostOverlay.Models
             profile.ProfileRecords.Data.Records.TryGetValue(triumphHash, out record);
 
             return record;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public virtual void NotifyPropertyChanged(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
