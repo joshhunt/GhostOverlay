@@ -259,12 +259,6 @@ namespace GhostOverlay
 
             Tracked.Clear();
 
-            Log.Info("Tracked items:");
-            foreach (var dataTrackedEntry in TrackedEntriesCopyOf)
-            {
-                Log.Info("    {item}", dataTrackedEntry);
-            }
-
             foreach (var trackedEntry in TrackedEntriesCopyOf)
             {
                 ITrackable trackable = default;
@@ -293,10 +287,12 @@ namespace GhostOverlay
                     Log.Info("remove {trackedEntry}", trackedEntry);
                     toCleanup.Add(trackedEntry);
                 }
-                    
             }
 
+            Log.Info("AppState.Data.TrackedEntries before cleanup {v}", AppState.Data.TrackedEntries.Count);
             AppState.Data.TrackedEntries.RemoveAll(toCleanup.Contains);
+            AppState.SaveTrackedEntries(AppState.Data.TrackedEntries);
+            Log.Info("AppState.Data.TrackedEntries after cleanup {v}", AppState.Data.TrackedEntries.Count);
 
             var groupedBounties =
                 from t in Tracked
@@ -307,6 +303,41 @@ namespace GhostOverlay
 
             SetVisualState(Tracked.Count == 0 ? VisualState.Empty : VisualState.None);
             TrackedBountiesCollection.Source = groupedBounties;
+        }
+
+        private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyDefinitionsDestinyInventoryItemDefinition itemDefinition, DestinyResponsesDestinyProfileResponse profile)
+        {
+            var questStepsHashes = itemDefinition?.SetData?.ItemList?.Select(v => v.ItemHash).ToList() ??
+                                   new List<long>();
+            var questlineItemHash = itemDefinition?.Objectives?.QuestlineItemHash ?? 0;
+
+            if (questlineItemHash != 0)
+            {
+                var questLineItem = await Definitions.GetInventoryItem(questlineItemHash);
+                foreach (var questStepHash in questLineItem?.SetData?.ItemList?.Select(v => v.ItemHash) ?? new List<long>())
+                {
+                    if (!questStepsHashes.Contains(questStepHash))
+                    {
+                        questStepsHashes.Add(questStepHash);
+                    }
+                }
+            }
+
+            Log.Debug("UpgradeQuestStepTrackedEntry, tracked entry {trackedEntry}, found quest step hashes {questStepsHashes}", oldTrackedEntry, questStepsHashes);
+
+            var charactersInventory = profile?.CharacterInventories?.Data;
+            var characterId = oldTrackedEntry.OwnerId.ToString();
+
+            if (charactersInventory == null || !charactersInventory.ContainsKey(characterId))
+            {
+                Log.Info("UpgradeQuestStepTrackedEntry, could not find inventory for character ID {characterID}", characterId);
+                return default;
+            }
+
+            return charactersInventory[characterId].Items
+                .Where(itemComponent => questStepsHashes.Contains(itemComponent.ItemHash))
+                .Select(itemComponent => TrackedEntry.FromInventoryItemComponent(itemComponent, oldTrackedEntry.OwnerId))
+                .FirstOrDefault();
         }
 
         private async Task<DynamicTrackable> DynamicTrackableFromTrackedEntry(TrackedEntry trackedEntry, DestinyResponsesDestinyProfileResponse profile)
@@ -323,9 +354,9 @@ namespace GhostOverlay
             return default;
         }
 
-        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile, Dictionary<long, Character>  characters)
+        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile, Dictionary<long, Character> characters)
         {
-            if (profile == null) return default;
+            if (profile == null || entry == null) return default;
 
             var itemInstanceId = entry.InstanceId.ToString();
             var characterId = entry.OwnerId.ToString();
@@ -373,7 +404,17 @@ namespace GhostOverlay
 
             await bounty.PopulateDefinition();
 
-            return bounty;
+            if (bounty?.Objectives != null && bounty.Objectives.Count > 0)
+            {
+                // We found the pursuit fine, return it early.
+                return bounty;
+            }
+
+            // We were unable to find the pursuit, so maybe we can find further quest steps?
+            var newTrackedEntry = await UpgradeQuestStepTrackedEntry(entry, bounty.Definition, profile);
+            var newTrackedItem = await ItemFromTrackedEntry(newTrackedEntry, profile, characters);
+
+            return newTrackedItem;
         }
 
 

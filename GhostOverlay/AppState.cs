@@ -36,6 +36,17 @@ namespace GhostOverlay
             };
         }
 
+        public static TrackedEntry FromInventoryItemComponent(DestinyEntitiesItemsDestinyItemComponent item, long characterId)
+        {
+            return new TrackedEntry
+            {
+                Type = TrackedEntryType.Item,
+                Hash = item.ItemHash,
+                InstanceId = item.ItemInstanceId,
+                OwnerId = characterId
+            };
+        }
+
         public static TrackedEntry FromTriumph(Triumph triumph)
         {
             return new TrackedEntry
