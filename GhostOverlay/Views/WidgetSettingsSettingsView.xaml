@@ -18,6 +18,15 @@
             </StackPanel>
 
             <CheckBox x:Name="ShowDescriptionsCheckbox" Margin="0,16,0,0" Content="Show descriptions for Pursuits and Triumphs" Checked="ShowDescriptionsToggled" Unchecked="ShowDescriptionsToggled" />
+
+            <TextBlock FontSize="15"
+                       FontWeight="Medium"
+                       Margin="0,16,0,4">
+                Widget Transparency
+            </TextBlock>
+            <TextBlock>
+                Set the pinned widget transparency in Xbox Game Bar settings, under Personalisation.
+            </TextBlock>
         </StackPanel>
 
         <StackPanel Margin="0,24,0,0">
