@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using BungieNetApi.Model;
 
@@ -25,6 +26,17 @@ namespace GhostOverlay
             set
             {
                 _displayName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _showDevOptions;
+        private bool ShowDevOptions
+        {
+            get => _showDevOptions;
+            set
+            {
+                _showDevOptions = value;
                 OnPropertyChanged();
             }
         }
@@ -89,6 +101,7 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.DefinitionsPath:
                 case WidgetPropertyChanged.DestinySettings:
                 case WidgetPropertyChanged.ShowDescriptions:
+                case WidgetPropertyChanged.ShowDevOptions:
                     UpdateViewModel();
                     break;
 
@@ -112,6 +125,8 @@ namespace GhostOverlay
             {
                 DefinitionsDbName = Path.GetFileName(AppState.Data.DefinitionsPath);
             }
+
+            ShowDevOptions = AppState.Data.ShowDevOptions.Value;
 
             if (AppState.Data.DestinySettings?.Value?.SystemContentLocales != null)
             {
@@ -192,6 +207,20 @@ namespace GhostOverlay
         {
             AppState.Data.ShowDescriptions.Value = ((CheckBox) e.OriginalSource)?.IsChecked ?? false;
             Log.Info("AppState.Data.ShowDescriptions.Value to {v}", AppState.Data.ShowDescriptions.Value);
+        }
+
+        private int tappedCount = 0;
+        private void UIElement_OnTapped(object sender, TappedRoutedEventArgs e)
+        {
+            tappedCount += 1;
+            Log.Info("Dev tapped count {v}", tappedCount);
+
+            if (tappedCount >= 10)
+            {
+                AppState.Data.ShowDevOptions.Value = !AppState.Data.ShowDevOptions.Value;
+                Log.Info("  ShowDevOptions is now {v}", AppState.Data.ShowDevOptions.Value);
+                tappedCount = 0;
+            }
         }
     }
 }

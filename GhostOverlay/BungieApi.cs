@@ -161,13 +161,12 @@ namespace GhostOverlay
             {
                 foreach (var item in characterInventory.Items)
                 {
-                    if (item.ItemInstanceId != null && item.ItemInstanceId != 0 && (item.BucketHash == BucketShips ||
-                                                                                    item.BucketHash == BucketSparrows))
-                    {
-                        selectedCharacterId = characterId;
-                        selectedItem = item;
-                        break;
-                    }
+                    if (item.ItemInstanceId == 0 ||
+                        (item.BucketHash != BucketShips && item.BucketHash != BucketSparrows)) continue;
+
+                    selectedCharacterId = characterId;
+                    selectedItem = item;
+                    break;
                 }
 
                 if (selectedCharacterId != null)

@@ -10,7 +10,7 @@
 
     <StackPanel Margin="16,8,16,0">
         <StackPanel>
-            <TextBlock Style="{ThemeResource TitleTextBlockStyle}">Preferences</TextBlock>
+            <TextBlock Style="{ThemeResource TitleTextBlockStyle}" Tapped="UIElement_OnTapped">Preferences</TextBlock>
 
             <StackPanel Orientation="Horizontal">
                 <ComboBox Name="LanguageComboBox" SelectedItem="{x:Bind SelectedLanguage, Mode=OneWay}" SelectionChanged="Selector_OnSelectionChanged" Margin="0,8,0,0" Header="Language" PlaceholderText="Select a language" Width="200" ItemsSource="{x:Bind Languages, Mode=OneWay}" DisplayMemberPath="DisplayName" />
@@ -68,6 +68,11 @@
             </StackPanel>
         </StackPanel>
 
-        
+        <TextBlock Visibility="{x:Bind ShowDevOptions, Mode=OneWay}"
+                   FontSize="15"
+                   FontWeight="Medium"
+                   Margin="0,16,0,4">
+            Dev options are enabled
+        </TextBlock>
     </StackPanel>
 </Page>

@@ -117,6 +117,12 @@
     </Page.Resources>
 
     <Grid>
+        <Grid.ContextFlyout>
+            <MenuFlyout>
+                <MenuFlyoutItem Text="Screenshot in 2 seconds" Icon="Camera" Click="CaptureScreenshot_OnClick"/>
+            </MenuFlyout>
+        </Grid.ContextFlyout>
+
         <StackPanel
             x:Name="EmptyState"
             HorizontalAlignment="Center"

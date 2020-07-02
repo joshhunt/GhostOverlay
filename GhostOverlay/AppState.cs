@@ -140,7 +140,8 @@ namespace GhostOverlay
         DefinitionsPath,
         TrackedEntries,
         AuthedBungieMembershipId,
-        ShowDescriptions
+        ShowDescriptions,
+        ShowDevOptions,
     }
 
     public static class AppState

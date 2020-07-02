@@ -4,15 +4,21 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Graphics.Display;
+using Windows.Graphics.Imaging;
+using Windows.Media.SpeechSynthesis;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI.WindowManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
@@ -44,6 +50,17 @@ namespace GhostOverlay
             set
             {
                 _isBustingProfileRequests = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _showDevOptions;
+        private bool ShowDevOptions
+        {
+            get => _showDevOptions;
+            set
+            {
+                _showDevOptions = value;
                 OnPropertyChanged();
             }
         }
@@ -148,6 +165,7 @@ namespace GhostOverlay
 
                 case WidgetPropertyChanged.BustProfileRequests:
                 case WidgetPropertyChanged.ProfileError:
+                case WidgetPropertyChanged.ShowDevOptions:
                     UpdateMiscViewItems();
                     break;
             }
@@ -164,6 +182,11 @@ namespace GhostOverlay
             {
                 ErrorMessage = AppState.Data.ProfileError.Value;
                 ErrorOverlay.Visibility = !string.IsNullOrEmpty(ErrorMessage) ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (AppState.Data.ShowDevOptions.Value != ShowDevOptions)
+            {
+                ShowDevOptions = AppState.Data.ShowDevOptions.Value;
             }
         }
 
@@ -564,6 +587,33 @@ namespace GhostOverlay
                     AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
                 }
             }
+        }
+
+        private async void CaptureScreenshot_OnClick(object sender, RoutedEventArgs e)
+        {
+            await Task.Delay(2000);
+
+            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            await rtb.RenderAsync(WidgetPage);
+
+            var pixelBuffer = await rtb.GetPixelsAsync();
+            var pixels = pixelBuffer.ToArray();
+            var displayInformation = DisplayInformation.GetForCurrentView();
+            var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fff") + ".png", CreationCollisionOption.ReplaceExisting);
+            using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Premultiplied,
+                    (uint)rtb.PixelWidth,
+                    (uint)rtb.PixelHeight,
+                    displayInformation.RawDpiX,
+                    displayInformation.RawDpiY,
+                    pixels);
+                await encoder.FlushAsync();
+            }
+
+            await CommonHelpers.TextToSpeech("Done.");
         }
     }
 
