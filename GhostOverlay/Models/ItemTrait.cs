@@ -52,7 +52,7 @@ namespace GhostOverlay.Models
         {
             if (allTraitCategoryDefinitions == null)
             {
-                allTraitCategoryDefinitions = await Definitions.GetAllTraitCategory();
+                allTraitCategoryDefinitions = await Definitions.GetAllTraitCategories();
             }
 
             TraitCategoryDefinition = allTraitCategoryDefinitions.FirstOrDefault(v => v.TraitIds.Contains(TraitId));

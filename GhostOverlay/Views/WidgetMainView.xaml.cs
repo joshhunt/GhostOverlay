@@ -320,6 +320,20 @@ namespace GhostOverlay
             AppState.SaveTrackedEntries(AppState.Data.TrackedEntries);
             Log.Info("AppState.Data.TrackedEntries after cleanup {v}", AppState.Data.TrackedEntries.Count);
 
+            var groupedByVendors = Tracked
+                .GroupBy(v => Definitions.VendorForBounty.GetValueOrDefault(v.TrackedEntry.Hash)).ToList();
+
+            foreach (var groupedByVendor in groupedByVendors)
+            {
+                var vendorHash = groupedByVendor.Key;
+                var vendorDef = await Definitions.GetVendorDefinition(vendorHash);
+                Log.Info(vendorDef?.DisplayProperties?.Name ?? "No vendor??");
+                foreach (var trackable in groupedByVendor)
+                {
+                    Log.Info("   - {v}", trackable.DisplayProperties.Name);
+                }
+            }
+
             var groupedBounties =
                 from t in Tracked
                 orderby t.SortValue

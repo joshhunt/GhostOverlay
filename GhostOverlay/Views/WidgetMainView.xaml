@@ -119,7 +119,7 @@
     <Grid>
         <Grid.ContextFlyout>
             <MenuFlyout>
-                <MenuFlyoutItem Text="Screenshot in 2 seconds" Icon="Camera" Click="CaptureScreenshot_OnClick"/>
+                <MenuFlyoutItem Visibility="{x:Bind ShowDevOptions, Mode=OneWay}" Text="Screenshot in 2 seconds" Icon="Camera" Click="CaptureScreenshot_OnClick"/>
             </MenuFlyout>
         </Grid.ContextFlyout>
 

@@ -29,7 +29,8 @@ namespace GhostOverlay
         Language,
         BustProfileRequests,
         ShowDescriptions,
-        ShowDevOptions
+        ShowDevOptions,
+        AutoHide
     }
 
     public class WidgetValue<T>

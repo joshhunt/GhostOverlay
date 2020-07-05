@@ -24,14 +24,16 @@ namespace GhostOverlay
         private static readonly Uri IconDataRemoteUrl =
             new Uri("https://raw.githubusercontent.com/joshhunt/ghost-site/master/generated-data/icons-by-label.json");
 
-        private static readonly string defaultDefinitionsPath = "@@NotDownloaded";
-        private static SqliteConnection db;
-        private static bool IsDownloading;
-        private static Task<string> CurrentDownloadingTask;
         public static Task<string> Ready;
         public static string FallbackLanguage = "en";
-        private static int AttemptsToOpen = 0;
         public static Dictionary<string, List<List<string>>> IconData = new Dictionary<string, List<List<string>>>();
+        public static Dictionary<long, long> VendorForBounty = new Dictionary<long, long>();
+
+        private static readonly string defaultDefinitionsPath = "@@NotDownloaded";
+        private static SqliteConnection db;
+        private static bool isDownloading;
+        private static Task<string> currentDownloadingTask;
+        private static int attemptsToOpen = 0;
 
         public static int HashToDbHash(uint hash)
         {
@@ -55,7 +57,7 @@ namespace GhostOverlay
 
         public static async Task<string> OpenOrDownloadDatabase()
         {
-            Log.Info("OpenOrDownloadDatabase attempt {AttemptsToOpen}", AttemptsToOpen);
+            Log.Info("OpenOrDownloadDatabase attempt {AttemptsToOpen}", attemptsToOpen);
 
             var definitionsPath = AppState.ReadSetting(SettingsKey.DefinitionsPath, defaultDefinitionsPath);
             Log.Info("definitionsPath settings value: {definitionsPath}", definitionsPath);
@@ -81,12 +83,12 @@ namespace GhostOverlay
             await db.OpenAsync();
             Log.Info("Opened database, going to test it");
 
-            AttemptsToOpen += 1;
+            attemptsToOpen += 1;
             var databaseWorks = await TestDatabase();
 
             if (!databaseWorks)
             {
-                if (AttemptsToOpen < 2)
+                if (attemptsToOpen < 2)
                 {
                     Log.Info("FAILED to open definitions database. Going to clear them all and redownload");
                     ClearAllDefinitions();
@@ -101,8 +103,7 @@ namespace GhostOverlay
                 throw new Exception("Unable to open definitions - it seems corrupt or something?");
             }
 
-            Log.Info("Init icon data");
-            InitializeIconData();
+            await Task.WhenAll(InitializeIconData(), InitializeBountyData());
 
             AppState.Data.DefinitionsPath = definitionsPath;
 
@@ -189,21 +190,21 @@ namespace GhostOverlay
 
         public static async Task<string> DownloadDefinitionsDatabase()
         {
-            if (IsDownloading)
+            if (isDownloading)
             {
                 Log.Info("Already downloading, returning previous Task");
-                return await CurrentDownloadingTask;
+                return await currentDownloadingTask;
             }
 
             Log.Info("Downloading new definitions, new task");
-            IsDownloading = true;
-            CurrentDownloadingTask = DownloadDefinitionsDatabaseWork();
-            await CurrentDownloadingTask;
+            isDownloading = true;
+            currentDownloadingTask = DownloadDefinitionsDatabaseWork();
+            await currentDownloadingTask;
             Log.Info("Done downloading");
-            IsDownloading = false;
+            isDownloading = false;
 
             Log.Info("Done downloading - returning await again");
-            return await CurrentDownloadingTask;
+            return await currentDownloadingTask;
         }
 
         public static async Task<string> DownloadDefinitionsDatabaseWork()
@@ -351,8 +352,30 @@ namespace GhostOverlay
             }
         }
 
-        private static async void InitializeIconData()
+        private static readonly long BOUNTY_ITEM_CATEGORY_HASH = 1784235469;
+        private static async Task InitializeBountyData()
         {
+            var allVendors = await GetAllVendorDefinitions();
+
+            foreach (var vendor in allVendors)
+            {
+                if (vendor.ItemList == null) continue;
+
+                foreach (var itemSale in vendor.ItemList)
+                {
+                    var itemDef = await GetInventoryItem(itemSale.ItemHash, skipReady:true);
+                    if (itemDef.ItemCategoryHashes != null && itemDef.ItemCategoryHashes.Contains(BOUNTY_ITEM_CATEGORY_HASH))
+                    {
+                        VendorForBounty[itemDef.Hash] = vendor.Hash;
+                    }
+                }
+            }
+        }
+
+        private static async Task InitializeIconData()
+        {
+            Log.Info("Init icon data");
+
             var appData = ApplicationData.Current;
             var iconDataFilePath = Path.Combine(appData.LocalCacheFolder.Path, "iconData.json");
 
@@ -388,11 +411,8 @@ namespace GhostOverlay
             IconData = data;
         }
 
-
         public static async Task<List<T>> GetMultipleDefinitions<T>(string command)
         {
-            await Ready;
-
             var selectCommand = new SqliteCommand(command, db);
             var query = await selectCommand.ExecuteReaderAsync();
 
@@ -430,10 +450,10 @@ namespace GhostOverlay
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetInventoryItem(long hash)
+        public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetInventoryItem(long hash, bool skipReady = false)
         {
             return await GetDefinition<DestinyDefinitionsDestinyInventoryItemDefinition>(
-                "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
+                "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash, skipReady);
         }
 
         public static async Task<DestinyDefinitionsDestinyObjectiveDefinition> GetObjective(long hash)
@@ -485,10 +505,16 @@ namespace GhostOverlay
                 "SELECT json FROM DestinyTraitCategoryDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<List<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition>> GetAllTraitCategory()
+        public static async Task<List<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition>> GetAllTraitCategories()
         {
             return await GetMultipleDefinitions<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition> (
                 "SELECT json FROM DestinyTraitCategoryDefinition;");
+        }
+
+        public static async Task<List<DestinyDefinitionsDestinyVendorDefinition>> GetAllVendorDefinitions()
+        {
+            return await GetMultipleDefinitions<DestinyDefinitionsDestinyVendorDefinition>(
+                "SELECT json FROM DestinyVendorDefinition;");
         }
 
         public static async Task<DestinyDefinitionsDestinyActivityDefinition> GetActivity(long hash)
@@ -501,6 +527,12 @@ namespace GhostOverlay
         {
             return await GetDefinition<DestinyDefinitionsDestinyActivityModeDefinition>(
                 "SELECT json FROM DestinyActivityModeDefinition WHERE id = @Hash;", hash);
+        }
+
+        public static async Task<DestinyDefinitionsDestinyVendorDefinition> GetVendorDefinition(long hash)
+        {
+            return await GetDefinition<DestinyDefinitionsDestinyVendorDefinition>(
+                "SELECT json FROM DestinyVendorDefinition WHERE id = @Hash;", hash);
         }
     }
 }
