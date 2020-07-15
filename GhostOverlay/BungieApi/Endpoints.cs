@@ -18,7 +18,7 @@ namespace GhostOverlay
         #pragma warning restore 649
 
         public async Task<DestinyProfileResponse> GetProfile(BungieMembershipType membershipType, long membershipId,
-            DestinyComponent[] components, bool requireAuth = false)
+            DestinyComponentType[] components, bool requireAuth = false)
         {
             if (DebugProfile != null)
             {
@@ -44,7 +44,7 @@ namespace GhostOverlay
             return await GetBungie<DestinyLinkedProfilesResponse>($"/Platform/Destiny2/254/Profile/{AppState.Data.TokenData.BungieMembershipId}/LinkedProfiles/", true);
         }
 
-        private static (string characterId, DestinyItemComponent item) FindItemToLock(
+        private static (long characterId, DestinyItemComponent item) FindItemToLock(
             DestinyProfileResponse profile)
         {
             string selectedCharacterId = default;
@@ -68,40 +68,37 @@ namespace GhostOverlay
                 }
             }
 
-            return (characterId: selectedCharacterId, item: selectedItem);
+            return (characterId: Convert.ToInt64(selectedCharacterId), item: selectedItem);
         }
 
         public async Task CacheBust(DestinyProfileResponse profile)
         {
             var (characterId, item) = FindItemToLock(profile);
-            var itemState = (DestinyItemState)(item?.State ?? 0);
-            var itemIsLocked = itemState == DestinyItemState.Locked;
+            var itemState = item?.State ?? 0;
+            var itemIsLocked = itemState == ItemState.Locked;
 
-            if (item != null)
+            if (item == null) return;
+
+            Log.Debug("Found item to toggle lock state, character ID {characterId}, {itemHash}:{itemInstanceId}. locked state:{locked}", characterId, item.ItemHash, item.ItemInstanceId, itemIsLocked);
+
+            try
             {
-                Log.Info("Found item to toggle lock state, character ID {characterId}, {itemHash}:{itemInstanceId}. locked state:{locked}", characterId, item.ItemHash, item.ItemInstanceId, itemIsLocked);
-
-                try
-                {
-                    await SetLockState(itemIsLocked, item.ItemInstanceId, characterId,
-                        profile.Profile.Data.UserInfo.MembershipType);
-                }
-                catch (Exception err)
-                {
-                    Log.Error("Error busting profile cache, silently ignoring {Error}", err);
-                }
+                await SetLockState(itemIsLocked, item.ItemInstanceId, characterId, profile.Profile.Data.UserInfo.MembershipType);
+            }
+            catch (Exception err)
+            {
+                Log.Error("Error busting profile cache, silently ignoring {Error}", err);
             }
         }
 
-        private async Task SetLockState(bool itemState, long itemItemInstanceId, string characterId, BungieMembershipType membershipType)
+        private async Task SetLockState(bool itemState, long itemItemInstanceId, long characterId, BungieMembershipType membershipType)
         {   
-            // TODO: Evaluate whether we still need this, or we can grab it from GhostSharp
-            var payload = new SetLockStatePayload()
+            var payload = new DestinyItemStateRequest()
             {
                 State = itemState,
                 ItemId = itemItemInstanceId,
                 CharacterId = characterId,
-                MembershipType = (int)membershipType
+                MembershipType = membershipType
             };
 
             Log.Info("Setting locked state to {locked} on item {itemId}", itemState, itemItemInstanceId);
@@ -110,8 +107,7 @@ namespace GhostOverlay
                 method: Method.POST, body: payload);
         }
 
-        public async Task<DestinyProfileResponse> GetProfileForCurrentUser(
-            DestinyComponent[] components)
+        public async Task<DestinyProfileResponse> GetProfileForCurrentUser(DestinyComponentType[] components)
         {
             var linkedProfiles = await GetLinkedProfiles();
             var memberships = linkedProfiles.Profiles.OrderByDescending(v => v.DateLastPlayed).ToList();

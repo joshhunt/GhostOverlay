@@ -137,7 +137,6 @@
     <Compile Include="AppState.cs" />
     <Compile Include="BungieApi\BungieApiException.cs" />
     <Compile Include="BungieApi\Endpoints.cs" />
-    <Compile Include="BungieApi\ExtraDestinyClasses.cs" />
     <Compile Include="BungieApi\GetBungie.cs" />
     <Compile Include="BungieApi\OAuth.cs" />
     <Compile Include="Logger.cs" />

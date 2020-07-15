@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Text;
+using GhostSharp.BungieNetApi.Models;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Validation;
@@ -24,18 +25,18 @@ namespace GhostOverlay
         private static readonly long BucketShips = 284967655;
         private static readonly long BucketSparrows = 2025709351;
 
-        public readonly DestinyComponent[] DefaultProfileComponents =
+        public readonly DestinyComponentType[] DefaultProfileComponents =
         {
-            DestinyComponent.Profiles,
-            DestinyComponent.ProfileInventories,
-            DestinyComponent.Characters,
-            DestinyComponent.CharacterInventories,
-            DestinyComponent.CharacterEquipment,
-            DestinyComponent.ItemInstances,
-            DestinyComponent.ItemObjectives,
-            DestinyComponent.Records,
-            DestinyComponent.CharacterActivities,
-            DestinyComponent.PresentationNodes
+            DestinyComponentType.Profiles,
+            DestinyComponentType.ProfileInventories,
+            DestinyComponentType.Characters,
+            DestinyComponentType.CharacterInventories,
+            DestinyComponentType.CharacterEquipment,
+            DestinyComponentType.ItemInstances,
+            DestinyComponentType.ItemObjectives,
+            DestinyComponentType.Records,
+            DestinyComponentType.CharacterActivities,
+            DestinyComponentType.PresentationNodes
         };
 
         public BungieApi()
