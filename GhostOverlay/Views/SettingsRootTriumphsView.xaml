@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ghostOverlay="using:GhostOverlay"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -16,6 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <CollectionViewSource x:Name="NodesCollection" IsSourceGrouped="True" />
+            <converters:BoolToObjectConverter x:Key="BoolToCompletedColor" TrueValue="#A05DA46A" FalseValue="#40FFFFFF" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -51,7 +53,8 @@
 
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="ghostOverlay:PresentationNode">
-                <Grid Width="269" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Padding="16">
+                <StackPanel Width="269" Background="{ThemeResource SystemControlBackgroundListLowBrush}" >
+                <Grid Padding="16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -84,6 +87,41 @@
                             Text="{x:Bind Definition.DisplayProperties.Name}" />
                     </StackPanel>
                 </Grid>
+                    <!-- #FF5DA46A -->
+
+                    <Grid Margin="8,0,8,8">
+                    <ProgressBar
+                        Height="22"
+                        CornerRadius="0"
+                        Background="#80000000"
+                        Foreground="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletedColor}}"
+                        Value="{x:Bind Objective.CompletionPercent}" />
+
+                    <Grid Margin="6,2,6,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.ColumnSpan="1" Orientation="Horizontal">
+                                <TextBlock 
+                                   FontSize="14"
+                                   TextTrimming="CharacterEllipsis"
+                                   Text="{x:Bind Objective.Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
+                                   FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
+                            </StackPanel>
+
+                        <TextBlock Grid.Column="1"
+                                   FontSize="14">
+                            <Run
+                                Text="{x:Bind Objective.Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
+                            <Run Text="/" />
+                            <Run
+                                Text="{x:Bind Objective.Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
+                        </TextBlock>
+                    </Grid>
+                </Grid>
+                </StackPanel>
             </DataTemplate>
         </GridView.ItemTemplate>
     </GridView>

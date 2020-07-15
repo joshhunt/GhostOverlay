@@ -7,7 +7,7 @@ using BungieNetApi.Model;
 
 namespace GhostOverlay.Models
 {
-    public class Triumph : ITriumphsViewChildren, ITrackable
+    public class Triumph : ITrackable
     {
         public TrackedEntry TrackedEntry { get; set; }
         public DestinyDefinitionsRecordsDestinyRecordDefinition Definition;

@@ -13,6 +13,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using GhostOverlay.Models;
+using Serilog;
 
 namespace GhostOverlay
 {
@@ -161,15 +162,113 @@ namespace GhostOverlay
         }
     }
 
-    public interface ITriumphsViewChildren { }
-
-    public class PresentationNode : ITriumphsViewChildren
+    public class PresentationNode
     {
+        private static readonly Logger Log = new Logger("PresentationNode");
+        private static readonly long triumphsCompletedObjectiveHash = 3230204557;
+        private static string triumphsCompletedString;
+
         public long PresentationNodeHash;
         public DestinyDefinitionsPresentationDestinyPresentationNodeDefinition Definition;
         public Uri ImageUri => CommonHelpers.BungieUri(Definition?.DisplayProperties?.Icon);
         public PresentationNode ParentNode;
 
-        public String Name => Definition?.DisplayProperties?.Name ?? "No name";
+        public string Name => Definition?.DisplayProperties?.Name ?? "No name";
+        public bool SkipSecondLevel;
+
+        public Objective Objective { get; set; }
+        public bool IsCompleted => (Objective?.Progress?.Progress ?? 1) >= (Objective?.Progress?.CompletionValue ?? 0);
+
+        public static async Task<string> GetTriumphsCompletedString(
+            DestinyDefinitionsDestinyObjectiveDefinition objDefinition)
+        {
+            if (triumphsCompletedString?.Length > 1)
+            {
+                return triumphsCompletedString;
+            }
+
+            if (objDefinition?.ProgressDescription?.Length > 1)
+            {
+                return objDefinition.ProgressDescription;
+            }
+
+            var objective = await Definitions.GetObjective(triumphsCompletedObjectiveHash);
+            triumphsCompletedString = objective?.ProgressDescription ?? "Triumphs completed";
+
+            return triumphsCompletedString;
+        }
+
+        public static DestinyComponentsPresentationDestinyPresentationNodeComponent FindProfilePresentationNode(long hash, DestinyResponsesDestinyProfileResponse profile)
+        {
+            var profilePresentationNodes = profile?.ProfilePresentationNodes?.Data?.Nodes;
+            var characterPresentationNodes = profile?.CharacterPresentationNodes?.Data;
+            var hashString = hash.ToString();
+
+            if (profilePresentationNodes != null && profilePresentationNodes.ContainsKey(hashString))
+            {
+                return profilePresentationNodes[hashString];
+            }
+
+            if (characterPresentationNodes != null)
+            {
+                foreach (var (_, value) in characterPresentationNodes)
+                {
+                    if (value.Nodes.ContainsKey(hashString))
+                    {
+                        return value.Nodes[hashString];
+                    }
+                }
+            }
+
+            return default;
+        }
+
+        public static async Task<PresentationNode> FromHash(long hash, DestinyResponsesDestinyProfileResponse profile, PresentationNode parentNode)
+        {
+            var newNode = new PresentationNode
+            {
+                PresentationNodeHash = hash,
+                ParentNode = parentNode,
+                Definition = await Definitions.GetPresentationNode(hash),
+            };
+
+            Log.Info("Looking at {hash} {name}", hash, newNode.Definition.DisplayProperties.Name);
+
+            var profileNodeData = FindProfilePresentationNode(hash, profile);
+
+            if (profileNodeData != null && profileNodeData.Objective != null)
+            {
+                Log.Info("  {name}, found presentation node data", newNode.Definition.DisplayProperties.Name);
+
+                var obj = new Objective { Progress = profileNodeData.Objective };
+                await obj.PopulateDefinition();
+                obj.Definition.ProgressDescription = await GetTriumphsCompletedString(obj.Definition);
+
+                // Documentation says these values are the canonical ones
+                obj.Progress.Progress = profileNodeData.ProgressValue;
+                obj.Progress.CompletionValue = profileNodeData.CompletionValue;
+
+                newNode.Objective = obj;
+            }
+            
+            if (newNode.Objective == null && newNode.Definition.CompletionRecordHash != 0)
+            {
+                var completionRecord = Triumph.FindRecordInProfile(newNode.Definition.CompletionRecordHash.ToString(), profile);
+                if (completionRecord == null || !(completionRecord.Objectives?.Count > 0)) return newNode;
+
+                if (completionRecord.Objectives.Count > 1)
+                {
+                    Log.Info("Completion record for PresentationNode {hash} has {count} objectives, using just the first", hash, completionRecord.Objectives.Count);
+                }
+
+                var obj = new Objective { Progress = completionRecord.Objectives[0] };
+                await obj.PopulateDefinition();
+                obj.Definition.ProgressDescription = await GetTriumphsCompletedString(obj.Definition);
+
+                newNode.Objective = obj;
+            }
+ 
+            return newNode;
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -14,6 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using BungieNetApi.Model;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -26,6 +28,7 @@ namespace GhostOverlay.Views
     {
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         private readonly long rootTriumphsNodeHash = 1024788583;
+        private readonly long rootSealsNodeHash = 1652422747;
         private Frame parentFrame;
 
         public SettingsRootTriumphsView()
@@ -67,6 +70,17 @@ namespace GhostOverlay.Views
 
             var rootNode = await Definitions.GetPresentationNode(rootTriumphsNodeHash);
 
+            async Task OnEachSecondLevelNode(
+                DestinyDefinitionsPresentationDestinyPresentationNodeChildEntry secondLevelChild,
+                PresentationNode topLevelNode, bool skipSecondLevel = false)
+            {
+                var secondLevelNode = await PresentationNode.FromHash(secondLevelChild.PresentationNodeHash,
+                    AppState.Data.Profile, topLevelNode);
+                secondLevelNode.SkipSecondLevel = skipSecondLevel;
+
+                nodes.Add(secondLevelNode);
+            }
+
             foreach (var topLevelChild in rootNode.Children.PresentationNodes)
             {
                 var topLevelNode = new PresentationNode
@@ -78,15 +92,21 @@ namespace GhostOverlay.Views
 
                 foreach (var secondLevelChild in topLevelNode.Definition.Children.PresentationNodes)
                 {
-                    var secondLevelNode = new PresentationNode
-                    {
-                        PresentationNodeHash = secondLevelChild.PresentationNodeHash,
-                        ParentNode = topLevelNode,
-                        Definition =
-                            await Definitions.GetPresentationNode(secondLevelChild.PresentationNodeHash),
-                    };
+                    await OnEachSecondLevelNode(secondLevelChild, topLevelNode);
+                }
+            }
 
-                    nodes.Add(secondLevelNode);
+            var sealsNode = new PresentationNode
+            {
+                PresentationNodeHash = rootSealsNodeHash,
+                Definition = await Definitions.GetPresentationNode(rootSealsNodeHash)
+            };
+
+            if (sealsNode.Definition != null)
+            {
+                foreach (var secondLevelChild in sealsNode.Definition.Children.PresentationNodes)
+                {
+                    await OnEachSecondLevelNode(secondLevelChild, sealsNode, true);
                 }
             }
 

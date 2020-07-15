@@ -24,6 +24,8 @@ namespace GhostOverlay
         private readonly RangeObservableCollection<PresentationNode> thirdLevelNodes =
             new RangeObservableCollection<PresentationNode>();
 
+        private bool SkipSecondLevel = false;
+
         // cleaned up stuff
         private PresentationNode _selectedTopLevelNode;
         private PresentationNode _selectedSecondLevelNode;
@@ -68,12 +70,17 @@ namespace GhostOverlay
         {
             if (e.Parameter is PresentationNode paramNode)
             {
-                //topPresentationHash = thisPresentationNode.ParentNode.PresentationNodeHash;
-                //secondLevelPresentationNodeHash = thisPresentationNode.PresentationNodeHash;
-
                 // TODO: is this thread safe?
                 SelectedTopLevelNode = paramNode.ParentNode;
                 SelectedSecondLevelNode = paramNode;
+                SkipSecondLevel = paramNode.SkipSecondLevel;
+
+                if (SkipSecondLevel)
+                {
+                    SelectedThirdLevelNode = paramNode;
+                }
+
+                Log.Info("On navigated to, SkipSecondLevel: {v}", SkipSecondLevel);
             }
 
             notifier.Subscribe(this);
@@ -117,6 +124,12 @@ namespace GhostOverlay
 
         private async void UpdateSecondLevel()
         {
+            if (SkipSecondLevel)
+            {
+                SelectedSecondLevelNode = SelectedTopLevelNode;
+                return;
+            }
+
             // Clear items. Maybe we shouldnt do this?
             secondLevelNodes.Clear();
 
@@ -156,13 +169,18 @@ namespace GhostOverlay
         {
             // TODO: Figure out if we can not clear this out
             thirdLevelNodes.Clear();
+            Log.Info("UpdateThirdLevel, SkipSecondLevel: {v}", SkipSecondLevel);
 
             if (SelectedSecondLevelNode == null)
             {
                 return;
             }
 
-            foreach (var child in SelectedSecondLevelNode.Definition.Children.PresentationNodes)
+            var children = SkipSecondLevel
+                ? SelectedTopLevelNode.Definition.Children
+                : SelectedSecondLevelNode.Definition.Children;
+
+            foreach (var child in children.PresentationNodes)
             {
                 var childNode = new PresentationNode
                 {

@@ -6,6 +6,8 @@
     xmlns:models="using:GhostOverlay.Models"
     xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters">
 
+
+    <converters:BoolToObjectConverter x:Key="BoolToBorderThickness" TrueValue="2" FalseValue="0" />
     <converters:BoolToObjectConverter x:Key="BoolToCompletedColorConverter" TrueValue="#FF5DA46A"
                                       FalseValue="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
     <converters:BoolToObjectConverter x:Key="VisibleWhenTrueConverter" TrueValue="Visible" FalseValue="Collapsed" />
