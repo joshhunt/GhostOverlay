@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using Windows.Storage;
-using BungieNetApi.Model;
 using GhostOverlay.Models;
+using GhostSharp.BungieNetApi.Models;
 using Newtonsoft.Json;
 
 namespace GhostOverlay
@@ -36,7 +36,7 @@ namespace GhostOverlay
             };
         }
 
-        public static TrackedEntry FromInventoryItemComponent(DestinyEntitiesItemsDestinyItemComponent item, long characterId)
+        public static TrackedEntry FromInventoryItemComponent(DestinyItemComponent item, long characterId)
         {
             return new TrackedEntry
             {

@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using BungieNetApi.Model;
 using GhostOverlay.Models;
+using GhostSharp.BungieNetApi.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -90,7 +90,7 @@ namespace GhostOverlay.Views
 
                 var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
                     ? triumph.Record.IntervalObjectives
-                    : triumph.Record?.Objectives ?? new List<DestinyQuestsDestinyObjectiveProgress>();
+                    : triumph.Record?.Objectives ?? new List<DestinyObjectiveProgress>();
 
                 foreach (var objectiveProgress in objectives)
                 {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using BungieNetApi.Model;
 using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay
@@ -12,7 +11,7 @@ namespace GhostOverlay
         public DestinyObjectiveDefinition Definition =
             new DestinyObjectiveDefinition();
 
-        public DestinyQuestsDestinyObjectiveProgress Progress;
+        public DestinyObjectiveProgress Progress;
 
         public Visibility Visibility => (Progress.Progress == 0 && Progress.CompletionValue == 0)
             ? Visibility.Collapsed

@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
-using BungieNetApi.Model;
 using GhostSharp.BungieNetApi.Models;
-using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 
 namespace GhostOverlay.Models
 {
@@ -61,14 +56,14 @@ namespace GhostOverlay.Models
             return Definition;
         }
 
-        public static async Task<Item> ItemFromItemComponent(DestinyEntitiesItemsDestinyItemComponent item, DestinyResponsesDestinyProfileResponse profile, Character ownerCharacter = default)
+        public static async Task<Item> ItemFromItemComponent(DestinyItemComponent item, DestinyProfileResponse profile, Character ownerCharacter = default)
         {
             var uninstancedObjectivesData =
                 ownerCharacter == null
-                ?  new Dictionary<string, DestinyEntitiesItemsDestinyItemObjectivesComponent>()
+                ?  new Dictionary<string, DestinyItemObjectivesComponent>()
                 : profile.CharacterUninstancedItemComponents[ownerCharacter.CharacterComponent.CharacterId.ToString()].Objectives.Data;
 
-            var objectives = new List<DestinyQuestsDestinyObjectiveProgress>();
+            var objectives = new List<DestinyObjectiveProgress>();
             var itemInstanceId = item.ItemInstanceId.ToString();
             var itemHash = item.ItemHash.ToString();
 
@@ -107,7 +102,7 @@ namespace GhostOverlay.Models
             return bounty;
         }
 
-        public static async Task<List<Item>> ItemsFromProfile(DestinyResponsesDestinyProfileResponse profile, Character activeCharacter)
+        public static async Task<List<Item>> ItemsFromProfile(DestinyProfileResponse profile, Character activeCharacter)
         {
             var bounties = new List<Item>();
 

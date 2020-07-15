@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using BungieNetApi.Model;
 using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay.Models
@@ -12,7 +11,7 @@ namespace GhostOverlay.Models
     {
         public TrackedEntry TrackedEntry { get; set; }
         public DestinyRecordDefinition Definition;
-        public DestinyComponentsRecordsDestinyRecordComponent Record;
+        public DestinyRecordComponent Record;
         public List<Objective> Objectives { get; set; }
         public long Hash = 0;
         public DestinyDisplayPropertiesDefinition DisplayProperties =>
@@ -36,10 +35,10 @@ namespace GhostOverlay.Models
             return Definition;
         }
 
-        public static DestinyComponentsRecordsDestinyRecordComponent FindRecordInProfile(string triumphHash, DestinyResponsesDestinyProfileResponse profile)
+        public static DestinyRecordComponent FindRecordInProfile(string triumphHash, DestinyProfileResponse profile)
         {
             var characterIds = profile?.Profile?.Data?.CharacterIds ?? new List<long>();
-            DestinyComponentsRecordsDestinyRecordComponent record;
+            DestinyRecordComponent record;
 
             if (profile?.CharacterRecords?.Data == null)
             {

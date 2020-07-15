@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -17,7 +17,7 @@ namespace GhostOverlay
         private static readonly string DebugProfile;
         #pragma warning restore 649
 
-        public async Task<DestinyResponsesDestinyProfileResponse> GetProfile(int membershipType, long membershipId,
+        public async Task<DestinyProfileResponse> GetProfile(BungieMembershipType membershipType, long membershipId,
             DestinyComponent[] components, bool requireAuth = false)
         {
             if (DebugProfile != null)
@@ -26,11 +26,11 @@ namespace GhostOverlay
             }
 
             var componentsStr = string.Join(",", components);
-            return await GetBungie<DestinyResponsesDestinyProfileResponse>(
-                $"Platform/Destiny2/{membershipType}/Profile/{membershipId}/?components={componentsStr}", requireAuth);
+            return await GetBungie<DestinyProfileResponse>(
+                $"Platform/Destiny2/{(int)membershipType}/Profile/{membershipId}/?components={componentsStr}", requireAuth);
         }
 
-        public async Task<DestinyResponsesDestinyLinkedProfilesResponse> GetLinkedProfiles()
+        public async Task<DestinyLinkedProfilesResponse> GetLinkedProfiles()
         {
             // If the user's saved access token doesn't have a BungieMembershipId yet,
             // this will effectively upgrade it to one that does :) :) :) 
@@ -41,14 +41,14 @@ namespace GhostOverlay
                 throw new Exception("TokenData somehow lacks a BungieMembershipId. This is very bad.");
             }
 
-            return await GetBungie<DestinyResponsesDestinyLinkedProfilesResponse>($"/Platform/Destiny2/254/Profile/{AppState.Data.TokenData.BungieMembershipId}/LinkedProfiles/", true);
+            return await GetBungie<DestinyLinkedProfilesResponse>($"/Platform/Destiny2/254/Profile/{AppState.Data.TokenData.BungieMembershipId}/LinkedProfiles/", true);
         }
 
-        private (string characterId, DestinyEntitiesItemsDestinyItemComponent item) FindItemToLock(
-            DestinyResponsesDestinyProfileResponse profile)
+        private static (string characterId, DestinyItemComponent item) FindItemToLock(
+            DestinyProfileResponse profile)
         {
             string selectedCharacterId = default;
-            DestinyEntitiesItemsDestinyItemComponent selectedItem = default;
+            DestinyItemComponent selectedItem = default;
 
             foreach (var (characterId, characterInventory) in profile.CharacterEquipment.Data)
             {
@@ -71,7 +71,7 @@ namespace GhostOverlay
             return (characterId: selectedCharacterId, item: selectedItem);
         }
 
-        public async Task CacheBust(DestinyResponsesDestinyProfileResponse profile)
+        public async Task CacheBust(DestinyProfileResponse profile)
         {
             var (characterId, item) = FindItemToLock(profile);
             var itemState = (DestinyItemState)(item?.State ?? 0);
@@ -93,9 +93,16 @@ namespace GhostOverlay
             }
         }
 
-        private async Task SetLockState(bool itemState, long itemItemInstanceId, string characterId, int membershipType)
-        {
-            var payload = new SetLockStatePayload() { State = itemState, ItemId = itemItemInstanceId, CharacterId = characterId, MembershipType = membershipType };
+        private async Task SetLockState(bool itemState, long itemItemInstanceId, string characterId, BungieMembershipType membershipType)
+        {   
+            // TODO: Evaluate whether we still need this, or we can grab it from GhostSharp
+            var payload = new SetLockStatePayload()
+            {
+                State = itemState,
+                ItemId = itemItemInstanceId,
+                CharacterId = characterId,
+                MembershipType = (int)membershipType
+            };
 
             Log.Info("Setting locked state to {locked} on item {itemId}", itemState, itemItemInstanceId);
 
@@ -103,7 +110,7 @@ namespace GhostOverlay
                 method: Method.POST, body: payload);
         }
 
-        public async Task<DestinyResponsesDestinyProfileResponse> GetProfileForCurrentUser(
+        public async Task<DestinyProfileResponse> GetProfileForCurrentUser(
             DestinyComponent[] components)
         {
             var linkedProfiles = await GetLinkedProfiles();
@@ -118,17 +125,17 @@ namespace GhostOverlay
             return await GetProfile(user.MembershipType, user.MembershipId, components, true);
         }
 
-        public Task<DestinyConfigDestinyManifest> GetManifest()
+        public Task<DestinyManifest> GetManifest()
         {
-            return GetBungie<DestinyConfigDestinyManifest>("/Platform/Destiny2/Manifest");
+            return GetBungie<DestinyManifest>("/Platform/Destiny2/Manifest");
         }
 
-        public Task<CommonModelsCoreSettingsConfiguration> GetSettings()
+        public Task<CoreSettingsConfiguration> GetSettings()
         {
-            return GetBungie<CommonModelsCoreSettingsConfiguration>("/Platform/Settings/");
+            return GetBungie<CoreSettingsConfiguration>("/Platform/Settings/");
         }
 
-        private async Task<DestinyResponsesDestinyProfileResponse> GetDebugProfile()
+        private async Task<DestinyProfileResponse> GetDebugProfile()
         {
             Log.Error("DebugProfile is defined!!! Returning fixed debug profile data, instead of user's live profile!!!");
             var debugClient = new RestClient();
@@ -136,7 +143,7 @@ namespace GhostOverlay
 
             var response = await debugClient.ExecuteAsync(request);
 
-            var data = JsonConvert.DeserializeObject<BungieApiResponse<DestinyResponsesDestinyProfileResponse>>(response.Content);
+            var data = JsonConvert.DeserializeObject<BungieApiResponse<DestinyProfileResponse>>(response.Content);
 
             return data.Response;
         }

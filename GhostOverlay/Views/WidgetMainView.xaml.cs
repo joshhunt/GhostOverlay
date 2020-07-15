@@ -20,7 +20,6 @@ using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using BungieNetApi.Model;
 using GhostOverlay.Models;
 using GhostSharp.BungieNetApi.Models;
 using Microsoft.Gaming.XboxGameBar;
@@ -332,7 +331,7 @@ namespace GhostOverlay
             TrackedBountiesCollection.Source = groupedBounties;
         }
 
-        private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyInventoryItemDefinition itemDefinition, DestinyResponsesDestinyProfileResponse profile)
+        private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyInventoryItemDefinition itemDefinition, DestinyProfileResponse profile)
         {
             var questStepsHashes = itemDefinition?.SetData?.ItemList?.Select(v => v.ItemHash).ToList() ??
                                    new List<uint>();
@@ -361,16 +360,13 @@ namespace GhostOverlay
                 return default;
             }
             
-            // TODO: temp, eventually ItemHash won't be a long
-            var questStepsHashesAsLongs = questStepsHashes.Select(v => (long) v);
-
             return charactersInventory[characterId].Items
-                .Where(itemComponent => questStepsHashesAsLongs.Contains(itemComponent.ItemHash))
+                .Where(itemComponent => questStepsHashes.Contains(itemComponent.ItemHash))
                 .Select(itemComponent => TrackedEntry.FromInventoryItemComponent(itemComponent, oldTrackedEntry.OwnerId))
                 .FirstOrDefault();
         }
 
-        private async Task<DynamicTrackable> DynamicTrackableFromTrackedEntry(TrackedEntry trackedEntry, DestinyResponsesDestinyProfileResponse profile)
+        private async Task<DynamicTrackable> DynamicTrackableFromTrackedEntry(TrackedEntry trackedEntry, DestinyProfileResponse profile)
         {
             switch (trackedEntry.DynamicTrackableType)
             {
@@ -384,7 +380,7 @@ namespace GhostOverlay
             return default;
         }
 
-        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile, Dictionary<long, Character> characters)
+        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyProfileResponse profile, Dictionary<long, Character> characters)
         {
             if (profile == null || entry == null) return default;
 
@@ -392,7 +388,7 @@ namespace GhostOverlay
             var characterId = entry.OwnerId.ToString();
             var hash = entry.Hash.ToString();
 
-            var rawObjectives = new List<DestinyQuestsDestinyObjectiveProgress>();
+            var rawObjectives = new List<DestinyObjectiveProgress>();
 
             if (profile.ItemComponents.Objectives.Data.ContainsKey(itemInstanceId))
             {
@@ -459,7 +455,7 @@ namespace GhostOverlay
         }
 
 
-        private static async Task<Triumph> TriumphFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile)
+        private static async Task<Triumph> TriumphFromTrackedEntry(TrackedEntry entry, DestinyProfileResponse profile)
         {
             if (profile == null) return default;
 
@@ -476,7 +472,7 @@ namespace GhostOverlay
 
             var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
                 ? triumph.Record.IntervalObjectives
-                : (triumph.Record?.Objectives ?? new List<DestinyQuestsDestinyObjectiveProgress>());
+                : (triumph.Record?.Objectives ?? new List<DestinyObjectiveProgress>());
 
             foreach (var objectiveProgress in objectives)
             {

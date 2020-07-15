@@ -1,4 +1,3 @@
-using BungieNetApi.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -98,7 +97,7 @@ namespace GhostOverlay
 
     public class Character
     {
-        public DestinyEntitiesCharactersDestinyCharacterComponent CharacterComponent;
+        public DestinyCharacterComponent CharacterComponent;
         public DestinyClassDefinition ClassDefinition { get; set; }
         public DestinyGenderDefinition GenderDefinition { get; set; }
         public DestinyRaceDefinition RaceDefinition { get; set; }
@@ -182,7 +181,7 @@ namespace GhostOverlay
             return triumphsCompletedString;
         }
 
-        public static DestinyComponentsPresentationDestinyPresentationNodeComponent FindProfilePresentationNode(long hash, DestinyResponsesDestinyProfileResponse profile)
+        public static DestinyPresentationNodeComponent FindProfilePresentationNode(long hash, DestinyProfileResponse profile)
         {
             var profilePresentationNodes = profile?.ProfilePresentationNodes?.Data?.Nodes;
             var characterPresentationNodes = profile?.CharacterPresentationNodes?.Data;
@@ -207,7 +206,7 @@ namespace GhostOverlay
             return default;
         }
 
-        public static async Task<PresentationNode> FromHash(long hash, DestinyResponsesDestinyProfileResponse profile, PresentationNode parentNode)
+        public static async Task<PresentationNode> FromHash(long hash, DestinyProfileResponse profile, PresentationNode parentNode)
         {
             var newNode = new PresentationNode
             {

@@ -10,8 +10,6 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
-using BungieNetApi.Model;
-using OpenAPIDateConverter = BungieNetApi.Client.OpenAPIDateConverter;
 
 namespace GhostOverlay
 {

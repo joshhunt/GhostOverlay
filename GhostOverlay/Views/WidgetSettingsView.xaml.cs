@@ -9,7 +9,6 @@ using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using BungieNetApi.Model;
 using Microsoft.Gaming.XboxGameBar;
 using GhostOverlay.Views;
 using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;

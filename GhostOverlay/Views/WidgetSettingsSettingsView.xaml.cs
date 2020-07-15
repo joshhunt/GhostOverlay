@@ -8,7 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay
 {
@@ -17,7 +17,7 @@ namespace GhostOverlay
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         private readonly Logger Log = new Logger("WidgetSettingsSettingsView");
-        private readonly RangeObservableCollection<CommonModelsCoreSetting> Languages = new RangeObservableCollection<CommonModelsCoreSetting>();
+        private readonly RangeObservableCollection<CoreSetting> Languages = new RangeObservableCollection<CoreSetting>();
 
         private string _displayName;
         private string DisplayName
@@ -41,8 +41,8 @@ namespace GhostOverlay
             }
         }
 
-        private CommonModelsCoreSetting _selectedLanguage;
-        private CommonModelsCoreSetting SelectedLanguage
+        private CoreSetting _selectedLanguage;
+        private CoreSetting SelectedLanguage
         {
             get => _selectedLanguage;
             set
@@ -144,11 +144,11 @@ namespace GhostOverlay
                 if (userInfo.CrossSaveOverride == 0)
                 {
                     // User has not enabled cross save. Just one platform
-                    PlatformString = $"({MembershipTypeToString(userInfo.MembershipType)})";
+                    PlatformString = $"({userInfo.MembershipType})";
                 }
                 else
                 {
-                    var platforms = userInfo.ApplicableMembershipTypes.Select(MembershipTypeToString);
+                    var platforms = userInfo.ApplicableMembershipTypes.Select(v => v.ToString());
                     PlatformString = $"(Cross save: {string.Join(", ", platforms)})";
                 }
             }
@@ -192,7 +192,7 @@ namespace GhostOverlay
 
         private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count > 0 && e.AddedItems[0] is CommonModelsCoreSetting added && AppState.Data.Language.Value != added.Identifier)
+            if (e.AddedItems.Count > 0 && e.AddedItems[0] is CoreSetting added && AppState.Data.Language.Value != added.Identifier)
             {
                 Log.Info("Changed language to {added}", added.Identifier);
                 LanguageDefinitionsProgressRing.IsActive = true;

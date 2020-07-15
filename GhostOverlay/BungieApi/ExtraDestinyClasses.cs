@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace GhostOverlay
 {
+    // TODO: Delete this, use GhostSharp instead
     [Flags]
     public enum DestinyItemState
     {
@@ -16,6 +17,7 @@ namespace GhostOverlay
         Masterwork = 4,
     }
 
+    // TODO: Delete this, use GhostSharp instead
     public enum DestinyComponent
     {
         Profiles = 100,
@@ -52,7 +54,8 @@ namespace GhostOverlay
         Transitory = 1000,
         Metrics = 1100
     }
-
+    
+    // TODO: Evaluate whether we still need this or not
     public class SetLockStatePayload
     {
         [JsonProperty("state")]

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using BungieNetApi.Model;
 using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay.Models
@@ -36,6 +35,8 @@ namespace GhostOverlay.Models
 
     class CrucibleMapTrackable : DynamicTrackable
     {
+        private static readonly Logger Log = new Logger("DynamicTrackable");
+
         // crucible map
         public long CurrentActivityHash { get; set; }
         public DestinyActivityDefinition CurrentActivityDefinition {  get; set;  }
@@ -59,14 +60,17 @@ namespace GhostOverlay.Models
             CurrentActivityModeDefinition = await Definitions.GetActivityMode(CurrentActivityModeHash);
         }
 
-        public static async Task<CrucibleMapTrackable> CreateFromProfile(DestinyResponsesDestinyProfileResponse profile)
+        public static async Task<CrucibleMapTrackable> CreateFromProfile(DestinyProfileResponse profile)
         {
-            DateTime activityStart = DateTime.MinValue;
             string activeCharacterId = "";
-            DestinyEntitiesCharactersDestinyCharacterActivitiesComponent currentActivitiesComponent = default;
+            DateTime activityStart = DateTime.MinValue;
+            DestinyCharacterActivitiesComponent currentActivitiesComponent = default;
 
             foreach (var (characterId, activitiesComponent) in profile.CharacterActivities.Data)
             {
+                // TODO: validate dates are correct
+                Log.Info("TODO: validate dates are correct: DateActivityStarted: {DateActivityStarted}, activityStart: {activityStart}", activitiesComponent.DateActivityStarted, activityStart);
+
                 if (activitiesComponent.CurrentActivityHash != 0 && activitiesComponent.DateActivityStarted > activityStart)
                 {
                     activeCharacterId = characterId;

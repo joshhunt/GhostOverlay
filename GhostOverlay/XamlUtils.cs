@@ -89,7 +89,7 @@ namespace GhostOverlay
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var incomingNumber = (int)value;
+            var incomingNumber = (long)value;
             return $"{incomingNumber,0:n0}";
         }
 

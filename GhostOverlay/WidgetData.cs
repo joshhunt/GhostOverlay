@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using Windows.Globalization;
 using Windows.System.Threading;
 using Windows.UI.Core;
-using BungieNetApi.Model;
 using GhostOverlay.Models;
+using GhostSharp.BungieNetApi.Models;
 using DayOfWeek = System.DayOfWeek;
 
 namespace GhostOverlay
@@ -98,7 +98,7 @@ namespace GhostOverlay
 
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
 
-        public WidgetValue<CommonModelsCoreSettingsConfiguration> DestinySettings = new WidgetValue<CommonModelsCoreSettingsConfiguration>(WidgetPropertyChanged.DestinySettings);
+        public WidgetValue<CoreSettingsConfiguration> DestinySettings = new WidgetValue<CoreSettingsConfiguration>(WidgetPropertyChanged.DestinySettings);
         public WidgetValue<bool> DefinitionsUpdating = new WidgetValue<bool>(WidgetPropertyChanged.DefinitionsUpdating, false);
         public WidgetValue<bool> BustProfileRequests = new WidgetValue<bool>(WidgetPropertyChanged.BustProfileRequests, false);
         public WidgetValue<string> ProfileError = new WidgetValue<string>(WidgetPropertyChanged.ProfileError);
@@ -134,8 +134,8 @@ namespace GhostOverlay
             }
         }
 
-        private DestinyResponsesDestinyProfileResponse _profile;
-        public DestinyResponsesDestinyProfileResponse Profile
+        private DestinyProfileResponse _profile;
+        public DestinyProfileResponse Profile
         {
             get => _profile;
 
@@ -371,7 +371,7 @@ namespace GhostOverlay
             ShowDevOptions.Value = AppState.ReadSetting(SettingsKey.ShowDevOptions, false);
         }
 
-        public async Task<CommonModelsCoreSettingsConfiguration> UpdateDestinySettings()
+        public async Task<CoreSettingsConfiguration> UpdateDestinySettings()
         {
             DestinySettings.Value = await AppState.bungieApi.GetSettings();
 
