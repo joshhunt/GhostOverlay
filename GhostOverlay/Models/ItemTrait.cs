@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay.Models
 {
     class ItemTrait
     {
-        private static List<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition> allTraitCategoryDefinitions;
+        private static List<DestinyTraitCategoryDefinition> allTraitCategoryDefinitions;
         
         private static readonly Dictionary<string, string> CustomTraitNames = new Dictionary<string, string>
         {
@@ -33,8 +34,8 @@ namespace GhostOverlay.Models
         };
 
         public string TraitId;
-        public DestinyDefinitionsTraitsDestinyTraitDefinition Definition;
-        public DestinyDefinitionsTraitsDestinyTraitCategoryDefinition TraitCategoryDefinition;
+        public DestinyTraitDefinition Definition;
+        public DestinyTraitCategoryDefinition TraitCategoryDefinition;
         public bool HasIcon => CustomIcons.ContainsKey(TraitId);
         public Uri IconUri => HasIcon ? CustomIcons[TraitId] : CommonHelpers.LocalFallbackIconUri;
 
@@ -48,7 +49,7 @@ namespace GhostOverlay.Models
             }
         }
 
-        public async Task<DestinyDefinitionsTraitsDestinyTraitDefinition> PopulateDefinition()
+        public async Task<DestinyTraitDefinition> PopulateDefinition()
         {
             if (allTraitCategoryDefinitions == null)
             {

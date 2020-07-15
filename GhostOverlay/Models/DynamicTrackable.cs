@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay.Models
 {
@@ -18,7 +16,7 @@ namespace GhostOverlay.Models
     abstract class DynamicTrackable : ITrackable
     {
         public bool IsCompleted { get; set; }
-        public DestinyDefinitionsCommonDestinyDisplayPropertiesDefinition DisplayProperties { get; set; }
+        public DestinyDisplayPropertiesDefinition DisplayProperties { get; set; }
         public List<Objective> Objectives { get; set; }
         public string Title { get; set; }
         public Uri ImageUri => new Uri($"https://www.bungie.net{DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
@@ -40,11 +38,11 @@ namespace GhostOverlay.Models
     {
         // crucible map
         public long CurrentActivityHash { get; set; }
-        public DestinyDefinitionsDestinyActivityDefinition CurrentActivityDefinition {  get; set;  }
+        public DestinyActivityDefinition CurrentActivityDefinition {  get; set;  }
 
         // crucible mode (control, rumble, etc)
         public long CurrentActivityModeHash { get; set; }
-        public DestinyDefinitionsDestinyActivityModeDefinition CurrentActivityModeDefinition { get; set; }
+        public DestinyActivityModeDefinition CurrentActivityModeDefinition { get; set; }
 
         public bool isInActivity => CurrentActivityDefinition != null && CurrentActivityModeDefinition != null;
         public bool isNotInActivity => !isInActivity;

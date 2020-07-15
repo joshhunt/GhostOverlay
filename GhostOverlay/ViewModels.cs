@@ -99,9 +99,9 @@ namespace GhostOverlay
     public class Character
     {
         public DestinyEntitiesCharactersDestinyCharacterComponent CharacterComponent;
-        public DestinyDefinitionsDestinyClassDefinition ClassDefinition { get; set; }
-        public DestinyDefinitionsDestinyGenderDefinition GenderDefinition { get; set; }
-        public DestinyDefinitionsDestinyRaceDefinition RaceDefinition { get; set; }
+        public DestinyClassDefinition ClassDefinition { get; set; }
+        public DestinyGenderDefinition GenderDefinition { get; set; }
+        public DestinyRaceDefinition RaceDefinition { get; set; }
 
         public Uri EmblemBackgroundUri => CommonHelpers.BungieUri(CharacterComponent?.EmblemBackgroundPath, "/common/destiny2_content/icons/9dc4f3283ee9f9fc3d3499e9f9f1756c.jpg");
 
@@ -115,19 +115,19 @@ namespace GhostOverlay
         public string RaceName =>
             RaceDefinition?.GenderedRaceNamesByGenderHash[CharacterComponent.GenderHash.ToString()] ?? "Unknown";
 
-        public async Task<DestinyDefinitionsDestinyClassDefinition> PopulateDefinition()
+        public async Task<DestinyClassDefinition> PopulateDefinition()
         {
             ClassDefinition = await Definitions.GetClass(CharacterComponent.ClassHash);
             return ClassDefinition;
         }
 
-        public async Task<DestinyDefinitionsDestinyGenderDefinition> PopulateGenderDefinition()
+        public async Task<DestinyGenderDefinition> PopulateGenderDefinition()
         {
             GenderDefinition = await Definitions.GetGender(CharacterComponent.GenderHash);
             return GenderDefinition;
         }
 
-        public async Task<DestinyDefinitionsDestinyRaceDefinition> PopulateRaceDefinition()
+        public async Task<DestinyRaceDefinition> PopulateRaceDefinition()
         {
             RaceDefinition = await Definitions.GetRace(CharacterComponent.RaceHash);
             return RaceDefinition;
@@ -153,7 +153,7 @@ namespace GhostOverlay
         private static string triumphsCompletedString;
 
         public long PresentationNodeHash;
-        public DestinyDefinitionsPresentationDestinyPresentationNodeDefinition Definition;
+        public DestinyPresentationNodeDefinition Definition;
         public Uri ImageUri => CommonHelpers.BungieUri(Definition?.DisplayProperties?.Icon);
         public PresentationNode ParentNode;
 

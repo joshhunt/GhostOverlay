@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -70,9 +71,7 @@ namespace GhostOverlay.Views
 
             var rootNode = await Definitions.GetPresentationNode(rootTriumphsNodeHash);
 
-            async Task OnEachSecondLevelNode(
-                DestinyDefinitionsPresentationDestinyPresentationNodeChildEntry secondLevelChild,
-                PresentationNode topLevelNode, bool skipSecondLevel = false)
+            async Task OnEachSecondLevelNode(DestinyPresentationNodeChildEntry secondLevelChild, PresentationNode topLevelNode, bool skipSecondLevel = false)
             {
                 var secondLevelNode = await PresentationNode.FromHash(secondLevelChild.PresentationNodeHash,
                     AppState.Data.Profile, topLevelNode);

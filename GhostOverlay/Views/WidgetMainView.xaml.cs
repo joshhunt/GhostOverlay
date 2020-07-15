@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using BungieNetApi.Model;
 using GhostOverlay.Models;
+using GhostSharp.BungieNetApi.Models;
 using Microsoft.Gaming.XboxGameBar;
 
 namespace GhostOverlay
@@ -331,16 +332,16 @@ namespace GhostOverlay
             TrackedBountiesCollection.Source = groupedBounties;
         }
 
-        private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyDefinitionsDestinyInventoryItemDefinition itemDefinition, DestinyResponsesDestinyProfileResponse profile)
+        private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyInventoryItemDefinition itemDefinition, DestinyResponsesDestinyProfileResponse profile)
         {
             var questStepsHashes = itemDefinition?.SetData?.ItemList?.Select(v => v.ItemHash).ToList() ??
-                                   new List<long>();
+                                   new List<uint>();
             var questlineItemHash = itemDefinition?.Objectives?.QuestlineItemHash ?? 0;
 
             if (questlineItemHash != 0)
             {
                 var questLineItem = await Definitions.GetInventoryItem(questlineItemHash);
-                foreach (var questStepHash in questLineItem?.SetData?.ItemList?.Select(v => v.ItemHash) ?? new List<long>())
+                foreach (var questStepHash in questLineItem?.SetData?.ItemList?.Select(v => v.ItemHash) ?? new List<uint>())
                 {
                     if (!questStepsHashes.Contains(questStepHash))
                     {
@@ -359,9 +360,12 @@ namespace GhostOverlay
                 Log.Info("UpgradeQuestStepTrackedEntry, could not find inventory for character ID {characterID}", characterId);
                 return default;
             }
+            
+            // TODO: temp, eventually ItemHash won't be a long
+            var questStepsHashesAsLongs = questStepsHashes.Select(v => (long) v);
 
             return charactersInventory[characterId].Items
-                .Where(itemComponent => questStepsHashes.Contains(itemComponent.ItemHash))
+                .Where(itemComponent => questStepsHashesAsLongs.Contains(itemComponent.ItemHash))
                 .Select(itemComponent => TrackedEntry.FromInventoryItemComponent(itemComponent, oldTrackedEntry.OwnerId))
                 .FirstOrDefault();
         }

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay.Models
 {
@@ -12,7 +9,7 @@ namespace GhostOverlay.Models
     {
         bool IsCompleted { get; }
         string GroupByKey { get; }
-        DestinyDefinitionsCommonDestinyDisplayPropertiesDefinition DisplayProperties { get; }
+        DestinyDisplayPropertiesDefinition DisplayProperties { get; }
         List<Objective> Objectives { get; set; }
         string Title { get; }
         Uri ImageUri { get; }

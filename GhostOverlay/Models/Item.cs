@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 using Microsoft.Toolkit.Uwp.UI.Controls.TextToolbarSymbols;
 
 namespace GhostOverlay.Models
@@ -20,10 +21,8 @@ namespace GhostOverlay.Models
         public long ItemInstanceId = 0;
         public TrackedEntry TrackedEntry { get; set; }
 
-        public DestinyDefinitionsDestinyInventoryItemDefinition Definition =
-            new DestinyDefinitionsDestinyInventoryItemDefinition();
-        public DestinyDefinitionsCommonDestinyDisplayPropertiesDefinition DisplayProperties =>
-            Definition.DisplayProperties;
+        public DestinyInventoryItemDefinition Definition = new DestinyInventoryItemDefinition();
+        public DestinyDisplayPropertiesDefinition DisplayProperties => Definition.DisplayProperties;
         public List<Objective> Objectives { get; set; }
         public Character OwnerCharacter;
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
@@ -55,7 +54,7 @@ namespace GhostOverlay.Models
 
         public string Subtitle => Definition?.ItemTypeDisplayName ?? "Pursuit";
 
-        public async Task<DestinyDefinitionsDestinyInventoryItemDefinition> PopulateDefinition()
+        public async Task<DestinyInventoryItemDefinition> PopulateDefinition()
         {
             Definition = await Definitions.GetInventoryItem(ItemHash);
 

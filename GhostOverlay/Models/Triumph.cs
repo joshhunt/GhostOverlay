@@ -4,17 +4,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 
 namespace GhostOverlay.Models
 {
     public class Triumph : ITrackable
     {
         public TrackedEntry TrackedEntry { get; set; }
-        public DestinyDefinitionsRecordsDestinyRecordDefinition Definition;
+        public DestinyRecordDefinition Definition;
         public DestinyComponentsRecordsDestinyRecordComponent Record;
         public List<Objective> Objectives { get; set; }
         public long Hash = 0;
-        public DestinyDefinitionsCommonDestinyDisplayPropertiesDefinition DisplayProperties =>
+        public DestinyDisplayPropertiesDefinition DisplayProperties =>
             Definition.DisplayProperties;
 
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
@@ -29,7 +30,7 @@ namespace GhostOverlay.Models
         public string Title => Definition?.DisplayProperties?.Name ?? "No name";
         public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
 
-        public async Task<DestinyDefinitionsRecordsDestinyRecordDefinition> PopulateDefinition()
+        public async Task<DestinyRecordDefinition> PopulateDefinition()
         {
             Definition = await Definitions.GetRecord(Hash);
             return Definition;

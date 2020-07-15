@@ -1,19 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Foundation.Diagnostics;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
-using Windows.System;
-using Windows.UI.Shell;
-using BungieNetApi.Model;
 using GhostSharp.BungieNetApi.Models;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
@@ -337,7 +332,7 @@ namespace GhostOverlay
 
             try
             {
-                var result = await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(querySql, queryHash, true); 
+                var result = await GetDefinition<DestinyClassDefinition>(querySql, queryHash, true); 
 
                 if (result == null)
                 {
@@ -431,9 +426,9 @@ namespace GhostOverlay
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public static async Task<DestinyDefinitionsDestinyInventoryItemDefinition> GetInventoryItem(long hash)
+        public static async Task<DestinyInventoryItemDefinition> GetInventoryItem(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyInventoryItemDefinition>(
+            return await GetDefinition<DestinyInventoryItemDefinition>(
                 "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
         }
 
@@ -443,64 +438,64 @@ namespace GhostOverlay
                 "SELECT json FROM DestinyObjectiveDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyClassDefinition> GetClass(long hash)
+        public static async Task<DestinyClassDefinition> GetClass(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyClassDefinition>(
+            return await GetDefinition<DestinyClassDefinition>(
                 "SELECT json FROM DestinyClassDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyGenderDefinition> GetGender(long hash)
+        public static async Task<DestinyGenderDefinition> GetGender(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyGenderDefinition>(
+            return await GetDefinition<DestinyGenderDefinition>(
                 "SELECT json FROM DestinyGenderDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyRaceDefinition> GetRace(long hash)
+        public static async Task<DestinyRaceDefinition> GetRace(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyRaceDefinition>(
+            return await GetDefinition<DestinyRaceDefinition>(
                 "SELECT json FROM DestinyRaceDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsPresentationDestinyPresentationNodeDefinition>
+        public static async Task<DestinyPresentationNodeDefinition>
             GetPresentationNode(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsPresentationDestinyPresentationNodeDefinition>(
+            return await GetDefinition<DestinyPresentationNodeDefinition>(
                 "SELECT json FROM DestinyPresentationNodeDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsRecordsDestinyRecordDefinition> GetRecord(long hash)
+        public static async Task<DestinyRecordDefinition> GetRecord(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsRecordsDestinyRecordDefinition>(
+            return await GetDefinition<DestinyRecordDefinition>(
                 "SELECT json FROM DestinyRecordDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsTraitsDestinyTraitDefinition> GetTrait(long hash)
+        public static async Task<DestinyTraitDefinition> GetTrait(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsTraitsDestinyTraitDefinition>(
+            return await GetDefinition<DestinyTraitDefinition>(
                 "SELECT json FROM DestinyTraitDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition> GetTraitCategory(long hash)
+        public static async Task<DestinyTraitCategoryDefinition> GetTraitCategory(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition>(
+            return await GetDefinition<DestinyTraitCategoryDefinition>(
                 "SELECT json FROM DestinyTraitCategoryDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<List<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition>> GetAllTraitCategory()
+        public static async Task<List<DestinyTraitCategoryDefinition>> GetAllTraitCategory()
         {
-            return await GetMultipleDefinitions<DestinyDefinitionsTraitsDestinyTraitCategoryDefinition> (
+            return await GetMultipleDefinitions<DestinyTraitCategoryDefinition> (
                 "SELECT json FROM DestinyTraitCategoryDefinition;");
         }
 
-        public static async Task<DestinyDefinitionsDestinyActivityDefinition> GetActivity(long hash)
+        public static async Task<DestinyActivityDefinition> GetActivity(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyActivityDefinition>(
+            return await GetDefinition<DestinyActivityDefinition>(
                 "SELECT json FROM DestinyActivityDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyActivityModeDefinition> GetActivityMode(long hash)
+        public static async Task<DestinyActivityModeDefinition> GetActivityMode(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyActivityModeDefinition>(
+            return await GetDefinition<DestinyActivityModeDefinition>(
                 "SELECT json FROM DestinyActivityModeDefinition WHERE id = @Hash;", hash);
         }
     }
