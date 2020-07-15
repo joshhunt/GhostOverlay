@@ -37,7 +37,7 @@ namespace GhostOverlay
             DefinitionsLoading
         }
 
-        private readonly Logger Log = new Logger("WidgetMainView");
+        private static readonly Logger Log = new Logger("WidgetMainView");
 
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
@@ -440,11 +440,22 @@ namespace GhostOverlay
             var newTrackedEntry = await UpgradeQuestStepTrackedEntry(entry, bounty.Definition, profile);
             var newTrackedItem = await ItemFromTrackedEntry(newTrackedEntry, profile, characters);
 
+            if (newTrackedEntry != null)
+            {
+                var oldTrackedEntryIndex = AppState.Data.TrackedEntries.FindIndex(item => item.Equals(entry));
+                if (oldTrackedEntryIndex > -1)
+                {
+                    AppState.Data.TrackedEntries[oldTrackedEntryIndex] = newTrackedEntry;
+                    Log.Info("Replacing tracked entry {entry} at index {index} with new entry {newEntry}", entry, oldTrackedEntryIndex, newTrackedEntry);
+                    AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
+                }
+            }
+
             return newTrackedItem;
         }
 
 
-        private async Task<Triumph> TriumphFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile)
+        private static async Task<Triumph> TriumphFromTrackedEntry(TrackedEntry entry, DestinyResponsesDestinyProfileResponse profile)
         {
             if (profile == null) return default;
 
@@ -476,7 +487,7 @@ namespace GhostOverlay
         private void RemoveTrackedEntry(TrackedEntry entry)
         {
             var copyOf = AppState.Data.TrackedEntries.ToList();
-            copyOf.RemoveAll(v => v == entry);
+            copyOf.RemoveAll(v => v.Equals(entry));
             AppState.Data.TrackedEntries = copyOf;
         }
 
