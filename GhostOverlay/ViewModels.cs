@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Media.SpeechSynthesis;
@@ -151,8 +152,26 @@ namespace GhostOverlay
 
         public DestinyQuestsDestinyObjectiveProgress Progress;
 
-        public double CompletionPercent =>
-            Math.Min(100, Math.Floor((double)Progress.Progress / Progress.CompletionValue * 100));
+        public Visibility Visibility => (Progress.Progress == 0 && Progress.CompletionValue == 0)
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+
+        public double CompletionPercent
+        {
+            get
+            {
+                switch (Progress.CompletionValue)
+                {
+                    case 0 when Progress.Progress == 0:
+                        return 0;
+                    case 0 when Progress.Progress > 0:
+                        return 100;
+                    default:
+                        return Math.Min(100, Math.Floor((double) Progress.Progress / Progress.CompletionValue * 100));
+                }
+            }
+            
+        }
 
         public async Task<DestinyDefinitionsDestinyObjectiveDefinition> PopulateDefinition()
         {

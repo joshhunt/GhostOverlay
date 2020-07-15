@@ -30,7 +30,7 @@
 
         <GridView.ItemContainerStyle>
             <Style TargetType="GridViewItem">
-                <Setter Property="VerticalContentAlignment" Value="Top" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Margin" Value="4" />
             </Style>
@@ -43,6 +43,7 @@
                         <Setter Property="Margin" Value="0" />
                     </Style>
                 </GroupStyle.HeaderContainerStyle>
+
                 <GroupStyle.HeaderTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Key.Name}" />
@@ -53,74 +54,76 @@
 
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="ghostOverlay:PresentationNode">
-                <StackPanel Width="269" Background="{ThemeResource SystemControlBackgroundListLowBrush}" >
-                <Grid Padding="16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Image
-                        Grid.Row="0" Grid.Column="0"
-                        Width="48"
-                        Height="48"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top">
-
-                        <Image.Source>
-                            <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
-                        </Image.Source>
-                    </Image>
-
-                    <StackPanel
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        HorizontalAlignment="Stretch">
-
-                        <TextBlock
-                            HorizontalAlignment="Left"
-                            FontSize="15"
-                            FontWeight="Medium"
-                            TextWrapping="WrapWholeWords"
-                            Style="{StaticResource SubtitleTextBlockStyle}"
-                            Text="{x:Bind Definition.DisplayProperties.Name}" />
-                    </StackPanel>
-                </Grid>
-                    <!-- #FF5DA46A -->
-
-                    <Grid Margin="8,0,8,8">
-                    <ProgressBar
-                        Height="22"
-                        CornerRadius="0"
-                        Background="#80000000"
-                        Foreground="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletedColor}}"
-                        Value="{x:Bind Objective.CompletionPercent}" />
-
-                    <Grid Margin="6,2,6,0">
+                <StackPanel
+                    Width="269"
+                    VerticalAlignment="Stretch"
+                    Background="{ThemeResource SystemControlBackgroundListLowBrush}">
+                    <Grid Padding="16">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
+                        <Image
+                            Grid.Row="0" Grid.Column="0"
+                            Width="48"
+                            Height="48"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+
+                            <Image.Source>
+                                <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                            </Image.Source>
+                        </Image>
+
+                        <StackPanel
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="12,0,0,0"
+                            HorizontalAlignment="Stretch">
+
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                FontSize="15"
+                                FontWeight="Medium"
+                                TextWrapping="WrapWholeWords"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                Text="{x:Bind Definition.DisplayProperties.Name}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="8,0,8,8" Visibility="{x:Bind Objective.Visibility}">
+                        <ProgressBar
+                            Height="22"
+                            CornerRadius="0"
+                            Background="#80000000"
+                            Foreground="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletedColor}}"
+                            Value="{x:Bind Objective.CompletionPercent}" />
+
+                        <Grid Margin="6,2,6,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
                             <StackPanel Grid.ColumnSpan="1" Orientation="Horizontal">
-                                <TextBlock 
-                                   FontSize="14"
-                                   TextTrimming="CharacterEllipsis"
-                                   Text="{x:Bind Objective.Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
-                                   FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
+                                <TextBlock
+                                    FontSize="14"
+                                    TextTrimming="CharacterEllipsis"
+                                    Text="{x:Bind Objective.Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
+                                    FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
                             </StackPanel>
 
-                        <TextBlock Grid.Column="1"
-                                   FontSize="14">
-                            <Run
-                                Text="{x:Bind Objective.Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
-                            <Run Text="/" />
-                            <Run
-                                Text="{x:Bind Objective.Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
-                        </TextBlock>
+                            <TextBlock Grid.Column="1"
+                                       FontSize="14">
+                                <Run
+                                    Text="{x:Bind Objective.Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
+                                <Run Text="/" />
+                                <Run
+                                    Text="{x:Bind Objective.Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
+                            </TextBlock>
+                        </Grid>
                     </Grid>
-                </Grid>
                 </StackPanel>
             </DataTemplate>
         </GridView.ItemTemplate>
