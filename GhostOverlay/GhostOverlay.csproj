@@ -135,6 +135,11 @@
       <DependentUpon>AppAuthSuccessfulView.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppState.cs" />
+    <Compile Include="BungieApi\BungieApiException.cs" />
+    <Compile Include="BungieApi\Endpoints.cs" />
+    <Compile Include="BungieApi\ExtraDestinyClasses.cs" />
+    <Compile Include="BungieApi\GetBungie.cs" />
+    <Compile Include="BungieApi\OAuth.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Models\DynamicTrackable.cs" />
     <Compile Include="Models\ItemTrait.cs" />
@@ -865,7 +870,7 @@
     </Compile>
     <Compile Include="XamlUtils.cs" />
     <Compile Include="OAuthToken.cs" />
-    <Compile Include="BungieApi.cs" />
+    <Compile Include="BungieApi\BungieApi.cs" />
     <Compile Include="DestinyProfile.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
