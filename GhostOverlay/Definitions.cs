@@ -14,6 +14,7 @@ using Windows.Storage;
 using Windows.System;
 using Windows.UI.Shell;
 using BungieNetApi.Model;
+using GhostSharp.BungieNetApi.Models;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 
@@ -436,9 +437,9 @@ namespace GhostOverlay
                 "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
         }
 
-        public static async Task<DestinyDefinitionsDestinyObjectiveDefinition> GetObjective(long hash)
+        public static async Task<DestinyObjectiveDefinition> GetObjective(long hash)
         {
-            return await GetDefinition<DestinyDefinitionsDestinyObjectiveDefinition>(
+            return await GetDefinition<DestinyObjectiveDefinition>(
                 "SELECT json FROM DestinyObjectiveDefinition WHERE id = @Hash;", hash);
         }
 

@@ -14,6 +14,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using GhostOverlay.Models;
+using GhostSharp.BungieNetApi.Models;
 using Serilog;
 
 namespace GhostOverlay
@@ -145,42 +146,6 @@ namespace GhostOverlay
         }
     }
 
-    public class Objective
-    {
-        public DestinyDefinitionsDestinyObjectiveDefinition Definition =
-            new DestinyDefinitionsDestinyObjectiveDefinition();
-
-        public DestinyQuestsDestinyObjectiveProgress Progress;
-
-        public Visibility Visibility => (Progress.Progress == 0 && Progress.CompletionValue == 0)
-            ? Visibility.Collapsed
-            : Visibility.Visible;
-
-        public double CompletionPercent
-        {
-            get
-            {
-                switch (Progress.CompletionValue)
-                {
-                    case 0 when Progress.Progress == 0:
-                        return 0;
-                    case 0 when Progress.Progress > 0:
-                        return 100;
-                    default:
-                        return Math.Min(100, Math.Floor((double) Progress.Progress / Progress.CompletionValue * 100));
-                }
-            }
-            
-        }
-
-        public async Task<DestinyDefinitionsDestinyObjectiveDefinition> PopulateDefinition()
-        {
-            Definition = await Definitions.GetObjective(Progress.ObjectiveHash);
-
-            return Definition;
-        }
-    }
-
     public class PresentationNode
     {
         private static readonly Logger Log = new Logger("PresentationNode");
@@ -199,7 +164,7 @@ namespace GhostOverlay
         public bool IsCompleted => (Objective?.Progress?.Progress ?? 1) >= (Objective?.Progress?.CompletionValue ?? 0);
 
         public static async Task<string> GetTriumphsCompletedString(
-            DestinyDefinitionsDestinyObjectiveDefinition objDefinition)
+            DestinyObjectiveDefinition objDefinition)
         {
             if (triumphsCompletedString?.Length > 1)
             {

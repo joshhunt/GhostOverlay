@@ -145,6 +145,7 @@
     <Compile Include="Models\ItemTrait.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ITrackable.cs" />
+    <Compile Include="Models\Objective.cs" />
     <Compile Include="Models\RemoteConfig.cs" />
     <Compile Include="Models\TimerViewModel.cs" />
     <Compile Include="Models\Triumph.cs" />
@@ -1031,6 +1032,9 @@
     </PRIResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="GhostSharp">
+      <Version>0.0.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Data.Sqlite.Core">
       <Version>3.1.5</Version>
     </PackageReference>
