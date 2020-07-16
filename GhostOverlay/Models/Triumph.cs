@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using GhostSharper.Models;
 using Serilog;
@@ -48,19 +49,18 @@ namespace GhostOverlay.Models
             if (profileRecord != null)
                 return profileRecord;
 
-            foreach (var characterId in characterIds)
+            var characterRecords = characterIds.Select(characterId =>
             {
-                // TODO: we should probably return the most complete one, rather than the first we find?
                 var recordsForCharacter = profile.CharacterRecords.Data[characterId.ToString()];
-                var charRecord = recordsForCharacter.Records.GetValueOrDefault(triumphHash);
+                return recordsForCharacter.Records.GetValueOrDefault(triumphHash);
+            }).Where(v => v != null).ToList();
 
-                if (charRecord != null)
-                {
-                    return charRecord;
-                };
-            }
+            var completedCharacterRecord =
+                characterRecords.FirstOrDefault(v =>
+                    !v.State.HasFlag(DestinyRecordState.ObjectiveNotCompleted) ||
+                    v.State.HasFlag(DestinyRecordState.RecordRedeemed));
 
-            return default;
+            return completedCharacterRecord ?? characterRecords.FirstOrDefault();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
