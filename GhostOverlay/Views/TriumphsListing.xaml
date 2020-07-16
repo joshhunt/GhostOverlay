@@ -8,6 +8,7 @@
     xmlns:models="using:GhostOverlay.Models"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     xmlns:ghostOverlay="using:GhostOverlay"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -16,6 +17,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ghostOverlay:TemplatesResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
+
+            <converters:EmptyObjectToObjectConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -94,6 +97,10 @@
                             ItemTemplate="{StaticResource ObjectiveTemplate}"
                             ItemsSource="{x:Bind Objectives}"
                             SelectionMode="None" />
+
+                        <TextBlock Visibility="{x:Bind Record, Converter={StaticResource CollectionVisibilityConverter}}" FontStyle="Italic">
+                            Missing data
+                        </TextBlock>
                     </StackPanel>
                 </Grid>
             </DataTemplate>

@@ -91,9 +91,7 @@ namespace GhostOverlay.Views
 
                 if (triumph.Record == null)
                 {
-                    // TODO: Don't actually hide this, show it similar to p
-                    Log.Info($"triumph {triumph.Definition.DisplayProperties.Name} skipped because its record is missing");
-                    continue;
+                    Log.Info($"Triumph {childRecord.RecordHash} is missing its record from profile data");
                 }
 
                 var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
