@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Api;
+using GhostSharper.Models;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -139,7 +140,7 @@ namespace GhostOverlay
 
             var response = await debugClient.ExecuteAsync(request);
 
-            var data = JsonConvert.DeserializeObject<BungieApiResponse<DestinyProfileResponse>>(response.Content);
+            var data = JsonConvert.DeserializeObject<DestinyServerResponse<DestinyProfileResponse>>(response.Content);
 
             return data.Response;
         }

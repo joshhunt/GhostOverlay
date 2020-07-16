@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 
 namespace GhostOverlay.Models
 {

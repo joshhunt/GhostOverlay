@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
+using Serilog;
 
 namespace GhostOverlay.Models
 {

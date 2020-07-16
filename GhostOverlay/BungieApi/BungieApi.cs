@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Text;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Validation;

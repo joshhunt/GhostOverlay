@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using GhostOverlay.Models;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 using Microsoft.Gaming.XboxGameBar;
 
 namespace GhostOverlay

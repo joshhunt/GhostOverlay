@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GhostSharper.Api;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -39,7 +40,7 @@ namespace GhostOverlay
             if (response.ContentType.Contains("application/json") != true)
                 throw new BungieApiException("API did not return JSON");
 
-            var data = JsonConvert.DeserializeObject<BungieApiResponse<T>>(response.Content);
+            var data = JsonConvert.DeserializeObject<DestinyServerResponse<T>>(response.Content);
             Log.Debug("RESPONSE {Path} {ErrorStatus}, {Message}", path, data.ErrorStatus, data.Message);
 
             if (data.ErrorStatus.Equals("Success") != true)
@@ -47,7 +48,7 @@ namespace GhostOverlay
                 Log.Info("setting exception fields");
                 var err = new BungieApiException($"Bungie API Error {data.ErrorStatus}: {data.Message}")
                 {
-                    Response = BungieApiResponse<T>.ToSimple(data),
+                    Response = DestinyServerResponse<T>.ToSimple(data),
                     RequestPath = path,
                     Request = request
                 };

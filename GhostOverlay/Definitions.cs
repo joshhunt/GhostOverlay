@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 
 namespace GhostOverlay.Models
 {

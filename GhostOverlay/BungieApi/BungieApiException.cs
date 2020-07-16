@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using GhostSharper.Api;
 using RestSharp;
 
 namespace GhostOverlay
@@ -11,7 +12,7 @@ namespace GhostOverlay
     [Serializable]
     public class BungieApiException : Exception
     {
-        public BungieApiResponse<object> Response;
+        public DestinyServerResponse<object> Response;
 
         public BungieApiException()
         {

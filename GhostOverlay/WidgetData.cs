@@ -10,7 +10,7 @@ using Windows.Globalization;
 using Windows.System.Threading;
 using Windows.UI.Core;
 using GhostOverlay.Models;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 using DayOfWeek = System.DayOfWeek;
 
 namespace GhostOverlay

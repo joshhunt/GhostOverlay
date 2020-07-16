@@ -13,7 +13,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using GhostOverlay.Models;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 using Serilog;
 
 namespace GhostOverlay

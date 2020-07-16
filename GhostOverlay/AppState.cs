@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using Windows.Storage;
 using GhostOverlay.Models;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 using Newtonsoft.Json;
 
 namespace GhostOverlay

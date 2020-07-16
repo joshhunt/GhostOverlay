@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 
 namespace GhostOverlay
 {

@@ -8,7 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 
 namespace GhostOverlay
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using GhostOverlay.Models;
-using GhostSharp.BungieNetApi.Models;
+using GhostSharper.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -109,7 +109,6 @@ namespace GhostOverlay.Views
             viewIsUpdating = false;
 
             UpdateSelection();
-            Log.Info($"actual triumphs: {triumphs.Count}");
         }
 
         private void UpdateSelection()
