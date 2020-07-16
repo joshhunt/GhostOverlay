@@ -44,7 +44,7 @@ namespace GhostOverlay.Views
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Log.Info($"HandleMessage {message}");
+            Log.Debug($"HandleMessage {message}");
 
             switch (message)
             {
@@ -118,13 +118,13 @@ namespace GhostOverlay.Views
                 viewIsUpdating = true;
 
                 TriumphsGrid.SelectedItems.Clear();
-                Log.Info($"Selecting tracked triumphs:");
+                Log.Debug("Selecting tracked triumphs");
 
                 foreach (var item in triumphs)
                 {
                     if (item is Triumph triumph && AppState.Data.IsTracked(triumph))
                     {
-                        Log.Info($" - Adding `{triumph.Definition.DisplayProperties.Name}` to Selected triumphs");
+                        Log.Debug($" - Adding `{triumph.Definition.DisplayProperties.Name}` to Selected triumphs");
                         TriumphsGrid.SelectedItems.Add(item);
                     }
                 }

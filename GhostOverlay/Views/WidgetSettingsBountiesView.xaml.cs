@@ -43,7 +43,7 @@ namespace GhostOverlay
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
-            Log.Info($"HandleMessage {message}");
+            Log.Debug($"HandleMessage {message}");
 
             switch (message)
             {

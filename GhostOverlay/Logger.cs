@@ -30,7 +30,7 @@ namespace GhostOverlay
                 sLog = new LoggerConfiguration()
                     .MinimumLevel.Debug()
                     .WriteTo.Debug()
-                    .WriteTo.File(logLocation, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Debug, fileSizeLimitBytes: ONE_MEGABYTE, retainedFileCountLimit: 5)
+                    .WriteTo.File(logLocation, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Information, fileSizeLimitBytes: ONE_MEGABYTE, retainedFileCountLimit: 5)
                     .CreateLogger();
             }
         }
