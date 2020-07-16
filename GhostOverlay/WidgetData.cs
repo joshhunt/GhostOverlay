@@ -333,7 +333,7 @@ namespace GhostOverlay
             }
 
             ProfileScheduleRequesters -= 1;
-            UpdateProfileTimer.Cancel();
+            UpdateProfileTimer?.Cancel();
         }
 
         public bool IsTracked(Item item)
