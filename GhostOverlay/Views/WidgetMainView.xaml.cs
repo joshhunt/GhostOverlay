@@ -466,7 +466,7 @@ namespace GhostOverlay
             };
             await triumph.PopulateDefinition();
 
-            triumph.Record = Triumph.FindRecordInProfile(triumph.Hash.ToString(), profile);
+            triumph.Record = Triumph.FindRecordInProfileOrDefault(triumph.Hash.ToString(), profile);
 
             if (triumph.Record == null) return default;
 

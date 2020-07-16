@@ -36,31 +36,31 @@ namespace GhostOverlay.Models
             return Definition;
         }
 
-        public static DestinyRecordComponent FindRecordInProfile(string triumphHash, DestinyProfileResponse profile)
+        public static DestinyRecordComponent FindRecordInProfileOrDefault(string triumphHash, DestinyProfileResponse profile)
         {
             var characterIds = profile?.Profile?.Data?.CharacterIds ?? new List<long>();
-            DestinyRecordComponent record;
 
             if (profile?.CharacterRecords?.Data == null)
-            {
                 return default;
-            }
+
+            var profileRecord = profile.ProfileRecords.Data.Records.GetValueOrDefault(triumphHash);
+
+            if (profileRecord != null)
+                return profileRecord;
 
             foreach (var characterId in characterIds)
             {
                 // TODO: we should probably return the most complete one, rather than the first we find?
                 var recordsForCharacter = profile.CharacterRecords.Data[characterId.ToString()];
-                recordsForCharacter.Records.TryGetValue(triumphHash, out record);
+                var charRecord = recordsForCharacter.Records.GetValueOrDefault(triumphHash);
 
-                if (record != null)
+                if (charRecord != null)
                 {
-                    break;
+                    return charRecord;
                 };
             }
 
-            profile.ProfileRecords.Data.Records.TryGetValue(triumphHash, out record);
-
-            return record;
+            return default;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

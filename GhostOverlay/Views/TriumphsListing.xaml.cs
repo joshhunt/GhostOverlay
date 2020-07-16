@@ -77,6 +77,7 @@ namespace GhostOverlay.Views
                 var recordDefinition = await Definitions.GetRecord(childRecord.RecordHash);
                 if (recordDefinition.Redacted)
                 {
+                    // TODO: Show placerholder redacted triumphs
                     continue;
                 }
 
@@ -85,8 +86,15 @@ namespace GhostOverlay.Views
                     Definition = recordDefinition,
                     Hash = childRecord.RecordHash,
                     Objectives = new List<Objective>(),
-                    Record = Triumph.FindRecordInProfile(childRecord.RecordHash.ToString(), profile)
+                    Record = Triumph.FindRecordInProfileOrDefault(childRecord.RecordHash.ToString(), profile)
                 };
+
+                if (triumph.Record == null)
+                {
+                    // TODO: Don't actually hide this, show it similar to p
+                    Log.Info($"triumph {triumph.Definition.DisplayProperties.Name} skipped because its record is missing");
+                    continue;
+                }
 
                 var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
                     ? triumph.Record.IntervalObjectives
@@ -99,11 +107,7 @@ namespace GhostOverlay.Views
                     triumph.Objectives.Add(obj);
                 }
 
-                if (triumph.Record != null)
-                    triumphs.Add(triumph);
-                else
-                    Log.Info(
-                        $"triumph {triumph.Definition.DisplayProperties.Name} skipped because its record is missing");
+                triumphs.Add(triumph);
             }
 
             viewIsUpdating = false;

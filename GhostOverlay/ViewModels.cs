@@ -236,7 +236,7 @@ namespace GhostOverlay
             
             if (newNode.Objective == null && newNode.Definition.CompletionRecordHash != 0)
             {
-                var completionRecord = Triumph.FindRecordInProfile(newNode.Definition.CompletionRecordHash.ToString(), profile);
+                var completionRecord = Triumph.FindRecordInProfileOrDefault(newNode.Definition.CompletionRecordHash.ToString(), profile);
                 if (completionRecord == null || !(completionRecord.Objectives?.Count > 0)) return newNode;
 
                 if (completionRecord.Objectives.Count > 1)
