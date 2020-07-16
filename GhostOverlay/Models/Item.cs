@@ -35,13 +35,10 @@ namespace GhostOverlay.Models
         public string SortValue {
             get
             {
-                var value = 0;
+                var value = 100;
 
                 if (IsCompleted)
-                    value += 10000;
-
-                if (Definition?.TraitIds?.Contains(QuestTraitId) ?? false)
-                    value += 1000;
+                    value += 100;
 
                 return value.ToString();
             }
