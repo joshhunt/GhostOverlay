@@ -109,10 +109,16 @@ namespace GhostOverlay
             if (shouldLog()) sLog.Debug(makeMessage(message), arg1, arg2, arg3, arg4);
         }
 
+        public void Warn<T1>(string message, T1 arg1)
+        {
+            if (shouldLog()) sLog.Warning(makeMessage(message), arg1);
+        }
+
         public void Error(string message)
         {
             sLog.Error(makeMessage(message));
         }
+
 
         public void Error(string message, Exception err)
         {

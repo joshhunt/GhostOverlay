@@ -387,6 +387,13 @@ namespace GhostOverlay
             var itemInstanceId = entry.InstanceId.ToString();
             var characterId = entry.OwnerId.ToString();
             var hash = entry.Hash.ToString();
+                
+
+            if (!profile.Characters.Data.ContainsKey(characterId))
+            {
+                Log.Warn("Tracked entry is for character ID {characterId} which is not from this profile.", characterId);
+                return default;
+            }
 
             var rawObjectives = new List<DestinyObjectiveProgress>();
 
