@@ -22,10 +22,8 @@ namespace GhostOverlay.Views
         private long presentationNodeHash;
         private readonly RangeObservableCollection<Triumph> triumphs = new RangeObservableCollection<Triumph>();
         private bool viewIsUpdating;
-        private HashSet<long> PresentationNodeStack;
 
         public DestinyPresentationNodeDefinition PresentationNodeDef { get; set; }
-        public string Heading { get; set; }
 
         public TriumphsListing()
         {
@@ -36,8 +34,7 @@ namespace GhostOverlay.Views
         {
             if (e.Parameter != null)
             {
-                PresentationNodeStack = (HashSet<long>)e.Parameter;
-                presentationNodeHash = PresentationNodeStack.Last();
+                presentationNodeHash = (long)e.Parameter;
             }
 
             eventAggregator.Subscribe(this);
@@ -77,11 +74,6 @@ namespace GhostOverlay.Views
             triumphs.Clear();
 
             PresentationNodeDef = await Definitions.GetPresentationNode(presentationNodeHash);
-            var stackDefs = new List<DestinyPresentationNodeDefinition>();
-            foreach (var hash in PresentationNodeStack)
-                stackDefs.Add(await Definitions.GetPresentationNode(hash));
-
-            Heading = string.Join(" > ", stackDefs.Where(v => v != null).Select(v => v.DisplayProperties.Name));
 
             if (PresentationNodeDef == null) return;
 

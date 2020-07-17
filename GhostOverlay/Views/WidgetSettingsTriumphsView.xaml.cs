@@ -206,15 +206,7 @@ namespace GhostOverlay
 
         private void UpdateTriumphsListingView()
         {
-            // var navigationParam = (parentPresentationNodeHash: SelectedSecondLevelNode.PresentationNodeHash,
-            //     presentationNodeHash: SelectedThirdLevelNode.PresentationNodeHash);
-
-            var navigationParam = new HashSet<long>() {
-                SelectedTopLevelNode.PresentationNodeHash,
-                SelectedSecondLevelNode.PresentationNodeHash,
-                SelectedThirdLevelNode.PresentationNodeHash,
-            };
-            TriumphsFrame.Navigate(typeof(TriumphsListing), navigationParam);
+            TriumphsFrame.Navigate(typeof(TriumphsListing), SelectedThirdLevelNode.PresentationNodeHash);
         }
 
         private void OnSecondLevelNodeClicked(object sender, ItemClickEventArgs e)

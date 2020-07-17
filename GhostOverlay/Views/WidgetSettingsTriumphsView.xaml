@@ -67,12 +67,25 @@
     </Page.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <ScrollViewer Grid.Column="0">
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource TitleTextBlockStyle}" Margin="8">
+            <Run Text="{x:Bind SelectedTopLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}"></Run>
+            <Run Text=">"></Run>
+            <Run Text="{x:Bind SelectedSecondLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}"></Run>
+            <Run Text=">"></Run>
+            <Run Text="{x:Bind SelectedThirdLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}"></Run>
+        </TextBlock>
+
+        <ScrollViewer Grid.Column="0" Grid.Row="1">
             <StackPanel
                 Padding="4,8"
                 BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
@@ -153,6 +166,11 @@
             </StackPanel>
         </ScrollViewer>
 
-        <Frame VerticalAlignment="Stretch" Grid.Column="1" x:Name="TriumphsFrame" />
+        <Frame
+            Grid.Column="1"
+            Grid.Row="1"
+            Margin="0,8,0,0"
+            x:Name="TriumphsFrame"
+            VerticalAlignment="Stretch" />
     </Grid>
 </Page>
