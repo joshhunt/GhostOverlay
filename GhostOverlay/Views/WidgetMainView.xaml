@@ -95,7 +95,7 @@
                                         HorizontalAlignment="Stretch" />
 
                         <ListView
-                            Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
+                            Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenFalseConverter}}"
                             IsItemClickEnabled="False"
                             IsHitTestVisible="False"
                             ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"

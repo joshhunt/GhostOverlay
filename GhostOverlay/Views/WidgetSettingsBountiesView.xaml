@@ -44,9 +44,7 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <ContentControl
-                        Grid.Row="0" Grid.Column="0"
-                        ContentTemplate="{StaticResource BountyIcon}" />
+                    <ContentControl Grid.Row="0" Grid.Column="0" ContentTemplate="{StaticResource BountyIcon}" />
 
                     <StackPanel
                         Grid.Row="0"
@@ -54,11 +52,10 @@
                         Margin="12,0,0,0"
                         HorizontalAlignment="Stretch">
 
-                        <ContentControl ContentTemplate="{StaticResource TrackableBody}"
-                                        HorizontalAlignment="Stretch" />
+                        <ContentControl ContentTemplate="{StaticResource TrackableBody}" HorizontalAlignment="Stretch" />
 
                         <ListView
-                            Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}, ConverterParameter=CollapsedWhenTrue}"
+                            Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenFalseConverter}}"
                             IsItemClickEnabled="False"
                             IsHitTestVisible="False"
                             ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"

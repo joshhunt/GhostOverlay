@@ -17,8 +17,6 @@
 
     <local:NumberFormatterConverter x:Key="NumberFormatterConverter" />
     <local:DestinySymbolConverter x:Key="DestinySymbolConverter" />
-    <local:BooleanBrushConverter x:Key="BooleanBrushConverter" />
-    <local:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
 
     <Style x:Key="ObjectiveListViewStyle" TargetType="ListViewItem">
 
@@ -42,7 +40,7 @@
 
     <DataTemplate x:Key="BountyCompletedObjectives" x:DataType="models:ITrackable">
         <StackPanel Margin="0,4,0,0"
-                    Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}}">
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -122,7 +120,7 @@
 
                 <Rectangle
                     x:Name="TrackableIconOutline"
-                    Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}}"
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}}"
                     Canvas.Top="0" Canvas.Left="0"
                     Width="32"
                     StrokeThickness="2"
@@ -131,7 +129,7 @@
 
                 <Polygon
                     x:Name="TrackableIconTriangle"
-                    Visibility="{x:Bind IsCompleted, Converter={StaticResource BooleanVisibilityConverter}}"
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}}"
                     Opacity="1"
                     Canvas.Top="15" Canvas.Left="15" Points="0,17 17,17, 17,0" Fill="#ffC19954" />
             </Canvas>
