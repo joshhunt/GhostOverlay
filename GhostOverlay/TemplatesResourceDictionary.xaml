@@ -7,6 +7,7 @@
     xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters">
 
 
+    <converters:BoolToObjectConverter x:Key="BoolToCompletionOpacity" TrueValue="0.5" FalseValue="1"/>
     <converters:BoolToObjectConverter x:Key="BoolToBorderThickness" TrueValue="2" FalseValue="0" />
     <converters:BoolToObjectConverter x:Key="BoolToCompletedColorConverter" TrueValue="#FF5DA46A"
                                       FalseValue="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
@@ -17,7 +18,6 @@
     <local:NumberFormatterConverter x:Key="NumberFormatterConverter" />
     <local:DestinySymbolConverter x:Key="DestinySymbolConverter" />
     <local:BooleanBrushConverter x:Key="BooleanBrushConverter" />
-    <local:BooleanNumberConverter x:Key="BooleanNumberConverter" />
     <local:BooleanVisibilityConverter x:Key="BooleanVisibilityConverter" />
 
     <Style x:Key="ObjectiveListViewStyle" TargetType="ListViewItem">
@@ -141,7 +141,7 @@
     <DataTemplate x:Key="ObjectiveTemplate" x:DataType="local:Objective">
         <UserControl>
             <Grid
-                Opacity="{x:Bind Progress.Complete, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
+                Opacity="{x:Bind Progress.Complete, Converter={StaticResource BoolToCompletionOpacity}}">
 
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup>

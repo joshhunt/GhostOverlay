@@ -12,31 +12,6 @@ using Windows.UI.Xaml.Markup;
 
 namespace GhostOverlay
 {
-    public class BooleanNumberConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            var numbers = new [] { 1, 0.5 };
-            var paramString = parameter as string;
-            var input = System.Convert.ToBoolean(value);
-
-            if (!string.IsNullOrEmpty(paramString))
-            {
-                numbers = paramString.Split(new [] {'|'}).Select(System.Convert.ToDouble).ToArray();
-            }
-
-            var result = input ? numbers[0] : numbers[1];
-
-            return result;
-        }
-
-        public object ConvertBack(object value, Type targetType,
-            object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class BooleanVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)

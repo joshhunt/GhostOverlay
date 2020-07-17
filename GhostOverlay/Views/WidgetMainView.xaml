@@ -55,7 +55,7 @@
 
             <DataTemplate x:DataType="models:ITrackable" x:Key="TrackableEntryTemplate">
                 <Grid
-                    Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.4|1}"
+                    Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}}"
                     ToolTipService.ToolTip="{x:Bind DisplayProperties.Description}">
 
                     <Grid.ColumnDefinitions>

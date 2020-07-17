@@ -38,7 +38,7 @@
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="models:Item">
                 <Grid Width="400" MaxWidth="400" MinHeight="125"
-                      Opacity="{x:Bind IsCompleted, Converter={StaticResource BooleanNumberConverter}, ConverterParameter=0.5|1}">
+                      Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
