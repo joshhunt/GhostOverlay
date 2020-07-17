@@ -22,91 +22,108 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <GridView
-        Padding="4"
-        x:Name="TriumphsGrid"
-        ItemsSource="{x:Bind triumphs}"
-        IsItemClickEnabled="True"
-        VerticalAlignment="Stretch"
-        SelectionChanged="OnSelectedTriumphsChanged"
-        SelectionMode="Multiple">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
 
-        <GridView.ItemContainerStyle>
-            <Style TargetType="GridViewItem">
-                <Setter Property="VerticalContentAlignment" Value="Top" />
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="Margin" Value="4" />
-            </Style>
-        </GridView.ItemContainerStyle>
+        <TextBlock
+            Grid.Row="0"
+            Margin="8,4,8,8"
+            Text="{x:Bind Heading}"
+            Style="{ThemeResource TitleTextBlockStyle}">
+        </TextBlock>
 
-        <GridView.ItemsPanel>
-            <ItemsPanelTemplate>
-                <controls:WrapPanel Orientation="Horizontal" />
-            </ItemsPanelTemplate>
-        </GridView.ItemsPanel>
+        <GridView
+            Grid.Row="1"
+            Padding="4,0,4,4"
+            x:Name="TriumphsGrid"
+            ItemsSource="{x:Bind triumphs}"
+            IsItemClickEnabled="True"
+            VerticalAlignment="Stretch"
+            SelectionChanged="OnSelectedTriumphsChanged"
+            SelectionMode="Multiple">
 
-        <GridView.ItemTemplate>
-            <DataTemplate x:DataType="models:Triumph">
-                <Grid Width="400" MinHeight="120"
-                      Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}}">
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem">
+                    <Setter Property="VerticalContentAlignment" Value="Top" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="4" />
+                </Style>
+            </GridView.ItemContainerStyle>
 
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:WrapPanel Orientation="Horizontal" Margin="0,-4,0,0" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
 
-                    <Image
-                        Grid.Row="0" Grid.Column="0"
-                        Width="48"
-                        Height="48"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:Triumph">
+                    <Grid Width="400" MinHeight="120"
+                          Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}}">
 
-                        <Image.Source>
-                            <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
-                        </Image.Source>
-                    </Image>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                    <StackPanel
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        HorizontalAlignment="Stretch">
-
-                        <TextBlock
+                        <Image
+                            Grid.Row="0" Grid.Column="0"
+                            Width="48"
+                            Height="48"
                             HorizontalAlignment="Left"
-                            FontSize="15"
-                            TextWrapping="WrapWholeWords"
-                            Style="{StaticResource SubtitleTextBlockStyle}">
+                            VerticalAlignment="Top">
 
-                            <Run Text="{x:Bind Definition.DisplayProperties.Name}" FontWeight="Medium" />
-                            <Run Text="&#8203;//" FontSize="14" Foreground="#c2c2c2" />
-                            <Run Text="{x:Bind Subtitle}" FontSize="14" Foreground="#c2c2c2" />
-                        </TextBlock>
+                            <Image.Source>
+                                <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                            </Image.Source>
+                        </Image>
 
-                        <TextBlock
-                            Margin="0,6,0,6"
-                            HorizontalAlignment="Left"
-                            MaxLines="2"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="{x:Bind Definition.DisplayProperties.Description}"
-                            TextTrimming="WordEllipsis"
-                            TextWrapping="WrapWholeWords" />
+                        <StackPanel
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Margin="12,0,0,0"
+                            HorizontalAlignment="Stretch">
 
-                        <ListView
-                            IsHitTestVisible="False"
-                            IsItemClickEnabled="False"
-                            ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
-                            ItemTemplate="{StaticResource ObjectiveTemplate}"
-                            ItemsSource="{x:Bind Objectives}"
-                            SelectionMode="None" />
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                FontSize="15"
+                                TextWrapping="WrapWholeWords"
+                                Style="{StaticResource SubtitleTextBlockStyle}">
 
-                        <TextBlock Visibility="{x:Bind Record, Converter={StaticResource CollectionVisibilityConverter}}" FontStyle="Italic">
-                            Missing data
-                        </TextBlock>
-                    </StackPanel>
-                </Grid>
-            </DataTemplate>
-        </GridView.ItemTemplate>
-    </GridView>
+                                <Run Text="{x:Bind Definition.DisplayProperties.Name}" FontWeight="Medium" />
+                                <Run Text="&#8203;//" FontSize="14" Foreground="#c2c2c2" />
+                                <Run Text="{x:Bind Subtitle}" FontSize="14" Foreground="#c2c2c2" />
+                            </TextBlock>
+
+                            <TextBlock
+                                Margin="0,6,0,6"
+                                HorizontalAlignment="Left"
+                                MaxLines="2"
+                                Style="{StaticResource BodyTextBlockStyle}"
+                                Text="{x:Bind Definition.DisplayProperties.Description}"
+                                TextTrimming="WordEllipsis"
+                                TextWrapping="WrapWholeWords" />
+
+                            <ListView
+                                IsHitTestVisible="False"
+                                IsItemClickEnabled="False"
+                                ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                                ItemTemplate="{StaticResource ObjectiveTemplate}"
+                                ItemsSource="{x:Bind Objectives}"
+                                SelectionMode="None" />
+
+                            <TextBlock Visibility="{x:Bind Record, Converter={StaticResource CollectionVisibilityConverter}}" FontStyle="Italic">
+                                Missing data
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+    </Grid>
+    
+        
 </Page>

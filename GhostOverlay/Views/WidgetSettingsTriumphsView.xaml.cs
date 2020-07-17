@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -205,7 +206,15 @@ namespace GhostOverlay
 
         private void UpdateTriumphsListingView()
         {
-            TriumphsFrame.Navigate(typeof(TriumphsListing), SelectedThirdLevelNode.PresentationNodeHash);
+            // var navigationParam = (parentPresentationNodeHash: SelectedSecondLevelNode.PresentationNodeHash,
+            //     presentationNodeHash: SelectedThirdLevelNode.PresentationNodeHash);
+
+            var navigationParam = new HashSet<long>() {
+                SelectedTopLevelNode.PresentationNodeHash,
+                SelectedSecondLevelNode.PresentationNodeHash,
+                SelectedThirdLevelNode.PresentationNodeHash,
+            };
+            TriumphsFrame.Navigate(typeof(TriumphsListing), navigationParam);
         }
 
         private void OnSecondLevelNodeClicked(object sender, ItemClickEventArgs e)

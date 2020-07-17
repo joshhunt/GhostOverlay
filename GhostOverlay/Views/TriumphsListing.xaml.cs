@@ -22,6 +22,10 @@ namespace GhostOverlay.Views
         private long presentationNodeHash;
         private readonly RangeObservableCollection<Triumph> triumphs = new RangeObservableCollection<Triumph>();
         private bool viewIsUpdating;
+        private HashSet<long> PresentationNodeStack;
+
+        public DestinyPresentationNodeDefinition PresentationNodeDef { get; set; }
+        public string Heading { get; set; }
 
         public TriumphsListing()
         {
@@ -30,7 +34,11 @@ namespace GhostOverlay.Views
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (e.Parameter != null) presentationNodeHash = (long) e.Parameter;
+            if (e.Parameter != null)
+            {
+                PresentationNodeStack = (HashSet<long>)e.Parameter;
+                presentationNodeHash = PresentationNodeStack.Last();
+            }
 
             eventAggregator.Subscribe(this);
             UpdateViewModel();
@@ -68,11 +76,16 @@ namespace GhostOverlay.Views
             viewIsUpdating = true;
             triumphs.Clear();
 
-            var presentationNode = await Definitions.GetPresentationNode(presentationNodeHash);
+            PresentationNodeDef = await Definitions.GetPresentationNode(presentationNodeHash);
+            var stackDefs = new List<DestinyPresentationNodeDefinition>();
+            foreach (var hash in PresentationNodeStack)
+                stackDefs.Add(await Definitions.GetPresentationNode(hash));
 
-            if (presentationNode == null) return;
+            Heading = string.Join(" > ", stackDefs.Where(v => v != null).Select(v => v.DisplayProperties.Name));
 
-            foreach (var childRecord in presentationNode.Children.Records)
+            if (PresentationNodeDef == null) return;
+
+            foreach (var childRecord in PresentationNodeDef.Children.Records)
             {
                 var recordDefinition = await Definitions.GetRecord(childRecord.RecordHash);
 

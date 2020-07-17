@@ -78,6 +78,12 @@
                 BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
                 BorderThickness="0,0,1,0">
 
+                <TextBlock
+                    Visibility="Collapsed"
+                    Margin="4,-4,8,8"
+                    Style="{ThemeResource TitleTextBlockStyle}"
+                    Text="{x:Bind SelectedTopLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" />
+
                 <!-- "Second level" categories -->
                 <ListView
                     Visibility="{x:Bind SkipSecondLevel, Converter={StaticResource BoolToInverseVisibility}}"
