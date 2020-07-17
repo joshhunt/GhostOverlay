@@ -26,7 +26,7 @@ namespace GhostOverlay.Models
             !IsCompleted && (TrackedEntry.ShowDescription || AppState.Data.ShowDescriptions.Value);
 
         public string SortValue => (IsCompleted ? "xxx_completed" : "");
-        public string Subtitle => "Triumph";
+        public string Subtitle => Definition?.CompletionInfo?.ScoreValue != null ? $"{Definition?.CompletionInfo?.ScoreValue} pts" : "";
 
         public string Title => Definition?.DisplayProperties?.Name ?? "No name";
         public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");

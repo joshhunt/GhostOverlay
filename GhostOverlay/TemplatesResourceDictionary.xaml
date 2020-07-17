@@ -54,23 +54,7 @@
                     Margin="0,0,6,0"
                     Fill="#FF589864" />
 
-                <ProgressBar
-                    Grid.Column="1"
-                    Height="20"
-                    CornerRadius="0"
-                    Foreground="Transparent"
-                    Background="Transparent"
-                    Opacity=".9"
-                    Value="0" />
-
-                <Grid Grid.Column="1" Margin="6,2,6,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.ColumnSpan="2" Text="Complete" />
-                </Grid>
+                <TextBlock Grid.Column="1" Margin="6,1,6,0" Text="Complete" />
             </Grid>
         </StackPanel>
     </DataTemplate>
