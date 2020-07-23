@@ -77,13 +77,13 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{ThemeResource TitleTextBlockStyle}" Margin="8">
-            <Run Text="{x:Bind SelectedTopLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}"></Run>
-            <Run Text=">"></Run>
-            <Run Text="{x:Bind SelectedSecondLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}"></Run>
-            <Run Text=">"></Run>
-            <Run Text="{x:Bind SelectedThirdLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}"></Run>
-        </TextBlock>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Margin="8">
+            <TextBlock Text="{x:Bind SelectedTopLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
+            <FontIcon Margin="6,5,8,0"  FontFamily="Segoe MDL2 Assets" Glyph="&#xE76C;" FontSize="13" HorizontalAlignment="Center"/>
+            <TextBlock Visibility="{x:Bind SkipSecondLevel, Converter={StaticResource BoolToInverseVisibility}}" Text="{x:Bind SelectedSecondLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
+            <FontIcon Visibility="{x:Bind SkipSecondLevel, Converter={StaticResource BoolToInverseVisibility}}" Margin="6,5,8,0" FontFamily="Segoe MDL2 Assets" Glyph="&#xE76C;" FontSize="13" HorizontalAlignment="Center"/>
+            <TextBlock Text="{x:Bind SelectedThirdLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
+        </StackPanel>
 
         <ScrollViewer Grid.Column="0" Grid.Row="1">
             <StackPanel
