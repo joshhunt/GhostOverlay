@@ -431,7 +431,7 @@ namespace GhostOverlay
             var item = await GetDefinition<DestinyInventoryItemDefinition>(
                 "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
 
-            if (item.TraitIds?.Contains("item_type.armor") ?? false)
+            if (item?.TraitIds?.Contains("item_type.armor") ?? false)
             {
                 item.TraitIds = new List<string>() { "__custom.solstice" };
             }
