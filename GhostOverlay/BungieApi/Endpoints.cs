@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using GhostSharper.Api;
@@ -27,8 +28,42 @@ namespace GhostOverlay
             }
 
             var componentsStr = string.Join(",", components);
-            return await GetBungie<DestinyProfileResponse>(
+            var profile = await GetBungie<DestinyProfileResponse>(
                 $"Platform/Destiny2/{(int)membershipType}/Profile/{membershipId}/?components={componentsStr}", requireAuth);
+
+            return profile;
+        }
+
+        private static async Task AddFakeItem(DestinyProfileResponse profile, uint itemHash, long itemInstanceId)
+        {
+            var random = new Random(unchecked((int)itemHash));
+
+            var itemDef = await Definitions.GetInventoryItem(itemHash);
+            var character = profile.Characters.Data.Values.First(v => v.ClassType == itemDef.ClassType);
+            var characterId = character.CharacterId.ToString();
+
+            profile.CharacterInventories.Data[characterId].Items.Add(new DestinyItemComponent()
+            {
+                ItemHash = itemHash,
+                BucketHash = itemDef.Inventory.BucketTypeHash,
+                ItemInstanceId = itemInstanceId,
+            });
+            profile.ItemComponents.Objectives.Data[itemInstanceId.ToString()] = new DestinyItemObjectivesComponent()
+            {
+                Objectives = new List<DestinyObjectiveProgress>()
+            };
+
+            foreach (var objectiveHash in itemDef.Objectives.ObjectiveHashes)
+            {
+                var objectiveDef = await Definitions.GetObjective(objectiveHash);
+
+                profile.ItemComponents.Objectives.Data[itemInstanceId.ToString()].Objectives.Add(new DestinyObjectiveProgress()
+                {
+                    ObjectiveHash = objectiveHash,
+                    Progress = random.Next(0, Convert.ToInt32(objectiveDef.CompletionValue)),
+                    CompletionValue = objectiveDef.CompletionValue,
+                });
+            }
         }
 
         public async Task<DestinyLinkedProfilesResponse> GetLinkedProfiles()

@@ -1,9 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using RestSharp;
 
 namespace GhostOverlay.Models
 {
+    public class TraitConfig
+    {
+        [JsonProperty("name")]
+        public string Name;
+
+        [JsonProperty("icon")]
+        public Uri Icon;
+    }
+
     public class RemoteConfigValues
     {
         [JsonProperty("autoProfileBust")]
@@ -23,6 +33,9 @@ namespace GhostOverlay.Models
 
         [JsonProperty("crucibleMapTrackerAutoProfileBustIntervalSeconds")]
         public long CrucibleMapTrackerAutoProfileBustIntervalSeconds = 30;
+
+        [JsonProperty("traitData")]
+        public Dictionary<string, TraitConfig> TraitData = new Dictionary<string, TraitConfig>();
 
         public override string ToString()
         {
@@ -48,13 +61,13 @@ namespace GhostOverlay.Models
                 var request = new RestRequest("/joshhunt/ghost-site/master/generated-data/settings.json");
                 var response = await client.ExecuteAsync(request);
                 Values = JsonConvert.DeserializeObject<RemoteConfigValues>(response.Content);
+                Log.Info("config: {v}", Values.TraitData.Keys);
                 Log.Info("Loading remote config {config}", Values);
             }
             catch (Exception err)
             {
                 Log.Error("Error loading remote config", err);
             }
-            
         }
     }
 }

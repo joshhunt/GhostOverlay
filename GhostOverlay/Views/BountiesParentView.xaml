@@ -21,37 +21,38 @@
             Margin="0"
             BorderBrush="{ThemeResource SystemControlBackgroundBaseLowBrush}"
             BorderThickness="0,0,1,0">
+            <ScrollViewer>
+                <ListView
+                    SelectedItem="{x:Bind SelectedTrait, Mode=OneWay}"
+                    ItemsSource="{x:Bind ItemTraits}"
+                    IsItemClickEnabled="True"
+                    ItemClick="OnTraitClick">
 
-            <ListView
-                SelectedItem="{x:Bind SelectedTrait, Mode=OneWay}"
-                ItemsSource="{x:Bind ItemTraits}"
-                IsItemClickEnabled="True"
-                ItemClick="OnTraitClick">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Margin" Value="4,4" />
+                            <Setter Property="Padding" Value="4" />
+                            <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundListLowBrush}" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
 
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                        <Setter Property="VerticalContentAlignment" Value="Center" />
-                        <Setter Property="Margin" Value="4,4" />
-                        <Setter Property="Padding" Value="4" />
-                        <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundListLowBrush}" />
-                    </Style>
-                </ListView.ItemContainerStyle>
-
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:ItemTrait">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Height="40" VerticalAlignment="Center">
-                                <Image.Source>
-                                    <BitmapImage UriSource="{x:Bind IconUri}"></BitmapImage>
-                                </Image.Source>
-                            </Image>
-                            <TextBlock Margin="8,4,0,0" FontWeight="Medium" VerticalAlignment="Top" Text="{x:Bind Name}" />
-                        </StackPanel>
-                        
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:ItemTrait">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Height="40" VerticalAlignment="Center">
+                                    <Image.Source>
+                                        <BitmapImage UriSource="{x:Bind IconUri}"></BitmapImage>
+                                    </Image.Source>
+                                </Image>
+                                <TextBlock Margin="8,4,0,0" FontWeight="Medium" VerticalAlignment="Top" Text="{x:Bind Name}" />
+                            </StackPanel>
+                            
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollViewer>
 
         </StackPanel>
 

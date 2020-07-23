@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using GhostSharper.Models;
 
@@ -8,12 +9,16 @@ namespace GhostOverlay.Models
 {
     public class Item : ITrackable
     {
+        public static uint ArmourCategoryHash = 20;
         public static long PersuitsBucketHash = 1345459588;
+
         public static string QuestTraitId = "inventory_filtering.quest";
         public static string BountyTraitId = "inventory_filtering.bounty";
 
         public long ItemHash = 0;
         public long ItemInstanceId = 0;
+        public long BucketHash { get; set; }
+
         public TrackedEntry TrackedEntry { get; set; }
 
         public DestinyInventoryItemDefinition Definition = new DestinyInventoryItemDefinition();
@@ -26,6 +31,10 @@ namespace GhostOverlay.Models
             !IsCompleted && ((TrackedEntry?.ShowDescription ?? true) || AppState.Data.ShowDescriptions.Value);
 
         public string GroupByKey => OwnerCharacter.ClassName;
+
+        public bool ShowInPursuits =>
+            BucketHash == PersuitsBucketHash ||
+            (Definition.ItemCategoryHashes?.Contains(ArmourCategoryHash) ?? false);
 
         public string Title =>
             Definition?.SetData?.QuestLineName ?? Definition?.DisplayProperties?.Name ?? "No name";
@@ -49,7 +58,6 @@ namespace GhostOverlay.Models
         public async Task<DestinyInventoryItemDefinition> PopulateDefinition()
         {
             Definition = await Definitions.GetInventoryItem(ItemHash);
-
             return Definition;
         }
 
@@ -83,6 +91,7 @@ namespace GhostOverlay.Models
             {
                 ItemHash = item.ItemHash,
                 ItemInstanceId = item.ItemInstanceId,
+                BucketHash = item.BucketHash,
                 OwnerCharacter = ownerCharacter,
                 Objectives = new List<Objective>()
             };
@@ -99,46 +108,41 @@ namespace GhostOverlay.Models
             return bounty;
         }
 
+
         public static async Task<List<Item>> ItemsFromProfile(DestinyProfileResponse profile, Character activeCharacter)
         {
             var bounties = new List<Item>();
 
-            foreach (var inventoryKv in profile.CharacterInventories.Data)
+            async Task EachInventoryItem(DestinyItemComponent inventoryItem, Character ownerCharacter = default)
             {
-                var characterId = inventoryKv.Key;
-                var inventory = inventoryKv.Value;
+                var bounty = await ItemFromItemComponent(inventoryItem, profile, ownerCharacter);
 
-                if (characterId != activeCharacter.CharacterId.ToString())
+                if (bounty.ShowInPursuits && bounty.Objectives?.Count > 0)
                 {
-                    continue;
+                    bounties.Add(bounty);
                 }
+            }
+
+            async Task EachCharacterInventory(string characterId, DestinyInventoryComponent inventory)
+            {
+                if (characterId != activeCharacter.CharacterId.ToString())
+                    return;
 
                 var character = new Character { CharacterComponent = profile.Characters.Data[characterId] };
                 await character.PopulateDefinition();
 
                 foreach (var inventoryItem in inventory.Items)
-                {
-                    if (inventoryItem.BucketHash != PersuitsBucketHash)
-                        continue;
-
-                    var bounty = await ItemFromItemComponent(inventoryItem, profile, character);
-
-                    if (bounty.Objectives?.Count > 0)
-                    {
-                        bounties.Add(bounty);
-                    }
-                }
+                    await EachInventoryItem(inventoryItem, character);
             }
 
-            //foreach (var inventoryItem in profile.ProfileInventory.Data.Items)
-            //{
-            //    var bounty = await ItemFromItemComponent(inventoryItem, profile);
+            foreach (var kv in profile.CharacterInventories.Data)
+                await EachCharacterInventory(kv.Key, kv.Value);
 
-            //    if (bounty.Objectives?.Count > 0 && (addCompletedBounties || !bounty.IsCompleted))
-            //    {
-            //        bounties.Add(bounty);
-            //    }
-            //}
+            foreach (var kv in profile.CharacterEquipment.Data)
+                await EachCharacterInventory(kv.Key, kv.Value);
+
+            foreach (var inventoryItem in profile.ProfileInventory.Data.Items)
+                await EachInventoryItem(inventoryItem);
 
             return bounties;
         }

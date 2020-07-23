@@ -241,7 +241,7 @@
                     HorizontalAlignment="Left"
                     FontSize="13"
                     MaxLines="2"
-                    Text="{x:Bind DisplayProperties.Description}"
+                    Text="{x:Bind DisplayProperties.Description, Converter={StaticResource DestinySymbolConverter}}"
                     TextTrimming="WordEllipsis"
                     TextWrapping="WrapWholeWords" />
             </StackPanel>

@@ -428,8 +428,15 @@ namespace GhostOverlay
 
         public static async Task<DestinyInventoryItemDefinition> GetInventoryItem(long hash)
         {
-            return await GetDefinition<DestinyInventoryItemDefinition>(
+            var item = await GetDefinition<DestinyInventoryItemDefinition>(
                 "SELECT json FROM DestinyInventoryItemDefinition WHERE id = @Hash;", hash);
+
+            if (item.TraitIds?.Contains("item_type.armor") ?? false)
+            {
+                item.TraitIds = new List<string>() { "__custom.solstice" };
+            }
+
+            return item;
         }
 
         public static async Task<DestinyObjectiveDefinition> GetObjective(long hash)
