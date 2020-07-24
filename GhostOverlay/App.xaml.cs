@@ -170,7 +170,7 @@ namespace GhostOverlay
 
             if (appRootFrame.Content == null)
             {
-                appRootFrame.Navigate(AppState.Data.TokenData.IsValid() ? typeof(WidgetSettingsView) : typeof(MainPage));
+                appRootFrame.Navigate(AppState.Data.TokenData.IsValid() ? typeof(WidgetMainView) : typeof(MainPage));
             }
 
             // Ensure the current window is active

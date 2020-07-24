@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using GhostSharper.Models;
@@ -6,12 +8,28 @@ using GhostSharper.Models;
 namespace GhostOverlay
 {
 
-    public class Objective
+    public class Objective : INotifyPropertyChanged
     {
         public DestinyObjectiveDefinition Definition =
             new DestinyObjectiveDefinition();
 
-        public DestinyObjectiveProgress Progress;
+        private DestinyObjectiveProgress progressBacking;
+        public DestinyObjectiveProgress Progress
+        {
+            get => progressBacking;
+            set
+            {
+                if (!value.Equals(progressBacking))
+                {
+                    progressBacking = value;
+                    OnPropertyChanged();
+
+                    // TODO: do we have a better way than manually keeping track?
+                    OnPropertyChanged($"Visibility");
+                    OnPropertyChanged($"CompletionPercent");
+                }
+            }
+        }
 
         public Visibility Visibility => (Progress.Progress == 0 && Progress.CompletionValue == 0)
             ? Visibility.Collapsed
@@ -39,6 +57,13 @@ namespace GhostOverlay
             Definition = await Definitions.GetObjective(Progress.ObjectiveHash);
 
             return Definition;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 

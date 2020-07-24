@@ -25,8 +25,8 @@ namespace GhostOverlay.Models
         public abstract string SortValue { get; }
         public string Subtitle => "";
         public abstract string GroupByKey { get; }
-        public event PropertyChangedEventHandler PropertyChanged;
 
+        public event PropertyChangedEventHandler PropertyChanged;
         public virtual void NotifyPropertyChanged(string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

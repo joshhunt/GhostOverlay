@@ -23,6 +23,7 @@ using Windows.UI.Xaml.Navigation;
 using GhostOverlay.Models;
 using GhostSharper.Models;
 using Microsoft.Gaming.XboxGameBar;
+using Microsoft.Toolkit.Collections;
 
 namespace GhostOverlay
 {
@@ -42,6 +43,7 @@ namespace GhostOverlay
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         private readonly List<ITrackable> Tracked = new List<ITrackable>();
+        private readonly ObservableGroupedCollection<string, ITrackable> TrackedSource = new ObservableGroupedCollection<string, ITrackable>();
 
         private bool _isBustingProfileRequests;
         private bool IsBustingProfileRequests
@@ -282,6 +284,7 @@ namespace GhostOverlay
             var characters = new Dictionary<long, Character>();
             var toCleanup = new List<TrackedEntry>();
             var TrackedEntriesCopyOf = AppState.Data.TrackedEntries.ToList();
+            var trackedDict = new Dictionary<string, TrackedEntry>();
 
             Tracked.Clear();
 
@@ -307,6 +310,7 @@ namespace GhostOverlay
 
                 if (trackable != null && (trackable is DynamicTrackable ||
                                           (trackable.Objectives != null && trackable.Objectives.Count > 0)))
+                    // TODO: add to OGC here rather than elsewhere in the list
                     Tracked.Add(trackable);
                 else if (trackedEntry.Type != TrackedEntryType.DynamicTrackable)
                 {
@@ -314,21 +318,110 @@ namespace GhostOverlay
                     toCleanup.Add(trackedEntry);
                 }
             }
+            
+            Tracked.ForEach(trackable =>
+            {
+                trackedDict[trackable.TrackedEntry.UniqueKey] = trackable.TrackedEntry;
+
+                var targetGroup = TrackedSource.FirstOrDefault(group => group.Key == trackable.GroupByKey);
+                if (targetGroup is null)
+                {
+                    TrackedSource.Add(new ObservableGroup<string, ITrackable>(trackable.GroupByKey, new[] { trackable }));
+                }
+                else
+                {
+                    var existingTrackable = targetGroup.FirstOrDefault(v => v.TrackedEntry.UniqueKey == trackable.TrackedEntry.UniqueKey);
+
+                    if (existingTrackable is null)
+                    {
+                        targetGroup.Add(trackable);
+                    }
+                    else
+                    {
+                        // TODO: make it work for Triumphs and DynamicTrackables
+                        if (existingTrackable is Item existingItem)
+                        {
+                            existingItem.UpdateObjectives(trackable.Objectives);
+                        }
+                    }
+                }
+            });
+
+            // TODO: find a better way to do this?
+
+            var toRemove = new List<ITrackable>();
+            foreach (var observableGroup in TrackedSource)
+            {
+                foreach (var trackable in observableGroup)
+                {
+                    if (!trackedDict.ContainsKey(trackable.TrackedEntry.UniqueKey))
+                    {
+                        toRemove.Add(trackable);
+                    }
+                }
+            }
+
+            toRemove.ForEach(trackable =>
+            {
+                var selectedGroup = TrackedSource.FirstOrDefault(group => group.Key == trackable.GroupByKey);
+                if (selectedGroup != null)
+                {
+                    selectedGroup.Remove(trackable);
+                    if (!selectedGroup.Any())
+                    {
+                        TrackedSource.Remove(selectedGroup);
+                    }
+                }
+            });
+
+            toCleanup.ForEach(trackedEntry =>
+            {
+                Log.Info("want to remove {v} {v2}", trackedEntry, trackedEntry.UniqueKey);
+
+                var selectedGroup = TrackedSource.FirstOrDefault(group => group.Any(vv =>
+                {
+                    var matches = vv.TrackedEntry.UniqueKey == trackedEntry.UniqueKey;
+                    Log.Info("finding group, does {v1} match {v2}: {v3}", vv.TrackedEntry.UniqueKey, trackedEntry.UniqueKey, matches);
+                    return matches;
+                }) );
+                Log.Info("group {v}", selectedGroup);
+
+                if (selectedGroup != null)
+                {
+                    Log.Info("group isnt null");
+                    // TODO: we're iterating over the groups twice. bad bad
+                    var removeIndex = -1;
+
+                    int index = 0;
+                    foreach (var item in selectedGroup)
+                    {
+                        if (item.TrackedEntry.UniqueKey == trackedEntry.UniqueKey)
+                        {
+                            removeIndex = index;
+                            break;
+                        }
+
+                        index++;
+                    }
+
+
+                    selectedGroup.RemoveAt(removeIndex);
+
+                    if (!selectedGroup.Any())
+                    {
+                        // The group is empty. We can remove it.
+                        TrackedSource.Remove(selectedGroup);
+                    }
+                }
+            });
+
 
             Log.Info("AppState.Data.TrackedEntries before cleanup {v}", AppState.Data.TrackedEntries.Count);
             AppState.Data.TrackedEntries.RemoveAll(toCleanup.Contains);
             AppState.SaveTrackedEntries(AppState.Data.TrackedEntries);
             Log.Info("AppState.Data.TrackedEntries after cleanup {v}", AppState.Data.TrackedEntries.Count);
 
-            var groupedBounties =
-                from t in Tracked
-                orderby t.SortValue
-                group t by t.GroupByKey
-                into g
-                select g;
-
             SetVisualState(Tracked.Count == 0 ? VisualState.Empty : VisualState.None);
-            TrackedBountiesCollection.Source = groupedBounties;
         }
 
         private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyInventoryItemDefinition itemDefinition, DestinyProfileResponse profile)

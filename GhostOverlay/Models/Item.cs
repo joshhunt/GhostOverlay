@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using GhostSharper.Models;
 
@@ -25,6 +26,7 @@ namespace GhostOverlay.Models
         public DestinyDisplayPropertiesDefinition DisplayProperties => Definition.DisplayProperties;
         public List<Objective> Objectives { get; set; }
         public Character OwnerCharacter;
+
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
 
         public bool ShowDescription =>
@@ -59,6 +61,24 @@ namespace GhostOverlay.Models
         {
             Definition = await Definitions.GetInventoryItem(ItemHash);
             return Definition;
+        }
+
+        public void UpdateObjectives(List<Objective> newObjectives)
+        {
+            // Update the existing items
+            Objectives.ForEach(existingObjective =>
+            {
+                // TODO: handle if the objective is removed???
+                var newObjective = newObjectives.Find(v =>
+                    v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
+
+                existingObjective.Progress = newObjective.Progress;
+            });
+
+            // TODO: only raise value if changed?
+            OnPropertyChanged($"IsCompleted");
+            OnPropertyChanged($"ShowDescription");
+            OnPropertyChanged($"SortValue");
         }
 
         public static async Task<Item> ItemFromItemComponent(DestinyItemComponent item, DestinyProfileResponse profile, Character ownerCharacter = default)
@@ -108,7 +128,6 @@ namespace GhostOverlay.Models
             return bounty;
         }
 
-
         public static async Task<List<Item>> ItemsFromProfile(DestinyProfileResponse profile, Character activeCharacter)
         {
             var bounties = new List<Item>();
@@ -149,7 +168,13 @@ namespace GhostOverlay.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [Obsolete("Use OnPropertyChanged instead")]
         public virtual void NotifyPropertyChanged(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

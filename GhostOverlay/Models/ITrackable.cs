@@ -17,6 +17,8 @@ namespace GhostOverlay.Models
         string SortValue { get; }
         string Subtitle { get; }
         bool ShowDescription { get; }
+
+        [Obsolete("Implement and use OnPropertyChanged instead")]
         void NotifyPropertyChanged(string fieldName);
     }
 }

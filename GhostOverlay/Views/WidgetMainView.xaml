@@ -17,7 +17,7 @@
                 <local:TemplatesResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
 
-            <CollectionViewSource x:Name="TrackedBountiesCollection" IsSourceGrouped="True" />
+            <CollectionViewSource x:Name="TrackedBountiesCollection" IsSourceGrouped="True" Source="{x:Bind TrackedSource}" />
 
             <DataTemplate x:Key="CrucibleMapTemplate" x:DataType="models:CrucibleMapTrackable">
                 <StackPanel>
@@ -55,7 +55,7 @@
 
             <DataTemplate x:DataType="models:ITrackable" x:Key="TrackableEntryTemplate">
                 <Grid
-                    Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}}"
+                    Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}, Mode=OneWay}"
                     ToolTipService.ToolTip="{x:Bind DisplayProperties.Description}">
 
                     <Grid.ColumnDefinitions>
@@ -95,7 +95,7 @@
                                         HorizontalAlignment="Stretch" />
 
                         <ListView
-                            Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenFalseConverter}}"
+                            Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenFalseConverter}, Mode=OneWay}"
                             IsItemClickEnabled="False"
                             IsHitTestVisible="False"
                             ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
