@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -20,8 +22,8 @@ namespace GhostOverlay
         /// </summary>
         public double HorizontalSpacing
         {
-            get { return (double)GetValue(HorizontalSpacingProperty); }
-            set { SetValue(HorizontalSpacingProperty, value); }
+            get => (double)GetValue(HorizontalSpacingProperty);
+            set => SetValue(HorizontalSpacingProperty, value);
         }
 
         /// <summary>
@@ -40,8 +42,8 @@ namespace GhostOverlay
         /// </summary>
         public double VerticalSpacing
         {
-            get { return (double)GetValue(VerticalSpacingProperty); }
-            set { SetValue(VerticalSpacingProperty, value); }
+            get => (double)GetValue(VerticalSpacingProperty);
+            set => SetValue(VerticalSpacingProperty, value);
         }
 
         /// <summary>
@@ -61,8 +63,8 @@ namespace GhostOverlay
         /// </summary>
         public Orientation Orientation
         {
-            get { return (Orientation)GetValue(OrientationProperty); }
-            set { SetValue(OrientationProperty, value); }
+            get => (Orientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
         }
 
         /// <summary>
@@ -84,8 +86,8 @@ namespace GhostOverlay
         /// </returns>
         public Thickness Padding
         {
-            get { return (Thickness)GetValue(PaddingProperty); }
-            set { SetValue(PaddingProperty, value); }
+            get => (Thickness)GetValue(PaddingProperty);
+            set => SetValue(PaddingProperty, value);
         }
 
         /// <summary>
@@ -104,8 +106,8 @@ namespace GhostOverlay
         /// </summary>
         public StretchChild StretchChild
         {
-            get { return (StretchChild)GetValue(StretchChildProperty); }
-            set { SetValue(StretchChildProperty, value); }
+            get => (StretchChild)GetValue(StretchChildProperty);
+            set => SetValue(StretchChildProperty, value);
         }
 
         /// <summary>
@@ -207,6 +209,9 @@ namespace GhostOverlay
                 var paddingEnd = new UvMeasure(Orientation, Padding.Right, Padding.Bottom);
                 var position = new UvMeasure(Orientation, Padding.Left, Padding.Top);
 
+                var measurements = new List<(UIElement, Rect)>();
+                var maxHeightForRow = new Dictionary<double, double>();
+
                 double currentV = 0;
                 void Arrange(UIElement child, bool isLast = false)
                 {
@@ -230,14 +235,16 @@ namespace GhostOverlay
                         desiredMeasure.U = parentMeasure.U - position.U;
                     }
 
+                    maxHeightForRow[position.V] = Math.Max(maxHeightForRow.GetValueOrDefault(position.V), desiredMeasure.V);
+
                     // place the item
                     if (Orientation == Orientation.Horizontal)
                     {
-                        child.Arrange(new Rect(position.U, position.V, desiredMeasure.U, desiredMeasure.V));
+                        measurements.Add((child, new Rect(position.U, position.V, desiredMeasure.U, desiredMeasure.V)));
                     }
                     else
                     {
-                        child.Arrange(new Rect(position.V, position.U, desiredMeasure.V, desiredMeasure.U));
+                        measurements.Add((child, new Rect(position.V, position.U, desiredMeasure.V, desiredMeasure.U)));
                     }
 
                     // adjust the location for the next items
@@ -252,6 +259,13 @@ namespace GhostOverlay
                 }
 
                 Arrange(Children[lastIndex], StretchChild == StretchChild.Last);
+
+                foreach (var x in measurements)
+                {
+                    var (child, rect) = x;
+                    rect.Height = maxHeightForRow[rect.Y];
+                    child.Arrange(rect);
+                }
             }
 
             return finalSize;

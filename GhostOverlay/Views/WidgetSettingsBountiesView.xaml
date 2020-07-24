@@ -32,12 +32,19 @@
                 <Setter Property="VerticalContentAlignment" Value="Top" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Margin" Value="4" />
+                <Setter Property="Padding" Value="4" />
             </Style>
         </GridView.ItemContainerStyle>
 
+        <GridView.ItemsPanel>
+            <ItemsPanelTemplate>
+                <local:EqualHeightWrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </GridView.ItemsPanel>
+
         <GridView.ItemTemplate>
             <DataTemplate x:DataType="models:Item">
-                <Grid Width="400" MaxWidth="400" MinHeight="125"
+                <Grid Width="400" MaxWidth="400" 
                       Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
