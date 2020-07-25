@@ -109,7 +109,7 @@ namespace GhostOverlay
 
         private void timer_Tick(object sender, object e)
         {
-            RaisePropertyChanged("SinceProfileUpdate");
+            OnPropertyChanged($"SinceProfileUpdate");
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -198,27 +198,20 @@ namespace GhostOverlay
             if (AppState.Data.TokenData == null || !AppState.Data.TokenData.IsValid())
             {
                 // Navigate frame to the "not logged in" view
-                if (this.Frame.CanGoBack && this.Frame.BackStack[this.Frame.BackStack.Count - 1].SourcePageType == typeof(WidgetNotAuthedView))
+                if (Frame.CanGoBack && Frame.BackStack[Frame.BackStack.Count - 1].SourcePageType == typeof(WidgetNotAuthedView))
                 {
-                    this.Frame.GoBack();
+                    Frame.GoBack();
                 }
                 else
                 {
-                    this.Frame.Navigate(typeof(WidgetNotAuthedView), widget);
+                    Frame.Navigate(typeof(WidgetNotAuthedView), widget);
                 }
             }
         }
 
         private void UpdateProfileUpdating()
         {
-            if (AppState.Data.ProfileIsUpdating)
-            {
-                ProfileUpdatingProgressRing.IsActive = true;
-            }
-            else
-            {
-                ProfileUpdatingProgressRing.IsActive = false;
-            }
+            ProfileUpdatingProgressRing.IsActive = AppState.Data.ProfileIsUpdating;
         }
 
         private void SetVisualState(VisualState state)
@@ -284,11 +277,11 @@ namespace GhostOverlay
             var profile = AppState.Data.Profile;
             var characters = new Dictionary<long, Character>();
             var toCleanup = new List<TrackedEntry>();
-            var TrackedEntriesCopyOf = AppState.Data.TrackedEntries.ToList();
+            var trackedEntriesCopyOf = AppState.Data.TrackedEntries.ToList();
 
             Tracked.Clear();
 
-            foreach (var trackedEntry in TrackedEntriesCopyOf)
+            foreach (var trackedEntry in trackedEntriesCopyOf)
             {
                 ITrackable trackable = default;
 
@@ -311,7 +304,7 @@ namespace GhostOverlay
                 if (trackable != null && (trackable is DynamicTrackable ||
                                           (trackable.Objectives != null && trackable.Objectives.Count > 0)))
                 {
-                    // TODO: add to OGC here rather than elsewhere in the list
+                    // TODO: add to OGC here rather than elsewhere in the list?
                     Tracked.Add(trackable);
                 } else if (trackedEntry.Type != TrackedEntryType.DynamicTrackable)
                 {
@@ -553,18 +546,13 @@ namespace GhostOverlay
             AppState.Data.TrackedEntries = new List<TrackedEntry>();
         }
 
-        private void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private int konamiPosition = 0;
-        private VirtualKey[] konamiKeys = { VirtualKey.Up, VirtualKey.Up, VirtualKey.Down, VirtualKey.Down, VirtualKey.Left, VirtualKey.Right, VirtualKey.Left, VirtualKey.Right, VirtualKey.B, VirtualKey.A, VirtualKey.Enter };
+        private readonly VirtualKey[] konamiKeys = { VirtualKey.Up, VirtualKey.Up, VirtualKey.Down, VirtualKey.Down, VirtualKey.Left, VirtualKey.Right, VirtualKey.Left, VirtualKey.Right, VirtualKey.B, VirtualKey.A, VirtualKey.Enter };
 
         private void Grid_KeyUp(object sender, KeyRoutedEventArgs e)
         {
@@ -591,26 +579,21 @@ namespace GhostOverlay
 
         private void ShowDescription_OnClick(object sender, RoutedEventArgs e)
         {
-            var button = sender as MenuFlyoutItem;
+            if (!(sender is MenuFlyoutItem button) || !(button.Tag is TrackedEntry trackedEntry)) return;
 
-            if (button.Tag is TrackedEntry trackedEntry)
-            {
-                var item = Tracked.FirstOrDefault(v => v.TrackedEntry == trackedEntry);
+            var item = Tracked.FirstOrDefault(v => v.TrackedEntry == trackedEntry);
+            if (item == null) return;
 
-                if (item != null)
-                {
-                    trackedEntry.ShowDescription = !(trackedEntry.ShowDescription);
-                    item.NotifyPropertyChanged("ShowDescription");
-                    AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
-                }
-            }
+            trackedEntry.ShowDescription = !(trackedEntry.ShowDescription);
+            item.NotifyPropertyChanged("ShowDescription");
+            AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
         }
 
         private async void CaptureScreenshot_OnClick(object sender, RoutedEventArgs e)
         {
             await Task.Delay(2000);
 
-            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            var rtb = new RenderTargetBitmap();
             await rtb.RenderAsync(WidgetPage);
 
             var pixelBuffer = await rtb.GetPixelsAsync();
