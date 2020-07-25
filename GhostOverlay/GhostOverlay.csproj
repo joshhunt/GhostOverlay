@@ -145,6 +145,7 @@
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ITrackable.cs" />
     <Compile Include="Models\Objective.cs" />
+    <Compile Include="Models\ObservableGroupedTrackableCollection.cs" />
     <Compile Include="Models\RemoteConfig.cs" />
     <Compile Include="Models\TimerViewModel.cs" />
     <Compile Include="Models\TrackedEntry.cs" />

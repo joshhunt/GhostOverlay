@@ -69,5 +69,10 @@ namespace GhostOverlay.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void UpdateTo(ITrackable item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

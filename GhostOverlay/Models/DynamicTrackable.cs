@@ -31,6 +31,8 @@ namespace GhostOverlay.Models
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public abstract void UpdateTo(ITrackable item);
     }
 
     class CrucibleMapTrackable : DynamicTrackable
@@ -52,6 +54,12 @@ namespace GhostOverlay.Models
         public Character OwnerCharacter;
 
         public override string GroupByKey => OwnerCharacter?.ClassName ?? "Insights";
+
+        public override void UpdateTo(ITrackable item)
+        {
+            throw new NotImplementedException();
+        }
+
         public override string SortValue => isInActivity ? "AAA" : "XXXXXXXXXXXXXX";
 
         public async Task PopulateDefinitions()

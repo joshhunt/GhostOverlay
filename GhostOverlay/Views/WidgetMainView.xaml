@@ -17,7 +17,7 @@
                 <local:TemplatesResourceDictionary />
             </ResourceDictionary.MergedDictionaries>
 
-            <CollectionViewSource x:Name="TrackedBountiesCollection" IsSourceGrouped="True" Source="{x:Bind TrackedSource}" />
+            <CollectionViewSource x:Name="TrackedBountiesCollection" IsSourceGrouped="True" Source="{x:Bind TrackedSource}"  />
 
             <DataTemplate x:Key="CrucibleMapTemplate" x:DataType="models:CrucibleMapTrackable">
                 <StackPanel>

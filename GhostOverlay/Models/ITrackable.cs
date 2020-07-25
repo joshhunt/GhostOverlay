@@ -5,7 +5,7 @@ using GhostSharper.Models;
 
 namespace GhostOverlay.Models
 {
-    interface ITrackable : INotifyPropertyChanged
+    public interface ITrackable : INotifyPropertyChanged
     {
         bool IsCompleted { get; }
         string GroupByKey { get; }
@@ -20,5 +20,7 @@ namespace GhostOverlay.Models
 
         [Obsolete("Implement and use OnPropertyChanged instead")]
         void NotifyPropertyChanged(string fieldName);
+
+        void UpdateTo(ITrackable item);
     }
 }

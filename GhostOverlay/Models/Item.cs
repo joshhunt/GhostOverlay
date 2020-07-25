@@ -63,24 +63,6 @@ namespace GhostOverlay.Models
             return Definition;
         }
 
-        public void UpdateObjectives(List<Objective> newObjectives)
-        {
-            // Update the existing items
-            Objectives.ForEach(existingObjective =>
-            {
-                // TODO: handle if the objective is removed???
-                var newObjective = newObjectives.Find(v =>
-                    v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
-
-                existingObjective.Progress = newObjective.Progress;
-            });
-
-            // TODO: only raise value if changed?
-            OnPropertyChanged($"IsCompleted");
-            OnPropertyChanged($"ShowDescription");
-            OnPropertyChanged($"SortValue");
-        }
-
         public static async Task<Item> ItemFromItemComponent(DestinyItemComponent item, DestinyProfileResponse profile, Character ownerCharacter = default)
         {
             var uninstancedObjectivesData =
@@ -177,6 +159,27 @@ namespace GhostOverlay.Models
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void UpdateTo(ITrackable newTrackable)
+        {
+            if (newTrackable is Item newItem)
+            {
+                // Update the existing objectives
+                Objectives.ForEach(existingObjective =>
+                {
+                    // TODO: handle if the objective is removed???
+                    var newObjective = newItem.Objectives.Find(v =>
+                        v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
+
+                    existingObjective.Progress = newObjective.Progress;
+                });
+
+                // TODO: only raise value if changed?
+                OnPropertyChanged($"IsCompleted");
+                OnPropertyChanged($"ShowDescription");
+                OnPropertyChanged($"SortValue");
+            }
         }
     }
 }

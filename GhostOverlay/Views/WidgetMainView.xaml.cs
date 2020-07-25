@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -284,7 +285,6 @@ namespace GhostOverlay
             var characters = new Dictionary<long, Character>();
             var toCleanup = new List<TrackedEntry>();
             var TrackedEntriesCopyOf = AppState.Data.TrackedEntries.ToList();
-            var trackedDict = new Dictionary<string, TrackedEntry>();
 
             Tracked.Clear();
 
@@ -310,111 +310,17 @@ namespace GhostOverlay
 
                 if (trackable != null && (trackable is DynamicTrackable ||
                                           (trackable.Objectives != null && trackable.Objectives.Count > 0)))
+                {
                     // TODO: add to OGC here rather than elsewhere in the list
                     Tracked.Add(trackable);
-                else if (trackedEntry.Type != TrackedEntryType.DynamicTrackable)
+                } else if (trackedEntry.Type != TrackedEntryType.DynamicTrackable)
                 {
                     Log.Info("remove {trackedEntry}", trackedEntry);
                     toCleanup.Add(trackedEntry);
                 }
             }
-            
-            Tracked.ForEach(trackable =>
-            {
-                trackedDict[trackable.TrackedEntry.UniqueKey] = trackable.TrackedEntry;
 
-                var targetGroup = TrackedSource.FirstOrDefault(group => group.Key == trackable.GroupByKey);
-                if (targetGroup is null)
-                {
-                    TrackedSource.Add(new ObservableGroup<string, ITrackable>(trackable.GroupByKey, new[] { trackable }));
-                }
-                else
-                {
-                    var existingTrackable = targetGroup.FirstOrDefault(v => v.TrackedEntry.UniqueKey == trackable.TrackedEntry.UniqueKey);
-
-                    if (existingTrackable is null)
-                    {
-                        targetGroup.Add(trackable);
-                    }
-                    else
-                    {
-                        // TODO: make it work for Triumphs and DynamicTrackables
-                        if (existingTrackable is Item existingItem)
-                        {
-                            existingItem.UpdateObjectives(trackable.Objectives);
-                        }
-                    }
-                }
-            });
-
-            // TODO: find a better way to do this?
-
-            var toRemove = new List<ITrackable>();
-            foreach (var observableGroup in TrackedSource)
-            {
-                foreach (var trackable in observableGroup)
-                {
-                    if (!trackedDict.ContainsKey(trackable.TrackedEntry.UniqueKey))
-                    {
-                        toRemove.Add(trackable);
-                    }
-                }
-            }
-
-            toRemove.ForEach(trackable =>
-            {
-                var selectedGroup = TrackedSource.FirstOrDefault(group => group.Key == trackable.GroupByKey);
-                if (selectedGroup != null)
-                {
-                    selectedGroup.Remove(trackable);
-                    if (!selectedGroup.Any())
-                    {
-                        TrackedSource.Remove(selectedGroup);
-                    }
-                }
-            });
-
-            toCleanup.ForEach(trackedEntry =>
-            {
-                Log.Info("want to remove {v} {v2}", trackedEntry, trackedEntry.UniqueKey);
-
-                var selectedGroup = TrackedSource.FirstOrDefault(group => group.Any(vv =>
-                {
-                    var matches = vv.TrackedEntry.UniqueKey == trackedEntry.UniqueKey;
-                    Log.Info("finding group, does {v1} match {v2}: {v3}", vv.TrackedEntry.UniqueKey, trackedEntry.UniqueKey, matches);
-                    return matches;
-                }) );
-                Log.Info("group {v}", selectedGroup);
-
-                if (selectedGroup != null)
-                {
-                    Log.Info("group isnt null");
-                    // TODO: we're iterating over the groups twice. bad bad
-                    var removeIndex = -1;
-
-                    int index = 0;
-                    foreach (var item in selectedGroup)
-                    {
-                        if (item.TrackedEntry.UniqueKey == trackedEntry.UniqueKey)
-                        {
-                            removeIndex = index;
-                            break;
-                        }
-
-                        index++;
-                    }
-
-
-                    selectedGroup.RemoveAt(removeIndex);
-
-                    if (!selectedGroup.Any())
-                    {
-                        // The group is empty. We can remove it.
-                        TrackedSource.Remove(selectedGroup);
-                    }
-                }
-            });
-
+            TrackedSource.SetTrackables(Tracked);
 
             Log.Info("AppState.Data.TrackedEntries before cleanup {v}", AppState.Data.TrackedEntries.Count);
             AppState.Data.TrackedEntries.RemoveAll(toCleanup.Contains);
