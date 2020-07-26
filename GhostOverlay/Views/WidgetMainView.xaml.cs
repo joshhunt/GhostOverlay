@@ -43,7 +43,6 @@ namespace GhostOverlay
 
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
-        private readonly List<ITrackable> Tracked = new List<ITrackable>();
         private readonly ObservableGroupedCollection<string, ITrackable> TrackedSource = new ObservableGroupedCollection<string, ITrackable>();
 
         private bool _isBustingProfileRequests;
@@ -276,12 +275,11 @@ namespace GhostOverlay
 
             var profile = AppState.Data.Profile;
             var characters = new Dictionary<long, Character>();
+
+            var tracked = new List<ITrackable>();
             var toCleanup = new List<TrackedEntry>();
-            var trackedEntriesCopyOf = AppState.Data.TrackedEntries.ToList();
 
-            Tracked.Clear();
-
-            foreach (var trackedEntry in trackedEntriesCopyOf)
+            foreach (var trackedEntry in AppState.Data.TrackedEntries.ToList())
             {
                 ITrackable trackable = default;
 
@@ -301,26 +299,18 @@ namespace GhostOverlay
                         break;
                 }
 
-                if (trackable != null && (trackable is DynamicTrackable ||
-                                          (trackable.Objectives != null && trackable.Objectives.Count > 0)))
-                {
-                    // TODO: add to OGC here rather than elsewhere in the list?
-                    Tracked.Add(trackable);
-                } else if (trackedEntry.Type != TrackedEntryType.DynamicTrackable)
-                {
-                    Log.Info("remove {trackedEntry}", trackedEntry);
+                if (trackable != null)
+                    tracked.Add(trackable);
+                else
                     toCleanup.Add(trackedEntry);
-                }
             }
 
-            TrackedSource.SetTrackables(Tracked);
+            TrackedSource.SetTrackables(tracked);
 
-            Log.Info("AppState.Data.TrackedEntries before cleanup {v}", AppState.Data.TrackedEntries.Count);
             AppState.Data.TrackedEntries.RemoveAll(toCleanup.Contains);
             AppState.SaveTrackedEntries(AppState.Data.TrackedEntries);
-            Log.Info("AppState.Data.TrackedEntries after cleanup {v}", AppState.Data.TrackedEntries.Count);
 
-            SetVisualState(Tracked.Count == 0 ? VisualState.Empty : VisualState.None);
+            SetVisualState(tracked.Count == 0 ? VisualState.Empty : VisualState.None);
         }
 
         private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyInventoryItemDefinition itemDefinition, DestinyProfileResponse profile)
@@ -450,7 +440,9 @@ namespace GhostOverlay
                 }
             }
 
-            return newTrackedItem;
+            return newTrackedItem.Objectives?.Count == 0
+                ? default
+                : newTrackedItem;
         }
 
 
@@ -472,6 +464,11 @@ namespace GhostOverlay
             var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
                 ? triumph.Record.IntervalObjectives
                 : (triumph.Record?.Objectives ?? new List<DestinyObjectiveProgress>());
+
+            if (objectives.Count == 0)
+            {
+                return default;
+            }
 
             foreach (var objectiveProgress in objectives)
             {
@@ -533,9 +530,7 @@ namespace GhostOverlay
 
         private void UntrackItem_OnClick(object sender, RoutedEventArgs e)
         {
-            var button = sender as MenuFlyoutItem;
-
-            if (button.Tag is TrackedEntry trackedEntry)
+            if (sender is MenuFlyoutItem button && button.Tag is TrackedEntry trackedEntry)
             {
                 RemoveTrackedEntry(trackedEntry);
             }
@@ -581,7 +576,7 @@ namespace GhostOverlay
         {
             if (!(sender is MenuFlyoutItem button) || !(button.Tag is TrackedEntry trackedEntry)) return;
 
-            var item = Tracked.FirstOrDefault(v => v.TrackedEntry == trackedEntry);
+            var item = TrackedSource.FindTrackable(trackedEntry.UniqueKey);
             if (item == null) return;
 
             trackedEntry.ShowDescription = !(trackedEntry.ShowDescription);

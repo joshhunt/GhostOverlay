@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml;
 using ColorCode.Common;
@@ -59,6 +60,24 @@ namespace GhostOverlay.Models
 
             foreach (var group in source)
                 group.SortTrackables();
+        }
+
+        public static ITrackable FindTrackable(
+            this ObservableGroupedCollection<string, ITrackable> source,
+            string uniqueKey)
+        {
+            foreach (var group in source)
+            {
+                foreach (var trackable in group)
+                {
+                    if (trackable.TrackedEntry.UniqueKey == uniqueKey)
+                    {
+                        return trackable;
+                    }
+                }
+            }
+
+            return default;
         }
 
         public static void SortTrackables(this ObservableGroup<string, ITrackable> group)
