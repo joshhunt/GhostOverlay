@@ -11,6 +11,10 @@ namespace GhostOverlay.Models
 {
     public class Triumph : ITrackable
     {
+        #pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 67
+
         public TrackedEntry TrackedEntry { get; set; }
         public DestinyRecordDefinition Definition;
         public DestinyRecordComponent Record;
@@ -63,16 +67,30 @@ namespace GhostOverlay.Models
             return completedCharacterRecord ?? characterRecords.FirstOrDefault();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public virtual void NotifyPropertyChanged(string propertyName = null)
+        public void UpdateTo(ITrackable newTrackable)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+            if (!(newTrackable is Triumph newTriumph)) return;
 
-        public void UpdateTo(ITrackable item)
-        {
-            throw new NotImplementedException();
+            Definition = newTriumph.Definition;
+            Record = newTriumph.Record;
+
+            // If the amount of objectives stays the same, update them in place. Otherwise, outright replace them all.
+            // Note: This doesn't handle if the count stays the same, but one objective is removed and other is added,
+            // but I don't think that'll ever happen in real life
+            if (Objectives.Count == newTriumph.Objectives.Count)
+            {
+                Objectives.ForEach(existingObjective =>
+                {
+                    var newObjective = newTriumph.Objectives.Find(v =>
+                        v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
+
+                    existingObjective.Progress = newObjective.Progress;
+                });
+            }
+            else
+            {
+                Objectives = newTriumph.Objectives;
+            }
         }
     }
 }

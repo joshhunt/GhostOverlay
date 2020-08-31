@@ -354,7 +354,7 @@ namespace GhostOverlay
             {
                 case DynamicTrackableType.CrucibleMap:
                     Log.Info("  Dynamic trackable is a DynamicTrackableType.CrucibleMap");
-                    var crucibleMapTracker = await CrucibleMapTrackable.CreateFromProfile(profile);
+                    var crucibleMapTracker = await CrucibleMapTrackable.CreateFromProfile(profile, trackedEntry);
                     Log.Info("  crucibleMapTracker: {crucibleMapTracker}", crucibleMapTracker);
                     return crucibleMapTracker;
             }
@@ -440,7 +440,7 @@ namespace GhostOverlay
                 }
             }
 
-            return newTrackedItem.Objectives?.Count == 0
+            return newTrackedItem?.Objectives?.Count == 0
                 ? default
                 : newTrackedItem;
         }
@@ -461,17 +461,24 @@ namespace GhostOverlay
 
             if (triumph.Record == null) return default;
 
-            var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
-                ? triumph.Record.IntervalObjectives
-                : (triumph.Record?.Objectives ?? new List<DestinyObjectiveProgress>());
+            var objectives = triumph.Record?.Objectives ?? new List<DestinyObjectiveProgress>();
 
-            if (objectives.Count == 0)
-            {
-                return default;
-            }
+            var hasIntervalObjectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0;
+            var intervalObjectives = hasIntervalObjectives
+                ? triumph.Record.IntervalObjectives
+                : new List<DestinyObjectiveProgress>();
+            var allIntervalsComplete = intervalObjectives.All(v => v.Complete);
+
+            var remainingIntervalObjectives = intervalObjectives.Where(v => !v.Complete);
+
+            objectives.AddRange(remainingIntervalObjectives);
+            if (hasIntervalObjectives && allIntervalsComplete)
+                objectives.Add(intervalObjectives.LastOrDefault());
 
             foreach (var objectiveProgress in objectives)
             {
+                if (objectiveProgress == null) continue;
+
                 var obj = new Objective { Progress = objectiveProgress };
                 await obj.PopulateDefinition();
                 triumph.Objectives.Add(obj);
@@ -580,7 +587,6 @@ namespace GhostOverlay
             if (item == null) return;
 
             trackedEntry.ShowDescription = !(trackedEntry.ShowDescription);
-            item.NotifyPropertyChanged("ShowDescription");
             AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
         }
 

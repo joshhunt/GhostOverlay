@@ -1,4 +1,5 @@
-﻿using GhostOverlay.Models;
+﻿using System.ComponentModel;
+using GhostOverlay.Models;
 using GhostSharper.Models;
 using Newtonsoft.Json;
 
@@ -11,8 +12,13 @@ namespace GhostOverlay
         DynamicTrackable = 2,
     }
 
-    public class TrackedEntry
+
+    public class TrackedEntry : INotifyPropertyChanged
     {
+        #pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 67
+
         [JsonProperty("h")] public long Hash;
         [JsonProperty("d")] public DynamicTrackableType DynamicTrackableType;
         [JsonProperty("i")] public long InstanceId;

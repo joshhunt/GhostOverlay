@@ -18,9 +18,6 @@ namespace GhostOverlay.Models
         string Subtitle { get; }
         bool ShowDescription { get; }
 
-        [Obsolete("Implement and use OnPropertyChanged instead")]
-        void NotifyPropertyChanged(string fieldName);
-
         void UpdateTo(ITrackable item);
     }
 }

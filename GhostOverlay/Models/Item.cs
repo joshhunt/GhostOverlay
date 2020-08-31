@@ -10,6 +10,10 @@ namespace GhostOverlay.Models
 {
     public class Item : ITrackable
     {
+        #pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 67
+
         public static uint ArmourCategoryHash = 20;
         public static long PersuitsBucketHash = 1345459588;
 
@@ -148,37 +152,29 @@ namespace GhostOverlay.Models
             return bounties;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [Obsolete("Use OnPropertyChanged instead")]
-        public virtual void NotifyPropertyChanged(string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         public void UpdateTo(ITrackable newTrackable)
         {
-            if (newTrackable is Item newItem)
+            if (!(newTrackable is Item newItem)) return;
+
+            BucketHash = newItem.BucketHash;
+            Definition = newItem.Definition;
+
+            // If the amount of objectives stays the same, update them in place. Otherwise, outright replace them all.
+            // Note: This doesn't handle if the count stays the same, but one objective is removed and other is added,
+            // but I don't think that'll ever happen in real life
+            if (Objectives.Count == newItem.Objectives.Count)
             {
-                // Update the existing objectives
                 Objectives.ForEach(existingObjective =>
                 {
-                    // TODO: handle if the objective is removed???
                     var newObjective = newItem.Objectives.Find(v =>
                         v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
 
                     existingObjective.Progress = newObjective.Progress;
                 });
-
-                // TODO: only raise value if changed?
-                OnPropertyChanged($"IsCompleted");
-                OnPropertyChanged($"ShowDescription");
-                OnPropertyChanged($"SortValue");
+            }
+            else
+            {
+                Objectives = newItem.Objectives;
             }
         }
     }
