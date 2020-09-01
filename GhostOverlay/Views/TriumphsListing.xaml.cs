@@ -86,7 +86,7 @@ namespace GhostOverlay.Views
                     Definition = recordDefinition,
                     Hash = childRecord.RecordHash,
                     Objectives = new List<Objective>(),
-                    Record = Triumph.FindRecordInProfileOrDefault(childRecord.RecordHash.ToString(), profile)
+                    Record = Triumph.FindRecordInProfileOrDefault(childRecord.RecordHash.ToString(), profile),
                 };
                 
                 if (triumph.Record == null)

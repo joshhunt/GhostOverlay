@@ -38,8 +38,8 @@
                         </Grid>
 
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Medium" FontSize="20" Text="{x:Bind CurrentActivityDefinition.DisplayProperties.Name}"></TextBlock>
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" Text="{x:Bind CurrentActivityModeDefinition.DisplayProperties.Name}"></TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Medium" FontSize="20" Text="{x:Bind CurrentActivityDefinition.DisplayProperties.Name, Mode=OneWay}"></TextBlock>
+                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" Text="{x:Bind CurrentActivityModeDefinition.DisplayProperties.Name, Mode=OneWay}"></TextBlock>
                         </StackPanel>
                     </Grid>
 
@@ -56,7 +56,7 @@
             <DataTemplate x:DataType="models:ITrackable" x:Key="TrackableEntryTemplate">
                 <Grid
                     Opacity="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletionOpacity}, Mode=OneWay}"
-                    ToolTipService.ToolTip="{x:Bind DisplayProperties.Description}">
+                    ToolTipService.ToolTip="{x:Bind DisplayProperties.Description, Mode=OneWay}">
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -188,7 +188,7 @@
                             <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Stretch">
 
-                                <TextBlock Text="{Binding Key}"
+                                <TextBlock Text="{Binding Key.Title, Mode=OneWay}"
                                            HorizontalAlignment="Stretch" />
                             </StackPanel>
                         </DataTemplate>

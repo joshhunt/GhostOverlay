@@ -7,9 +7,11 @@ namespace GhostOverlay.Models
 {
     public interface ITrackable : INotifyPropertyChanged
     {
+
         bool IsCompleted { get; }
-        string GroupByKey { get; }
         DestinyDisplayPropertiesDefinition DisplayProperties { get; }
+        TrackableOwner Owner { get; set; }
+
         List<Objective> Objectives { get; set; }
         string Title { get; }
         Uri ImageUri { get; }

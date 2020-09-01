@@ -27,7 +27,7 @@ namespace GhostOverlay
         [JsonProperty("s")] public bool ShowDescription;
 
         // TODO: does this work for DynamicTrackables
-        public string UniqueKey => InstanceId == 0 ? $"{Hash}|${OwnerId}" : InstanceId.ToString();
+        public string UniqueKey => InstanceId == 0 ? $"{Hash}|{OwnerId}" : InstanceId.ToString();
 
         public static TrackedEntry FromItem(Item item)
         {
@@ -36,7 +36,7 @@ namespace GhostOverlay
                 Type = TrackedEntryType.Item,
                 Hash = item.ItemHash,
                 InstanceId = item.ItemInstanceId,
-                OwnerId = item.OwnerCharacter.CharacterComponent.CharacterId
+                OwnerId = item.Owner.CharacterComponent.CharacterId
             };
         }
 
@@ -64,7 +64,7 @@ namespace GhostOverlay
         {
             return Type == TrackedEntryType.Item && Hash == item.ItemHash &&
                    InstanceId == item.ItemInstanceId &&
-                   OwnerId == item.OwnerCharacter.CharacterComponent.CharacterId;
+                   OwnerId == item.Owner.CharacterComponent.CharacterId;
         }
 
         public bool Matches(DynamicTrackableType dynamicTrackableType)

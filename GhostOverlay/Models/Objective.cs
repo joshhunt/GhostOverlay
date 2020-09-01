@@ -10,26 +10,14 @@ namespace GhostOverlay
 
     public class Objective : INotifyPropertyChanged
     {
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
+
         public DestinyObjectiveDefinition Definition =
             new DestinyObjectiveDefinition();
 
-        private DestinyObjectiveProgress progressBacking;
-        public DestinyObjectiveProgress Progress
-        {
-            get => progressBacking;
-            set
-            {
-                if (!value.Equals(progressBacking))
-                {
-                    progressBacking = value;
-                    OnPropertyChanged();
-
-                    // TODO: do we have a better way than manually keeping track?
-                    OnPropertyChanged($"Visibility");
-                    OnPropertyChanged($"CompletionPercent");
-                }
-            }
-        }
+        public DestinyObjectiveProgress Progress { get; set; }
 
         public Visibility Visibility => (Progress.Progress == 0 && Progress.CompletionValue == 0)
             ? Visibility.Collapsed
@@ -59,11 +47,10 @@ namespace GhostOverlay
             return Definition;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public void UpdateTo(Objective newObjective)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Progress = newObjective.Progress;
+            Definition = newObjective.Definition;
         }
     }
 

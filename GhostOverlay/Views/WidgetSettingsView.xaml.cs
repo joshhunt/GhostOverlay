@@ -20,23 +20,17 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
+
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
-        public event PropertyChangedEventHandler PropertyChanged;
         private static readonly Logger Log = new Logger("WidgetSettingsView");
 
-        private readonly ObservableCollection<Character> Characters = new ObservableCollection<Character>();
+        private readonly ObservableCollection<TrackableOwner> Characters = new ObservableCollection<TrackableOwner>();
 
-        private Character _activeCharacter;
-        private Character ActiveCharacter
-        {
-            get => _activeCharacter;
-            set
-            {
-                _activeCharacter = value;
-                OnPropertyChanged();
-            }
-        }
+        private TrackableOwner ActiveCharacter { get; set; }
 
         public WidgetSettingsView()
         {
@@ -112,7 +106,7 @@ namespace GhostOverlay
             
             foreach (var destinyEntitiesCharactersDestinyCharacterComponent in charactersData.Values)
             {
-                var newCharacter = new Character
+                var newCharacter = new TrackableOwner
                 {
                     CharacterComponent = destinyEntitiesCharactersDestinyCharacterComponent,
                 };
@@ -190,11 +184,6 @@ namespace GhostOverlay
                 var widgetControl = new XboxGameBarWidgetControl(widget);
                 await widgetControl.CloseAsync("WidgetMainSettings");
             }
-        }
-
-        private void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private void CharacterSelectButtonClicked(object sender, RoutedEventArgs e)

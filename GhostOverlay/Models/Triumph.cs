@@ -15,6 +15,8 @@ namespace GhostOverlay.Models
         public event PropertyChangedEventHandler PropertyChanged;
         #pragma warning restore 67
 
+        public static TrackableOwner StaticOwner = new TrackableOwner {DummyOwnerTitle = "Triumphs"};
+
         public TrackedEntry TrackedEntry { get; set; }
         public DestinyRecordDefinition Definition;
         public DestinyRecordComponent Record;
@@ -23,8 +25,13 @@ namespace GhostOverlay.Models
         public DestinyDisplayPropertiesDefinition DisplayProperties =>
             Definition.DisplayProperties;
 
+        public TrackableOwner Owner
+        {
+            get => StaticOwner;
+            set => throw new Exception("Don't set Owner on Triumphs");
+        }
+
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
-        public string GroupByKey => "Triumphs";
 
         public bool ShowDescription =>
             !IsCompleted && (TrackedEntry.ShowDescription || AppState.Data.ShowDescriptions.Value);
@@ -84,7 +91,7 @@ namespace GhostOverlay.Models
                     var newObjective = newTriumph.Objectives.Find(v =>
                         v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
 
-                    existingObjective.Progress = newObjective.Progress;
+                    existingObjective?.UpdateTo(newObjective);
                 });
             }
             else

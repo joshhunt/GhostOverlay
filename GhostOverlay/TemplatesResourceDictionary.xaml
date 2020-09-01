@@ -98,7 +98,7 @@
                     VerticalAlignment="Top">
 
                     <Image.Source>
-                        <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                        <BitmapImage UriSource="{x:Bind ImageUri, Mode=OneWay, FallbackValue=null}" />
                     </Image.Source>
                 </Image>
 
@@ -179,7 +179,7 @@
                                x:Name="ObjectiveDescription"
                                FontSize="13"
                                TextTrimming="CharacterEllipsis"
-                               Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
+                               Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}, Mode=OneWay}"
                                FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
 
                     <TextBlock Grid.Column="1" 
@@ -220,7 +220,7 @@
                     Margin="0,0,0,0"
                     TextTrimming="CharacterEllipsis"
                     HorizontalAlignment="Left">
-                        <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="14" />
+                        <Run Text="{x:Bind Title, Mode=OneWay}" FontWeight="Medium" FontSize="14" />
                 </TextBlock>
 
                 <TextBlock
@@ -229,9 +229,9 @@
                     Margin="0,0,0,0"
                     TextTrimming="CharacterEllipsis"
                     HorizontalAlignment="Left">
-                    <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="15" />
+                    <Run Text="{x:Bind Title, Mode=OneWay}" FontWeight="Medium" FontSize="15" />
                     <Run Text="&#8203;//" FontSize="14" Foreground="#c2c2c2" />
-                    <Run Text="{x:Bind Subtitle}" FontSize="14" Foreground="#c2c2c2" />
+                    <Run Text="{x:Bind Subtitle, Mode=OneWay}" FontSize="14" Foreground="#c2c2c2" />
                 </TextBlock>
 
                 <TextBlock
@@ -241,7 +241,7 @@
                     HorizontalAlignment="Left"
                     FontSize="13"
                     MaxLines="2"
-                    Text="{x:Bind DisplayProperties.Description, Converter={StaticResource DestinySymbolConverter}}"
+                    Text="{x:Bind DisplayProperties.Description, Mode=OneWay, Converter={StaticResource DestinySymbolConverter}}"
                     TextTrimming="WordEllipsis"
                     TextWrapping="WrapWholeWords" />
             </StackPanel>

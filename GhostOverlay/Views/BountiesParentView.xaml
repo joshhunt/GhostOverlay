@@ -24,7 +24,7 @@
             <ScrollViewer>
                 <ListView
                     SelectedItem="{x:Bind SelectedTrait, Mode=OneWay}"
-                    ItemsSource="{x:Bind ItemTraits}"
+                    ItemsSource="{x:Bind itemTraits}"
                     IsItemClickEnabled="True"
                     ItemClick="OnTraitClick">
 

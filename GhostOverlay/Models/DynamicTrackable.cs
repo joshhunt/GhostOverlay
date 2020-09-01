@@ -20,6 +20,7 @@ namespace GhostOverlay.Models
 
         public bool IsCompleted { get; set; }
         public DestinyDisplayPropertiesDefinition DisplayProperties { get; set; }
+        public TrackableOwner Owner { get; set; }
         public List<Objective> Objectives { get; set; }
         public string Title { get; set; }
         public Uri ImageUri => new Uri($"https://www.bungie.net{DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
@@ -28,7 +29,6 @@ namespace GhostOverlay.Models
 
         public abstract string SortValue { get; }
         public string Subtitle => "";
-        public abstract string GroupByKey { get; }
 
         public abstract void UpdateTo(ITrackable item);
     }
@@ -49,9 +49,7 @@ namespace GhostOverlay.Models
         public bool isNotInActivity => !isInActivity;
         public Uri PGCRImageUri => CommonHelpers.BungieUri(CurrentActivityDefinition?.PgcrImage, CommonHelpers.FallbackPGCRImagePath);
 
-        public Character OwnerCharacter;
-
-        public override string GroupByKey => OwnerCharacter?.ClassName ?? "Insights";
+        public new TrackableOwner Owner { get; set; }
 
         public override string SortValue => isInActivity ? "AAA" : "XXXXXXXXXXXXXX";
 
@@ -106,8 +104,7 @@ namespace GhostOverlay.Models
 
             if (profile.Characters.Data.ContainsKey(activeCharacterId))
             {
-                tracker.OwnerCharacter = new Character { CharacterComponent = profile.Characters.Data[activeCharacterId] };
-                await tracker.OwnerCharacter.PopulateDefinition();
+                tracker.Owner = await TrackableOwner.GetTrackableOwner(profile.Characters.Data[activeCharacterId]);
             }
             
             await tracker.PopulateDefinitions();

@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using GhostOverlay.Models;
 using GhostSharper.Models;
+using PropertyChanged;
 using Serilog;
 
 namespace GhostOverlay
@@ -73,6 +74,7 @@ namespace GhostOverlay
     {
         private bool suppressNotification = false;
 
+        [SuppressPropertyChangedWarnings]
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             if (!suppressNotification)
@@ -85,8 +87,7 @@ namespace GhostOverlay
                 throw new ArgumentNullException(nameof(list));
 
             suppressNotification = true;
-
-            foreach (T item in list)
+            foreach (var item in list)
             {
                 Add(item);
             }
@@ -95,12 +96,16 @@ namespace GhostOverlay
         }
     }
 
-    public class Character
+    public class TrackableOwner
     {
         public DestinyCharacterComponent CharacterComponent;
         public DestinyClassDefinition ClassDefinition { get; set; }
         public DestinyGenderDefinition GenderDefinition { get; set; }
         public DestinyRaceDefinition RaceDefinition { get; set; }
+
+        public string DummyOwnerTitle { get; set; }
+
+        public string Title => DummyOwnerTitle ?? ClassName;
 
         public Uri EmblemBackgroundUri => CommonHelpers.BungieUri(CharacterComponent?.EmblemBackgroundPath, "/common/destiny2_content/icons/9dc4f3283ee9f9fc3d3499e9f9f1756c.jpg");
 
@@ -142,6 +147,44 @@ namespace GhostOverlay
             };
 
             await Task.WhenAll(tasks);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TrackableOwner) obj);
+        }
+
+        protected bool Equals(TrackableOwner other)
+        {
+            return DummyOwnerTitle == other.DummyOwnerTitle && CharacterId == other.CharacterId;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((DummyOwnerTitle != null ? DummyOwnerTitle.GetHashCode() : 0) * 397) ^ CharacterId.GetHashCode();
+            }
+        }
+
+        public static Dictionary<long, TrackableOwner> OwnerCache = new Dictionary<long, TrackableOwner>();
+
+        public static async Task<TrackableOwner> GetTrackableOwner(DestinyCharacterComponent characterComponent)
+        {
+            var owner = OwnerCache.GetValueOrDefault(characterComponent.CharacterId);
+
+            if (owner == null)
+            {
+                Debug.WriteLine($"{characterComponent.CharacterId} not in the owner cache, making a new TrackableOwner");
+                owner = new TrackableOwner {CharacterComponent = characterComponent};
+                OwnerCache[characterComponent.CharacterId] = owner;
+                await owner.PopulateDefinition();
+            }
+
+            return owner;
         }
     }
 

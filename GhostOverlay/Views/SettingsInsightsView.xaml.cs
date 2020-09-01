@@ -25,8 +25,11 @@ namespace GhostOverlay.Views
     /// </summary>
     public sealed partial class SettingsInsightsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-        private readonly WidgetStateChangeNotifier notifier = new WidgetStateChangeNotifier();
+#pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
+
+        private readonly WidgetStateChangeNotifier notifier = new WidgetStateChangeNotifier();
 
         private readonly Logger Log = new Logger("SettingsInsightsView");
         private bool viewIsUpdating = false;
@@ -115,16 +118,6 @@ namespace GhostOverlay.Views
             }
 
             AppState.Data.TrackedEntries = copyOf;
-        }
-
-        private void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        private void OnPropertyChangedExplicit(string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -26,17 +27,15 @@ namespace GhostOverlay.Models
 
         public TrackedEntry TrackedEntry { get; set; }
 
-        public DestinyInventoryItemDefinition Definition = new DestinyInventoryItemDefinition();
+        public DestinyInventoryItemDefinition Definition { get; set; }
         public DestinyDisplayPropertiesDefinition DisplayProperties => Definition.DisplayProperties;
         public List<Objective> Objectives { get; set; }
-        public Character OwnerCharacter;
+        public TrackableOwner Owner { get; set; }
 
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
 
         public bool ShowDescription =>
             !IsCompleted && ((TrackedEntry?.ShowDescription ?? true) || AppState.Data.ShowDescriptions.Value);
-
-        public string GroupByKey => OwnerCharacter.ClassName;
 
         public bool ShowInPursuits =>
             BucketHash == PersuitsBucketHash ||
@@ -67,7 +66,7 @@ namespace GhostOverlay.Models
             return Definition;
         }
 
-        public static async Task<Item> ItemFromItemComponent(DestinyItemComponent item, DestinyProfileResponse profile, Character ownerCharacter = default)
+        public static async Task<Item> ItemFromItemComponent(DestinyItemComponent item, DestinyProfileResponse profile, TrackableOwner ownerCharacter = default)
         {
             var uninstancedObjectivesData =
                 ownerCharacter == null
@@ -90,7 +89,7 @@ namespace GhostOverlay.Models
 
             if (objectives.Count == 0)
             {
-                return new Item();
+                return default;
             }
 
             var bounty = new Item()
@@ -98,7 +97,7 @@ namespace GhostOverlay.Models
                 ItemHash = item.ItemHash,
                 ItemInstanceId = item.ItemInstanceId,
                 BucketHash = item.BucketHash,
-                OwnerCharacter = ownerCharacter,
+                Owner = ownerCharacter,
                 Objectives = new List<Objective>()
             };
             
@@ -114,15 +113,15 @@ namespace GhostOverlay.Models
             return bounty;
         }
 
-        public static async Task<List<Item>> ItemsFromProfile(DestinyProfileResponse profile, Character activeCharacter)
+        public static async Task<List<Item>> ItemsFromProfile(DestinyProfileResponse profile, TrackableOwner activeCharacter)
         {
             var bounties = new List<Item>();
 
-            async Task EachInventoryItem(DestinyItemComponent inventoryItem, Character ownerCharacter = default)
+            async Task EachInventoryItem(DestinyItemComponent inventoryItem, TrackableOwner ownerCharacter = default)
             {
                 var bounty = await ItemFromItemComponent(inventoryItem, profile, ownerCharacter);
 
-                if (bounty.ShowInPursuits && bounty.Objectives?.Count > 0)
+                if (bounty != null && bounty.ShowInPursuits && bounty.Objectives?.Count > 0)
                 {
                     bounties.Add(bounty);
                 }
@@ -133,8 +132,7 @@ namespace GhostOverlay.Models
                 if (characterId != activeCharacter.CharacterId.ToString())
                     return;
 
-                var character = new Character { CharacterComponent = profile.Characters.Data[characterId] };
-                await character.PopulateDefinition();
+                var character = await TrackableOwner.GetTrackableOwner(profile.Characters.Data[characterId]);
 
                 foreach (var inventoryItem in inventory.Items)
                     await EachInventoryItem(inventoryItem, character);
@@ -169,13 +167,18 @@ namespace GhostOverlay.Models
                     var newObjective = newItem.Objectives.Find(v =>
                         v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
 
-                    existingObjective.Progress = newObjective.Progress;
+                    existingObjective?.UpdateTo(newObjective);
                 });
             }
             else
             {
                 Objectives = newItem.Objectives;
             }
+        }
+
+        public override string ToString()
+        {
+            return $"ITrackable.Item(ItemHash: {ItemHash}, ItemInstanceId: {ItemInstanceId}, Name: {DisplayProperties?.Name ?? "No name"})";
         }
     }
 }

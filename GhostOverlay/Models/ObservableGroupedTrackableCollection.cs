@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Windows.UI.Xaml;
 using ColorCode.Common;
@@ -15,6 +16,7 @@ namespace GhostOverlay.Models
             TKey key,
             ITrackable item)
         {
+            Debug.WriteLine($"Looking for existing item for {item}");
             var group = source.FirstOrDefault(key);
 
             if (group is null)
@@ -23,30 +25,40 @@ namespace GhostOverlay.Models
                 source.Add(group);
             }
 
-            var existingItem = group.FirstOrDefault(v => v.TrackedEntry.UniqueKey == item.TrackedEntry.UniqueKey);
+
+            Debug.WriteLine($"  finding existing item");
+            var existingItem = group.FirstOrDefault(v => {
+                var result = v.TrackedEntry.UniqueKey == item.TrackedEntry.UniqueKey;
+                Debug.WriteLine($"    does {v.TrackedEntry.UniqueKey} == {item.TrackedEntry.UniqueKey}? - {result}");
+
+                return result;
+            });
+            Debug.WriteLine($"  existingItem: {existingItem}");
 
             if (existingItem is null)
             {
+                Debug.WriteLine($"  adding item as new");
                 group.Add(item);
             }
             else
             {
+                Debug.WriteLine($"  updating existing item");
                 // TODO: investigating what replacing the item looks like
                 existingItem.UpdateTo(item);
             }
         }
 
         public static void SetTrackables(
-            this ObservableGroupedCollection<string, ITrackable> source,
-            List<ITrackable> trackables
+            this ObservableGroupedCollection<TrackableOwner, ITrackable> source,
+            List<ITrackable> newTrackablesSource
         )
         {
             var keys = new List<string>();
 
-            foreach (var trackable in trackables)
+            foreach (var trackable in newTrackablesSource)
             {
                 keys.Add(trackable.TrackedEntry.UniqueKey);
-                source.AddTrackable(trackable.GroupByKey, trackable);
+                source.AddTrackable(trackable.Owner, trackable);
             }
 
             var toRemove = (
@@ -56,14 +68,14 @@ namespace GhostOverlay.Models
                 select trackable).ToList();
 
             foreach (var trackable in toRemove)
-                source.RemoveItem(trackable.GroupByKey, trackable);
+                source.RemoveItem(trackable.Owner, trackable);
 
             foreach (var group in source)
                 group.SortTrackables();
         }
 
         public static ITrackable FindTrackable(
-            this ObservableGroupedCollection<string, ITrackable> source,
+            this ObservableGroupedCollection<TrackableOwner, ITrackable> source,
             string uniqueKey)
         {
             foreach (var group in source)
@@ -80,7 +92,7 @@ namespace GhostOverlay.Models
             return default;
         }
 
-        public static void SortTrackables(this ObservableGroup<string, ITrackable> group)
+        public static void SortTrackables(this ObservableGroup<TrackableOwner, ITrackable> group)
         {
             QuickSort(group, 0, group.Count - 1 );
         }

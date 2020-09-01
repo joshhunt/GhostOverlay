@@ -25,7 +25,7 @@
             <Setter Property="TabNavigation" Value="Once" />
         </Style>
 
-        <DataTemplate x:Key="Hello" x:DataType="local:Character">
+        <DataTemplate x:Key="Hello" x:DataType="local:TrackableOwner">
             <TextBlock />
         </DataTemplate>
     </Page.Resources>
@@ -123,7 +123,7 @@
 
                             <muxc:ItemsRepeater ItemsSource="{x:Bind Characters}">
                                 <muxc:ItemsRepeater.ItemTemplate>
-                                    <DataTemplate x:DataType="local:Character">
+                                    <DataTemplate x:DataType="local:TrackableOwner">
                                         <Button
                                             Style="{ThemeResource ButtonRevealStyle}"
                                             VerticalAlignment="Stretch"

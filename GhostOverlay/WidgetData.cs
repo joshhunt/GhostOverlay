@@ -157,8 +157,8 @@ namespace GhostOverlay
             }
         }
 
-        private Character _activeCharacter;
-        public Character ActiveCharacter
+        private TrackableOwner _activeCharacter;
+        public TrackableOwner ActiveCharacter
         {
             get => _activeCharacter;
 

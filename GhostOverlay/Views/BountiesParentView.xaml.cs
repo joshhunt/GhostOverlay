@@ -18,6 +18,10 @@ namespace GhostOverlay.Views
     /// </summary>
     public sealed partial class BountiesParentView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
+
         private static readonly Logger Log = new Logger("BountiesParentView");
         private static readonly string[] IgnoreTraits = {"item_type.bounty"};
 
@@ -34,28 +38,16 @@ namespace GhostOverlay.Views
             "quest.past"
         };
 
-        private readonly ObservableCollection<ItemTrait> ItemTraits = new ObservableCollection<ItemTrait>();
+        private readonly ObservableCollection<ItemTrait> itemTraits = new ObservableCollection<ItemTrait>();
 
         private readonly WidgetStateChangeNotifier notifier = new WidgetStateChangeNotifier();
 
-        private ItemTrait _selectedTrait;
+        private ItemTrait SelectedTrait { get; set; }
 
         public BountiesParentView()
         {
             InitializeComponent();
         }
-
-        private ItemTrait SelectedTrait
-        {
-            get => _selectedTrait;
-            set
-            {
-                _selectedTrait = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public void HandleMessage(WidgetPropertyChanged message)
         {
@@ -89,7 +81,7 @@ namespace GhostOverlay.Views
 
             var bountiesForCharacter = await Item.ItemsFromProfile(profile, AppState.Data.ActiveCharacter);
 
-            ItemTraits.Clear();
+            itemTraits.Clear();
 
             var traits = bountiesForCharacter
                 .SelectMany(v => v.Definition?.TraitIds ?? new List<string>())
@@ -107,16 +99,16 @@ namespace GhostOverlay.Views
 
                 var trait = new ItemTrait {TraitId = traitId};
                 await trait.PopulateDefinition();
-                ItemTraits.Add(trait);
+                itemTraits.Add(trait);
             }
 
             // If the user has changed character, we'll have a new list of traits for the new character
             // however SelectedTrait will still be from the old character, so we go through and find
             // a new matching trait to set as active
-            if (SelectedTrait != null && !ItemTraits.Contains(SelectedTrait))
+            if (SelectedTrait != null && !itemTraits.Contains(SelectedTrait))
             {
-                var newSelectedTrait = ItemTraits.FirstOrDefault(v => v.TraitId == SelectedTrait.TraitId) ??
-                                ItemTraits.First();
+                var newSelectedTrait = itemTraits.FirstOrDefault(v => v.TraitId == SelectedTrait.TraitId) ??
+                                itemTraits.First();
 
                 if (newSelectedTrait.TraitId != SelectedTrait.TraitId)
                 {
@@ -125,25 +117,19 @@ namespace GhostOverlay.Views
 
                 SelectedTrait = newSelectedTrait;
             }
-            else if (SelectedTrait == null || !ItemTraits.Contains(SelectedTrait))
+            else if (SelectedTrait == null || !itemTraits.Contains(SelectedTrait))
             {
-                SelectedTrait = ItemTraits.First();
+                SelectedTrait = itemTraits.First();
                 BountiesFrame.Navigate(typeof(WidgetSettingsBountiesView), SelectedTrait);
             }
         }
 
         private void OnTraitClick(object sender, ItemClickEventArgs e)
         {
-            if (e.ClickedItem is ItemTrait trait)
-            {
-                BountiesFrame.Navigate(typeof(WidgetSettingsBountiesView), trait);
-                SelectedTrait = trait;
-            }
-        }
+            if (!(e.ClickedItem is ItemTrait trait)) return;
 
-        private void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            BountiesFrame.Navigate(typeof(WidgetSettingsBountiesView), trait);
+            SelectedTrait = trait;
         }
     }
 }

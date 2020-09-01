@@ -15,9 +15,12 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsTriumphsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
+
         private static readonly Logger Log = new Logger("WidgetSettingsTriumphsView");
         private readonly WidgetStateChangeNotifier notifier = new WidgetStateChangeNotifier();
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private readonly RangeObservableCollection<PresentationNode> secondLevelNodes =
             new RangeObservableCollection<PresentationNode>();
@@ -27,40 +30,9 @@ namespace GhostOverlay
 
         private bool SkipSecondLevel = false;
 
-        // cleaned up stuff
-        private PresentationNode _selectedTopLevelNode;
-        private PresentationNode _selectedSecondLevelNode;
-        private PresentationNode _selectedThirdLevelNode;
-
-        private PresentationNode SelectedTopLevelNode
-        {
-            get => _selectedTopLevelNode;
-            set
-            {
-                _selectedTopLevelNode = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private PresentationNode SelectedSecondLevelNode
-        {
-            get => _selectedSecondLevelNode;
-            set
-            {
-                _selectedSecondLevelNode = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private PresentationNode SelectedThirdLevelNode
-        {
-            get => _selectedThirdLevelNode;
-            set
-            {
-                _selectedThirdLevelNode = value;
-                OnPropertyChanged();
-            }
-        }
+        private PresentationNode SelectedTopLevelNode { get; set; }
+        private PresentationNode SelectedSecondLevelNode { get; set; }
+        private PresentationNode SelectedThirdLevelNode { get; set; }
 
         public WidgetSettingsTriumphsView()
         {
@@ -211,30 +183,23 @@ namespace GhostOverlay
 
         private void OnSecondLevelNodeClicked(object sender, ItemClickEventArgs e)
         {
-            if (e.ClickedItem is PresentationNode selectedNode)
-            {
-                SelectedSecondLevelNode = selectedNode;
+            if (!(e.ClickedItem is PresentationNode selectedNode)) return;
 
-                // Clear out the selected hash to the default can be handled
-                SelectedThirdLevelNode = default;
+            SelectedSecondLevelNode = selectedNode;
 
-                UpdateThirdLevel();
-                UpdateTriumphsListingView();
-            }
+            // Clear out the selected hash to the default can be handled
+            SelectedThirdLevelNode = default;
+
+            UpdateThirdLevel();
+            UpdateTriumphsListingView();
         }
 
         private void OnThirdLevelNodeClicked(object sender, ItemClickEventArgs e)
         {
-            if (e.ClickedItem is PresentationNode selectedNode)
-            {
-                SelectedThirdLevelNode = selectedNode;
-                UpdateTriumphsListingView();
-            }
-        }
+            if (!(e.ClickedItem is PresentationNode selectedNode)) return;
 
-        private void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            SelectedThirdLevelNode = selectedNode;
+            UpdateTriumphsListingView();
         }
     }
 }

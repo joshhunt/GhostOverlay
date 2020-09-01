@@ -28,59 +28,33 @@ using Microsoft.Toolkit.Collections;
 
 namespace GhostOverlay
 {
+    enum VisualState
+    {
+        None,
+        Empty,
+        InitialProfileLoad,
+        ProfileError,
+        DefinitionsLoading
+    }
+
     public sealed partial class WidgetMainView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-        private enum VisualState
-        {
-            None,
-            Empty,
-            InitialProfileLoad,
-            ProfileError,
-            DefinitionsLoading
-        }
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
 
         private static readonly Logger Log = new Logger("WidgetMainView");
 
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
-        private readonly ObservableGroupedCollection<string, ITrackable> TrackedSource = new ObservableGroupedCollection<string, ITrackable>();
+        private readonly ObservableGroupedCollection<TrackableOwner, ITrackable> TrackedSource = new ObservableGroupedCollection<TrackableOwner, ITrackable>();
 
-        private bool _isBustingProfileRequests;
-        private bool IsBustingProfileRequests
-        {
-            get => _isBustingProfileRequests;
-            set
-            {
-                _isBustingProfileRequests = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _showDevOptions;
-        private bool ShowDevOptions
-        {
-            get => _showDevOptions;
-            set
-            {
-                _showDevOptions = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _errorMessage;
-        private string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
-        }
+        private bool IsBustingProfileRequests { get; set; }
+        private bool ShowDevOptions { get; set; }
+        private string ErrorMessage { get; set; }
 
         // Timer stuff
         private DispatcherTimer timer;
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public string SinceProfileUpdate
         {
@@ -151,9 +125,9 @@ namespace GhostOverlay
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
-                case WidgetPropertyChanged.DefinitionsPath:
                 case WidgetPropertyChanged.TrackedItems:
                 case WidgetPropertyChanged.ShowDescriptions:
+                case WidgetPropertyChanged.DefinitionsPath:
                     UpdateFromProfile();
                     break;
 
@@ -170,6 +144,33 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.ShowDevOptions:
                     UpdateMiscViewItems();
                     break;
+
+                // case WidgetPropertyChanged.DefinitionsPath:
+                //     UpdateDefinitions();
+                //     break;
+            }
+        }
+
+        private async void UpdateDefinitions()
+        {
+            foreach (var observableGroup in TrackedSource)
+            {
+                foreach (var trackable in observableGroup)
+                {
+                    Debug.WriteLine("re populating definition");
+                    switch (trackable)
+                    {
+                        case Item item:
+                            await item.PopulateDefinition();
+                            break;
+                        case Triumph triumph:
+                            await triumph.PopulateDefinition();
+                            break;
+                        case CrucibleMapTrackable crucibleMapTrackable:
+                            await crucibleMapTrackable.PopulateDefinitions();
+                            break;
+                    }
+                }
             }
         }
 
@@ -274,7 +275,7 @@ namespace GhostOverlay
             Log.Info("UpdateTracked");
 
             var profile = AppState.Data.Profile;
-            var characters = new Dictionary<long, Character>();
+            var characters = new Dictionary<long, TrackableOwner>();
 
             var tracked = new List<ITrackable>();
             var toCleanup = new List<TrackedEntry>();
@@ -362,7 +363,7 @@ namespace GhostOverlay
             return default;
         }
 
-        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyProfileResponse profile, Dictionary<long, Character> characters)
+        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyProfileResponse profile, Dictionary<long, TrackableOwner> characters)
         {
             if (profile == null || entry == null) return default;
 
@@ -404,7 +405,7 @@ namespace GhostOverlay
 
             if (!characters.ContainsKey(entry.OwnerId))
             {
-                characters[entry.OwnerId] = new Character { CharacterComponent = profile.Characters.Data[characterId] };
+                characters[entry.OwnerId] = new TrackableOwner { CharacterComponent = profile.Characters.Data[characterId] };
                 await characters[entry.OwnerId].PopulateDefinition();
             }
 
@@ -413,7 +414,7 @@ namespace GhostOverlay
                 ItemHash = entry.Hash,
                 ItemInstanceId = entry.InstanceId,
                 Objectives = objectives,
-                OwnerCharacter = characters[entry.OwnerId],
+                Owner = characters[entry.OwnerId],
                 TrackedEntry = entry
             };
 
