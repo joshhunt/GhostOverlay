@@ -403,6 +403,7 @@ namespace GhostOverlay
                 HandleProfileError(err);
             }
 
+            NumberOfSameProfileUpdates = 0;
             ProfileIsUpdating = false;
         }
     }
