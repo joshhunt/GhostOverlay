@@ -224,6 +224,7 @@ namespace GhostOverlay
                 else
                 {
                     var shouldBustProfile = (BustProfileRequests.Value ||
+                                             AppState.RemoteConfig.AutoProfileBust ||
                                              (AppState.RemoteConfig.CrucibleMapTrackerAutoProfileBust &&
                                               CrucibleMapIsTracked)) && NumberOfSameProfileUpdates < 3;
                     Log.Info("shouldBustProfile: {shouldBustProfile}, NumberOfSameProfileUpdates: {NumberOfSameProfileUpdates}", shouldBustProfile, NumberOfSameProfileUpdates);
