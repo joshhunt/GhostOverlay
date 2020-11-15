@@ -469,19 +469,14 @@ namespace GhostOverlay
             var triumph = new Triumph {
                 Hash = entry.Hash,
                 TrackedEntry = entry,
-                Objectives = new List<Objective>()
+                Objectives = new List<Objective>(),
+                Record = Triumph.FindRecordInProfileOrDefault(entry.Hash.ToString(), profile)
             };
             await triumph.PopulateDefinition();
 
-            triumph.Record = Triumph.FindRecordInProfileOrDefault(triumph.Hash.ToString(), profile);
-
             if (triumph.Record == null) return default;
 
-            var objectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0
-                ? triumph.Record.IntervalObjectives
-                : (triumph.Record?.Objectives ?? new List<DestinyObjectiveProgress>());
-
-            foreach (var objectiveProgress in objectives)
+            foreach (var objectiveProgress in triumph.ObjectiveProgresses)
             {
                 var obj = new Objective { Progress = objectiveProgress };
                 await obj.PopulateDefinition();

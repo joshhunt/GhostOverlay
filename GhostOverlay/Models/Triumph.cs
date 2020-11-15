@@ -19,6 +19,24 @@ namespace GhostOverlay.Models
         public DestinyDisplayPropertiesDefinition DisplayProperties =>
             Definition.DisplayProperties;
 
+        public List<DestinyObjectiveProgress> ObjectiveProgresses
+        {
+            get
+            {
+                var objectives = Record?.Objectives != null
+                    ? Record.Objectives.Select(v => v).ToList()
+                    : new List<DestinyObjectiveProgress>();
+
+                var intervalObjectives = (Record?.IntervalObjectives?.Count ?? 0) > 0
+                    ? new List<DestinyObjectiveProgress>() { Record.IntervalObjectives.Last() }
+                    : new List<DestinyObjectiveProgress>();
+
+                objectives.AddRange(intervalObjectives);
+
+                return objectives;
+            }
+        }
+
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
         public string GroupByKey => "Triumphs";
 

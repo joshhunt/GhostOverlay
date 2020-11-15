@@ -180,7 +180,7 @@
                                FontSize="13"
                                TextTrimming="CharacterEllipsis"
                                Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
-                               FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
+                               FontFamily="XamlAutoFontFamily, ..\Assets\destiny_symbols_pc_bl.otf#Destiny Keys" />
 
                     <TextBlock Grid.Column="1" 
                                x:Name="ObjectiveProgress"

@@ -13,7 +13,7 @@ namespace GhostOverlay
 
         public DestinyObjectiveProgress Progress;
 
-        public Visibility Visibility => (Progress.Progress == 0 && Progress.CompletionValue == 0)
+        public Visibility Visibility => (Progress == null || Progress.Progress == default || (Progress.Progress == 0 && Progress.CompletionValue == 0))
             ? Visibility.Collapsed
             : Visibility.Visible;
 

@@ -18,6 +18,8 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:BoolToObjectConverter x:Key="BoolToInverseVisibility" TrueValue="Collapsed" FalseValue="Visible"/>
+            <converters:BoolToObjectConverter x:Key="BoolToCompletedColor" TrueValue="#A05DA46A" FalseValue="#40FFFFFF" />
+            <converters:EmptyObjectToObjectConverter x:Key="NullVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
 
             <DataTemplate x:Key="PresentationNodeTemplate" x:DataType="local:PresentationNode">
                 <Grid Width="400" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Padding="12">
@@ -158,7 +160,38 @@
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="local:PresentationNode">
                             <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                <TextBlock Text="{x:Bind Definition.DisplayProperties.Name}" />
+
+                                <Grid Margin="0">
+                                    <ProgressBar
+                                        Height="22"
+                                        CornerRadius="0"
+                                        Background="#00000000"
+                                        Foreground="{x:Bind IsCompleted, Converter={StaticResource BoolToCompletedColor}}"
+                                        Value="{x:Bind Objective.CompletionPercent}" />
+
+                                    <Grid Margin="6,2,6,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.ColumnSpan="1" Orientation="Horizontal">
+                                            <TextBlock
+                                                FontSize="14"
+                                                TextTrimming="CharacterEllipsis"
+                                                Text="{x:Bind Definition.DisplayProperties.Name, Converter={StaticResource DestinySymbolConverter}}"
+                                                FontFamily="XamlAutoFontFamily, ..\Assets\destiny_symbols_pc_bl.otf#Destiny Keys" />
+                                        </StackPanel>
+
+                                        <TextBlock Visibility="{x:Bind Objective, Converter={StaticResource NullVisibilityConverter}}" Grid.Column="1" FontSize="14">
+                                            <Run
+                                                Text="{x:Bind Objective.Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
+                                            <Run Text="/" />
+                                            <Run
+                                                Text="{x:Bind Objective.Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
+                                        </TextBlock>
+                                    </Grid>
+                                </Grid>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>

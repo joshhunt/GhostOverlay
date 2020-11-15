@@ -32,9 +32,10 @@ namespace GhostOverlay.Models
 
         public string GroupByKey => OwnerCharacter.ClassName;
 
-        public bool ShowInPursuits =>
-            BucketHash == PersuitsBucketHash ||
-            (Definition.ItemCategoryHashes?.Contains(ArmourCategoryHash) ?? false);
+        public bool GearWithIncompleteObjectives => (Definition.ItemCategoryHashes?.Contains(ArmourCategoryHash) ?? false) &&
+                                          IsCompleted != true;
+
+        public bool ShowInPursuits => BucketHash == PersuitsBucketHash || GearWithIncompleteObjectives;
 
         public string Title =>
             Definition?.SetData?.QuestLineName ?? Definition?.DisplayProperties?.Name ?? "No name";

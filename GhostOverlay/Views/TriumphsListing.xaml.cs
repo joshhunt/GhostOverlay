@@ -94,21 +94,8 @@ namespace GhostOverlay.Views
                     Log.Info($"Triumph {childRecord.RecordHash} is missing its record from profile data");
                 }
 
-                var objectives = triumph.Record?.Objectives ?? new List<DestinyObjectiveProgress>();
 
-                var hasIntervalObjectives = (triumph.Record?.IntervalObjectives?.Count ?? 0) > 0;
-                var intervalObjectives = hasIntervalObjectives
-                    ? triumph.Record.IntervalObjectives
-                    : new List<DestinyObjectiveProgress>();
-                var allIntervalsComplete = intervalObjectives.All(v => v.Complete);
-
-                var remainingIntervalObjectives = intervalObjectives.Where(v => !v.Complete);
-
-                objectives.AddRange(remainingIntervalObjectives);
-                if (hasIntervalObjectives && allIntervalsComplete)
-                    objectives.Add(intervalObjectives.LastOrDefault());
-
-                foreach (var objectiveProgress in objectives)
+                foreach (var objectiveProgress in triumph.ObjectiveProgresses)
                 {
                     if (objectiveProgress == null) continue;
 

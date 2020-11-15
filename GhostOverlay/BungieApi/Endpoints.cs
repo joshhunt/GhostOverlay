@@ -31,6 +31,8 @@ namespace GhostOverlay
             var profile = await GetBungie<DestinyProfileResponse>(
                 $"Platform/Destiny2/{(int)membershipType}/Profile/{membershipId}/?components={componentsStr}", requireAuth);
 
+            // await AddFakeItem(profile, 1983369203, 10002880619157);
+
             return profile;
         }
 
@@ -39,7 +41,8 @@ namespace GhostOverlay
             var random = new Random(unchecked((int)itemHash));
 
             var itemDef = await Definitions.GetInventoryItem(itemHash);
-            var character = profile.Characters.Data.Values.First(v => v.ClassType == itemDef.ClassType);
+            var character = profile.Characters.Data.Values.FirstOrDefault(v => v.ClassType == itemDef.ClassType) ??
+                            profile.Characters.Data.Values.First();
             var characterId = character.CharacterId.ToString();
 
             profile.CharacterInventories.Data[characterId].Items.Add(new DestinyItemComponent()

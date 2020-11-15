@@ -177,17 +177,16 @@ namespace GhostOverlay
                 return;
             }
 
-            var children = SkipSecondLevel
-                ? SelectedTopLevelNode.Definition.Children
-                : SelectedSecondLevelNode.Definition.Children;
+            var parentNode = SkipSecondLevel
+                ? SelectedTopLevelNode
+                : SelectedSecondLevelNode;
+
+            var children = parentNode.Definition.Children;
 
             foreach (var child in children.PresentationNodes)
             {
-                var childNode = new PresentationNode
-                {
-                    PresentationNodeHash = child.PresentationNodeHash,
-                    Definition = await Definitions.GetPresentationNode(child.PresentationNodeHash)
-                };
+                var childNode =
+                    await PresentationNode.FromHash(child.PresentationNodeHash, AppState.Data.Profile, parentNode);
                 
                 thirdLevelNodes.Add(childNode);
             }

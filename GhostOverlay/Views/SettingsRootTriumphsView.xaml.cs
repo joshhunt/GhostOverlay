@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
@@ -15,8 +16,12 @@ namespace GhostOverlay.Views
     public sealed partial class SettingsRootTriumphsView : Page, ISubscriber<WidgetPropertyChanged>
     {
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
-        private readonly long rootTriumphsNodeHash = 1024788583;
-        private readonly long rootSealsNodeHash = 1652422747;
+
+        private const long RootTriumphsNodeHash = 1866538467;
+        private const long RootSealsNodeHash = 616318467;
+        private const long RootCatalystsNodeHash = 1984921914;
+        private const long RootLoreNodeHash = 4077680549;
+
         private Frame parentFrame;
 
         public SettingsRootTriumphsView()
@@ -46,6 +51,7 @@ namespace GhostOverlay.Views
             switch (message) 
             {
                 case WidgetPropertyChanged.DefinitionsPath:
+                case WidgetPropertyChanged.Profile:
                     UpdateViewModel();
                     break;
             }
@@ -56,36 +62,84 @@ namespace GhostOverlay.Views
             var nodes = new List<PresentationNode>();
             if (!AppState.Data.DefinitionsLoaded) return;
 
-            var rootNode = await Definitions.GetPresentationNode(rootTriumphsNodeHash);
+            var rootNodeDef = await Definitions.GetPresentationNode(RootTriumphsNodeHash);
 
-            async Task OnEachSecondLevelNode(DestinyPresentationNodeChildEntry secondLevelChild, PresentationNode topLevelNode, bool skipSecondLevel = false)
+            async Task<PresentationNode> OnEachSecondLevelNode(DestinyPresentationNodeChildEntry secondLevelChild, PresentationNode topLevelNode, bool skipSecondLevel = false)
             {
                 var secondLevelNode = await PresentationNode.FromHash(secondLevelChild.PresentationNodeHash,
                     AppState.Data.Profile, topLevelNode);
-                secondLevelNode.SkipSecondLevel = skipSecondLevel;
 
+                secondLevelNode.SkipSecondLevel = skipSecondLevel;
                 nodes.Add(secondLevelNode);
+                return secondLevelNode;
             }
 
-            foreach (var topLevelChild in rootNode.Children.PresentationNodes)
+            if (rootNodeDef != null)
             {
-                var topLevelNode = new PresentationNode
+                foreach (var topLevelChild in rootNodeDef.Children.PresentationNodes)
                 {
-                    PresentationNodeHash = topLevelChild.PresentationNodeHash,
-                    Definition =
-                        await Definitions.GetPresentationNode(topLevelChild.PresentationNodeHash)
-                };
+                    var topLevelNode = new PresentationNode
+                    {
+                        PresentationNodeHash = topLevelChild.PresentationNodeHash,
+                        Definition = await Definitions.GetPresentationNode(topLevelChild.PresentationNodeHash)
 
-                foreach (var secondLevelChild in topLevelNode.Definition.Children.PresentationNodes)
-                {
-                    await OnEachSecondLevelNode(secondLevelChild, topLevelNode);
+                    };
+
+                    if (topLevelNode.Definition == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var secondLevelChild in topLevelNode.Definition.Children.PresentationNodes)
+                    {
+                        await OnEachSecondLevelNode(secondLevelChild, topLevelNode);
+                    }
                 }
             }
 
+            //
+            // Catalysts
+            //
+            var catalystsNode = new PresentationNode
+            {
+                PresentationNodeHash = RootCatalystsNodeHash,
+                Definition = await Definitions.GetPresentationNode(RootCatalystsNodeHash)
+            };
+
+            if (catalystsNode.Definition != null)
+            {
+                foreach (var secondLevelChild in catalystsNode.Definition.Children.PresentationNodes)
+                {
+                    var node = await OnEachSecondLevelNode(secondLevelChild, catalystsNode, true);
+                    node.Definition.DisplayProperties.HasIcon = true;
+                    node.Definition.DisplayProperties.Icon = catalystsNode.Definition.DisplayProperties.Icon;
+                }
+            }
+
+            //
+            // Lore
+            //
+            var loreNode = new PresentationNode
+            {
+                PresentationNodeHash = RootLoreNodeHash,
+                Definition = await Definitions.GetPresentationNode(RootLoreNodeHash)
+            };
+
+            if (loreNode.Definition != null)
+            {
+                foreach (var secondLevelChild in loreNode.Definition.Children.PresentationNodes)
+                {
+                    await OnEachSecondLevelNode(secondLevelChild, loreNode);
+                }
+            }
+
+            //
+            // Seals
+            //
             var sealsNode = new PresentationNode
             {
-                PresentationNodeHash = rootSealsNodeHash,
-                Definition = await Definitions.GetPresentationNode(rootSealsNodeHash)
+                PresentationNodeHash = RootSealsNodeHash,
+                Definition = await Definitions.GetPresentationNode(RootSealsNodeHash)
             };
 
             if (sealsNode.Definition != null)

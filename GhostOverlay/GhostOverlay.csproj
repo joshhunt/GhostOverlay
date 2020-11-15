@@ -280,6 +280,7 @@
     <PRIResource Include="Configuration.sample.resw">
       <SubType>Designer</SubType>
     </PRIResource>
+    <Content Include="Assets\destiny_symbols_pc_bl.otf" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>

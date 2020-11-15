@@ -92,7 +92,7 @@
                                 FontSize="25"
                                 Margin="0,-4,2,0"
                                 Foreground="#f5dc56"
-                                FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys"
+                                FontFamily="XamlAutoFontFamily, ..\Assets\destiny_symbols_pc_bl.otf#Destiny Keys"
                                 FontWeight="Medium">&#xE052;
                             </TextBlock>
 
@@ -170,7 +170,7 @@
                                                             FontSize="25"
                                                             Margin="0,-4,2,0"
                                                             Foreground="#f5dc56"
-                                                            FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys"
+                                                            FontFamily="XamlAutoFontFamily, ..\Assets\destiny_symbols_pc_bl.otf#Destiny Keys"
                                                             FontWeight="Medium">&#xE052;
                                                         </TextBlock>
 

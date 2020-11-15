@@ -14,17 +14,17 @@
 
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Default">
-                    <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily, Assets\DestinyKeys.ttf#Destiny Keys</FontFamily>
+                    <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily, Assets\destiny_symbols_pc_bl.otf#Destiny Keys</FontFamily>
 
                     <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
-                        <Setter Property="FontFamily" Value="XamlAutoFontFamily, Assets\DestinyKeys.ttf#Destiny Keys" />
+                        <Setter Property="FontFamily" Value="XamlAutoFontFamily, Assets\destiny_symbols_pc_bl.otf#Destiny Keys" />
                     </Style>
 
                     <Style
                         x:Key="GhostOverlayTextStyle"
                         BasedOn="{StaticResource BaseTextBlockStyle}"
                         TargetType="TextBlock">
-                        <Setter Property="FontFamily" Value="Assets\NHaasGroteskTXPro-55Rg.ttf#NeueHaasGroteskText Pro, Assets\DestinyKeys.ttf#Destiny Keys" />
+                        <Setter Property="FontFamily" Value="Assets\NHaasGroteskTXPro-55Rg.ttf#NeueHaasGroteskText Pro, Assets\destiny_symbols_pc_bl.otf#Destiny Keys" />
                         <Setter Property="FontSize" Value="20" />
                     </Style>
 

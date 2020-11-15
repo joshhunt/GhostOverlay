@@ -18,6 +18,7 @@
 
             <CollectionViewSource x:Name="NodesCollection" IsSourceGrouped="True" />
             <converters:BoolToObjectConverter x:Key="BoolToCompletedColor" TrueValue="#A05DA46A" FalseValue="#40FFFFFF" />
+            <converters:EmptyObjectToObjectConverter x:Key="NullVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -92,7 +93,7 @@
                         </StackPanel>
                     </Grid>
 
-                    <Grid Margin="8,0,8,8" Visibility="{x:Bind Objective.Visibility}">
+                    <Grid Margin="8,0,8,8" Visibility="{x:Bind Objective, Converter={StaticResource NullVisibilityConverter}}">
                         <ProgressBar
                             Height="22"
                             CornerRadius="0"
@@ -111,7 +112,7 @@
                                     FontSize="14"
                                     TextTrimming="CharacterEllipsis"
                                     Text="{x:Bind Objective.Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
-                                    FontFamily="XamlAutoFontFamily, ..\Assets\DestinyKeys.ttf#Destiny Keys" />
+                                    FontFamily="XamlAutoFontFamily, ..\Assets\destiny_symbols_pc_bl.otf#Destiny Keys" />
                             </StackPanel>
 
                             <TextBlock Grid.Column="1"
