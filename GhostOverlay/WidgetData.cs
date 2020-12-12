@@ -81,7 +81,7 @@ namespace GhostOverlay
     {
         private readonly Logger Log = new Logger("WidgetData");
 
-        public static double ActiveProfileUpdateSeconds = 15;
+        public static double ActiveProfileUpdateSeconds = 30;
         public static double InactiveProfileUpdateSeconds = 60;
 
         // number of requests to schedule profile updates. 
@@ -140,7 +140,7 @@ namespace GhostOverlay
             get => _profile;
 
             set
-            {
+            {   
                 if (value?.Equals(_profile) ?? false)
                 {
                     NumberOfSameProfileUpdates += 1;
@@ -219,7 +219,7 @@ namespace GhostOverlay
                 if (Profile == null)
                 {
                     Log.Info("Updating profile, for the first time using GetProfileForCurrentUser");
-                    Profile = await AppState.bungieApi.GetProfileForCurrentUser(AppState.bungieApi.DefaultProfileComponents);
+                    Profile = await AppState.Api.GetProfileForCurrentUser(AppState.Api.DefaultProfileComponents);
                 }
                 else
                 {
@@ -231,10 +231,10 @@ namespace GhostOverlay
 
                     if (shouldBustProfile)
                     {
-                        await AppState.bungieApi.CacheBust(Profile);
+                        await AppState.Api.CacheBust(Profile);
                     }
 
-                    Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                    Profile = await AppState.Api.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.Api.DefaultProfileComponents);
                     ProfileError.Value = "";
                 }
             }
@@ -374,7 +374,7 @@ namespace GhostOverlay
 
         public async Task<CoreSettingsConfiguration> UpdateDestinySettings()
         {
-            DestinySettings.Value = await AppState.bungieApi.GetSettings();
+            DestinySettings.Value = await AppState.Api.GetSettings();
 
             return DestinySettings.Value;
         }
@@ -395,8 +395,8 @@ namespace GhostOverlay
 
             try
             {
-                await AppState.bungieApi.CacheBust(Profile);
-                Profile = await AppState.bungieApi.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.bungieApi.DefaultProfileComponents);
+                await AppState.Api.CacheBust(Profile);
+                Profile = await AppState.Api.GetProfile(Profile.Profile.Data.UserInfo.MembershipType, Profile.Profile.Data.UserInfo.MembershipId, AppState.Api.DefaultProfileComponents);
             }
             catch (Exception err)
             {

@@ -156,7 +156,7 @@ namespace GhostOverlay
 
         public static async Task<string> FetchLatestDefinitionsPath()
         {
-            var manifest = await AppState.bungieApi.GetManifest();
+            var manifest = await AppState.Api.GetManifest();
 
             var language = AppState.Data.Language.Value ?? "@@UNSET";
             Log.Info("Language from AppState is {language}", language);

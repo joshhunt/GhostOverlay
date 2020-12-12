@@ -22,7 +22,7 @@ namespace GhostOverlay
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            var urlBungieAuth = new Uri(AppState.bungieApi.GetAuthorisationUrl());
+            var urlBungieAuth = new Uri(AppState.Api.GetAuthorisationUrl());
             var success = await Windows.System.Launcher.LaunchUriAsync(urlBungieAuth);
 
             if (!success)

@@ -148,6 +148,7 @@
     <Compile Include="Models\RemoteConfig.cs" />
     <Compile Include="Models\TimerViewModel.cs" />
     <Compile Include="Models\Triumph.cs" />
+    <Compile Include="Models\TrackedEntry.cs" />
     <Compile Include="Views\EqualHeightWrapPanel\Data.cs" />
     <Compile Include="Views\EqualHeightWrapPanel\EqualHeightWrapPanel.cs" />
     <Compile Include="Views\EqualHeightWrapPanel\StretchChild.cs" />
@@ -351,7 +352,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="GhostSharper">
-      <Version>2.9.0</Version>
+      <Version>2.9.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Data.Sqlite.Core">
       <Version>3.1.5</Version>

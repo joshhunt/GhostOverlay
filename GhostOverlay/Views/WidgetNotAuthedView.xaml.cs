@@ -50,7 +50,7 @@ namespace GhostOverlay
 
         private async Task LoginWithDesktop()
         {
-            var urlBungieAuth = new Uri(AppState.bungieApi.GetAuthorisationUrl());
+            var urlBungieAuth = new Uri(AppState.Api.GetAuthorisationUrl());
             var success = await Windows.System.Launcher.LaunchUriAsync(urlBungieAuth);
 
             if (success)
@@ -73,7 +73,7 @@ namespace GhostOverlay
             AuthWaiting.Visibility = Visibility.Visible;
 
             // original bungie redirect url: ghost-overlay:///oauth-return
-            var requestUri = new Uri(AppState.bungieApi.GetAuthorisationUrl());
+            var requestUri = new Uri(AppState.Api.GetAuthorisationUrl());
             var callbackUri = new Uri("https://destiny.report/ghost-auth-return");
 
             XboxGameBarWebAuthenticationResult result;
@@ -102,7 +102,7 @@ namespace GhostOverlay
                 var parsed = HttpUtility.ParseQueryString(responseUri.Query);
                 var authCode = parsed["code"];
 
-                await AppState.bungieApi.GetOAuthAccessToken(authCode);
+                await AppState.Api.GetOAuthAccessToken(authCode);
 
                 Log.Info("New token data (its there, trust me)");
 

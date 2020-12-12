@@ -1,15 +1,14 @@
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Web;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Resources;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Gaming.XboxGameBar;
+using Application = Windows.UI.Xaml.Application;
 
 namespace GhostOverlay
 {
@@ -127,7 +126,7 @@ namespace GhostOverlay
         private async void HandleAuthCode(string authCode)
         {
             Log.Info($"Handling auth code");
-            await AppState.bungieApi.GetOAuthAccessToken(authCode);
+            await AppState.Api.GetOAuthAccessToken(authCode);
 
             Log.Info($"GetOAuthAccessToken returned");
 

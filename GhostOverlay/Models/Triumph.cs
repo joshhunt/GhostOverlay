@@ -37,6 +37,23 @@ namespace GhostOverlay.Models
             }
         }
 
+        public long Points
+        {
+            get
+            {
+                if (Definition == null)
+                    return 0;
+
+                var intervalPoints =
+                    Definition.IntervalInfo?.IntervalObjectives?.Aggregate(0L,
+                        (acc, x) => acc + x.IntervalScoreValue) ?? 0;
+
+                var normalPoints = Definition.CompletionInfo?.ScoreValue ?? 0;
+
+                return intervalPoints + normalPoints;
+            }
+        }
+
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
         public string GroupByKey => "Triumphs";
 
@@ -44,7 +61,7 @@ namespace GhostOverlay.Models
             !IsCompleted && (TrackedEntry.ShowDescription || AppState.Data.ShowDescriptions.Value);
 
         public string SortValue => (IsCompleted ? "xxx_completed" : "");
-        public string Subtitle => Definition?.CompletionInfo?.ScoreValue != null ? $"{Definition?.CompletionInfo?.ScoreValue} pts" : "";
+        public string Subtitle => Points > 0 ? $"{Points} pts" : "";
 
         public string Title => Definition?.DisplayProperties?.Name ?? "No name";
         public Uri ImageUri => new Uri($"https://www.bungie.net{Definition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
