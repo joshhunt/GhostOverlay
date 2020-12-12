@@ -37,7 +37,7 @@ namespace GhostOverlay.Models
         public bool ShowDescription =>
             !IsCompleted && ((TrackedEntry?.ShowDescription ?? true) || AppState.Data.ShowDescriptions.Value);
 
-        public string GroupByKey => OwnerCharacter.ClassName;
+        public string GroupByKey => Owner.ClassName;
 
         public bool GearWithIncompleteObjectives => (Definition.ItemCategoryHashes?.Contains(ArmourCategoryHash) ?? false) &&
                                           IsCompleted != true;

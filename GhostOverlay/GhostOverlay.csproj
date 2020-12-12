@@ -150,7 +150,6 @@
     <Compile Include="Models\TimerViewModel.cs" />
     <Compile Include="Models\TrackedEntry.cs" />
     <Compile Include="Models\Triumph.cs" />
-    <Compile Include="Models\TrackedEntry.cs" />
     <Compile Include="Views\EqualHeightWrapPanel\Data.cs" />
     <Compile Include="Views\EqualHeightWrapPanel\EqualHeightWrapPanel.cs" />
     <Compile Include="Views\EqualHeightWrapPanel\StretchChild.cs" />

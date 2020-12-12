@@ -58,6 +58,8 @@ namespace GhostOverlay.Models
 
                 return intervalPoints + normalPoints;
             }
+        }
+
         public TrackableOwner Owner
         {
             get => StaticOwner;
