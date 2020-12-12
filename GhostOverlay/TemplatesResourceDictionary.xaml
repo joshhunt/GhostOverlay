@@ -40,7 +40,7 @@
 
     <DataTemplate x:Key="BountyCompletedObjectives" x:DataType="models:ITrackable">
         <StackPanel Margin="0,4,0,0"
-                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}}">
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}, Mode=OneWay}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -98,13 +98,13 @@
                     VerticalAlignment="Top">
 
                     <Image.Source>
-                        <BitmapImage UriSource="{x:Bind ImageUri, FallbackValue=null}" />
+                        <BitmapImage UriSource="{x:Bind ImageUri, Mode=OneWay, FallbackValue=null}" />
                     </Image.Source>
                 </Image>
 
                 <Rectangle
                     x:Name="TrackableIconOutline"
-                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}}"
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}, Mode=OneWay}"
                     Canvas.Top="0" Canvas.Left="0"
                     Width="32"
                     StrokeThickness="2"
@@ -113,7 +113,7 @@
 
                 <Polygon
                     x:Name="TrackableIconTriangle"
-                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}}"
+                    Visibility="{x:Bind IsCompleted, Converter={StaticResource VisibleWhenTrueConverter}, Mode=OneWay}"
                     Opacity="1"
                     Canvas.Top="15" Canvas.Left="15" Points="0,17 17,17, 17,0" Fill="#ffC19954" />
             </Canvas>
@@ -123,7 +123,7 @@
     <DataTemplate x:Key="ObjectiveTemplate" x:DataType="local:Objective">
         <UserControl>
             <Grid
-                Opacity="{x:Bind Progress.Complete, Converter={StaticResource BoolToCompletionOpacity}}">
+                Opacity="{x:Bind Progress.Complete, Converter={StaticResource BoolToCompletionOpacity}, Mode=OneWay}">
 
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroup>
@@ -158,7 +158,7 @@
                     Height="20"
                     Margin="0,0,6,0"
                     Visibility="Collapsed"
-                    Fill="{x:Bind Progress.Complete, Converter={StaticResource BoolToCompletedColorConverter}}" />
+                    Fill="{x:Bind Progress.Complete, Converter={StaticResource BoolToCompletedColorConverter}, Mode=OneWay}" />
 
                 <ProgressBar
                     x:Name="ObjectiveProgressBar"
@@ -167,7 +167,7 @@
                     CornerRadius="0"
                     Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
                     Foreground="#FF5DA46A"
-                    Value="{x:Bind CompletionPercent}" />
+                    Value="{x:Bind CompletionPercent, Mode=OneWay}" />
 
                 <Grid Grid.Column="1" Margin="6,0,6,0" x:Name="ObjectiveText">
                     <Grid.ColumnDefinitions>
@@ -179,16 +179,16 @@
                                x:Name="ObjectiveDescription"
                                FontSize="13"
                                TextTrimming="CharacterEllipsis"
-                               Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}}"
+                               Text="{x:Bind Definition.ProgressDescription, Converter={StaticResource DestinySymbolConverter}, Mode=OneWay}"
                                FontFamily="XamlAutoFontFamily, ..\Assets\destiny_symbols_pc_bl.otf#Destiny Keys" />
 
                     <TextBlock Grid.Column="1" 
                                x:Name="ObjectiveProgress"
                                FontSize="13">
-                        <Run Text="{x:Bind Progress.Progress, Converter={StaticResource NumberFormatterConverter}}" />
+                        <Run Text="{x:Bind Progress.Progress, Converter={StaticResource NumberFormatterConverter}, Mode=OneWay}" />
                         <Run Text="/" />
                         <Run
-                            Text="{x:Bind Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}}" />
+                            Text="{x:Bind Progress.CompletionValue, Converter={StaticResource NumberFormatterConverter}, Mode=OneWay}" />
                     </TextBlock>
                 </Grid>
             </Grid>
@@ -220,7 +220,7 @@
                     Margin="0,0,0,0"
                     TextTrimming="CharacterEllipsis"
                     HorizontalAlignment="Left">
-                        <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="14" />
+                        <Run Text="{x:Bind Title, Mode=OneWay}" FontWeight="Medium" FontSize="14" />
                 </TextBlock>
 
                 <TextBlock
@@ -229,9 +229,9 @@
                     Margin="0,0,0,0"
                     TextTrimming="CharacterEllipsis"
                     HorizontalAlignment="Left">
-                    <Run Text="{x:Bind Title}" FontWeight="Medium" FontSize="15" />
+                    <Run Text="{x:Bind Title, Mode=OneWay}" FontWeight="Medium" FontSize="15" />
                     <Run Text="&#8203;//" FontSize="14" Foreground="#c2c2c2" />
-                    <Run Text="{x:Bind Subtitle}" FontSize="14" Foreground="#c2c2c2" />
+                    <Run Text="{x:Bind Subtitle, Mode=OneWay}" FontSize="14" Foreground="#c2c2c2" />
                 </TextBlock>
 
                 <TextBlock
@@ -241,7 +241,7 @@
                     HorizontalAlignment="Left"
                     FontSize="13"
                     MaxLines="2"
-                    Text="{x:Bind DisplayProperties.Description, Converter={StaticResource DestinySymbolConverter}}"
+                    Text="{x:Bind DisplayProperties.Description, Mode=OneWay, Converter={StaticResource DestinySymbolConverter}}"
                     TextTrimming="WordEllipsis"
                     TextWrapping="WrapWholeWords" />
             </StackPanel>

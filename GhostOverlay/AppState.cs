@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.Serialization;
 using Windows.Storage;
 using GhostOverlay.Models;
 using Newtonsoft.Json;

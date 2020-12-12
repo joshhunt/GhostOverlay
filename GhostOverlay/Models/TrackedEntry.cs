@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using GhostOverlay.Models;
 using GhostSharper.Models;
 using Newtonsoft.Json;
@@ -11,14 +12,22 @@ namespace GhostOverlay
         DynamicTrackable = 2,
     }
 
-    public class TrackedEntry
+
+    public class TrackedEntry : INotifyPropertyChanged
     {
+        #pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 67
+
         [JsonProperty("h")] public long Hash;
         [JsonProperty("d")] public DynamicTrackableType DynamicTrackableType;
         [JsonProperty("i")] public long InstanceId;
         [JsonProperty("o")] public long OwnerId;
         [JsonProperty("t")] public TrackedEntryType Type;
         [JsonProperty("s")] public bool ShowDescription;
+
+        // TODO: does this work for DynamicTrackables
+        public string UniqueKey => InstanceId == 0 ? $"{Hash}|{OwnerId}" : InstanceId.ToString();
 
         public static TrackedEntry FromItem(Item item)
         {
@@ -27,7 +36,7 @@ namespace GhostOverlay
                 Type = TrackedEntryType.Item,
                 Hash = item.ItemHash,
                 InstanceId = item.ItemInstanceId,
-                OwnerId = item.OwnerCharacter.CharacterComponent.CharacterId
+                OwnerId = item.Owner.CharacterComponent.CharacterId
             };
         }
 
@@ -55,7 +64,7 @@ namespace GhostOverlay
         {
             return Type == TrackedEntryType.Item && Hash == item.ItemHash &&
                    InstanceId == item.ItemInstanceId &&
-                   OwnerId == item.OwnerCharacter.CharacterComponent.CharacterId;
+                   OwnerId == item.Owner.CharacterComponent.CharacterId;
         }
 
         public bool Matches(DynamicTrackableType dynamicTrackableType)
@@ -123,4 +132,5 @@ namespace GhostOverlay
             };
         }
     }
+
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -23,62 +24,37 @@ using Windows.UI.Xaml.Navigation;
 using GhostOverlay.Models;
 using GhostSharper.Models;
 using Microsoft.Gaming.XboxGameBar;
+using Microsoft.Toolkit.Collections;
 
 namespace GhostOverlay
 {
+    enum VisualState
+    {
+        None,
+        Empty,
+        InitialProfileLoad,
+        ProfileError,
+        DefinitionsLoading
+    }
+
     public sealed partial class WidgetMainView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-        private enum VisualState
-        {
-            None,
-            Empty,
-            InitialProfileLoad,
-            ProfileError,
-            DefinitionsLoading
-        }
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
 
         private static readonly Logger Log = new Logger("WidgetMainView");
 
         private XboxGameBarWidget widget;
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
-        private readonly List<ITrackable> Tracked = new List<ITrackable>();
+        private readonly ObservableGroupedCollection<TrackableOwner, ITrackable> TrackedSource = new ObservableGroupedCollection<TrackableOwner, ITrackable>();
 
-        private bool _isBustingProfileRequests;
-        private bool IsBustingProfileRequests
-        {
-            get => _isBustingProfileRequests;
-            set
-            {
-                _isBustingProfileRequests = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _showDevOptions;
-        private bool ShowDevOptions
-        {
-            get => _showDevOptions;
-            set
-            {
-                _showDevOptions = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _errorMessage;
-        private string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
-        }
+        private bool IsBustingProfileRequests { get; set; }
+        private bool ShowDevOptions { get; set; }
+        private string ErrorMessage { get; set; }
 
         // Timer stuff
         private DispatcherTimer timer;
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public string SinceProfileUpdate
         {
@@ -106,7 +82,7 @@ namespace GhostOverlay
 
         private void timer_Tick(object sender, object e)
         {
-            RaisePropertyChanged("SinceProfileUpdate");
+            OnPropertyChanged($"SinceProfileUpdate");
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -149,9 +125,9 @@ namespace GhostOverlay
             switch (message)
             {
                 case WidgetPropertyChanged.Profile:
-                case WidgetPropertyChanged.DefinitionsPath:
                 case WidgetPropertyChanged.TrackedItems:
                 case WidgetPropertyChanged.ShowDescriptions:
+                case WidgetPropertyChanged.DefinitionsPath:
                     UpdateFromProfile();
                     break;
 
@@ -168,6 +144,33 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.ShowDevOptions:
                     UpdateMiscViewItems();
                     break;
+
+                // case WidgetPropertyChanged.DefinitionsPath:
+                //     UpdateDefinitions();
+                //     break;
+            }
+        }
+
+        private async void UpdateDefinitions()
+        {
+            foreach (var observableGroup in TrackedSource)
+            {
+                foreach (var trackable in observableGroup)
+                {
+                    Debug.WriteLine("re populating definition");
+                    switch (trackable)
+                    {
+                        case Item item:
+                            await item.PopulateDefinition();
+                            break;
+                        case Triumph triumph:
+                            await triumph.PopulateDefinition();
+                            break;
+                        case CrucibleMapTrackable crucibleMapTrackable:
+                            await crucibleMapTrackable.PopulateDefinitions();
+                            break;
+                    }
+                }
             }
         }
 
@@ -195,27 +198,20 @@ namespace GhostOverlay
             if (AppState.Data.TokenData == null || !AppState.Data.TokenData.IsValid())
             {
                 // Navigate frame to the "not logged in" view
-                if (this.Frame.CanGoBack && this.Frame.BackStack[this.Frame.BackStack.Count - 1].SourcePageType == typeof(WidgetNotAuthedView))
+                if (Frame.CanGoBack && Frame.BackStack[Frame.BackStack.Count - 1].SourcePageType == typeof(WidgetNotAuthedView))
                 {
-                    this.Frame.GoBack();
+                    Frame.GoBack();
                 }
                 else
                 {
-                    this.Frame.Navigate(typeof(WidgetNotAuthedView), widget);
+                    Frame.Navigate(typeof(WidgetNotAuthedView), widget);
                 }
             }
         }
 
         private void UpdateProfileUpdating()
         {
-            if (AppState.Data.ProfileIsUpdating)
-            {
-                ProfileUpdatingProgressRing.IsActive = true;
-            }
-            else
-            {
-                ProfileUpdatingProgressRing.IsActive = false;
-            }
+            ProfileUpdatingProgressRing.IsActive = AppState.Data.ProfileIsUpdating;
         }
 
         private void SetVisualState(VisualState state)
@@ -279,13 +275,12 @@ namespace GhostOverlay
             Log.Info("UpdateTracked");
 
             var profile = AppState.Data.Profile;
-            var characters = new Dictionary<long, Character>();
+            var characters = new Dictionary<long, TrackableOwner>();
+
+            var tracked = new List<ITrackable>();
             var toCleanup = new List<TrackedEntry>();
-            var TrackedEntriesCopyOf = AppState.Data.TrackedEntries.ToList();
 
-            Tracked.Clear();
-
-            foreach (var trackedEntry in TrackedEntriesCopyOf)
+            foreach (var trackedEntry in AppState.Data.TrackedEntries.ToList())
             {
                 ITrackable trackable = default;
 
@@ -305,30 +300,18 @@ namespace GhostOverlay
                         break;
                 }
 
-                if (trackable != null && (trackable is DynamicTrackable ||
-                                          (trackable.Objectives != null && trackable.Objectives.Count > 0)))
-                    Tracked.Add(trackable);
-                else if (trackedEntry.Type != TrackedEntryType.DynamicTrackable)
-                {
-                    Log.Info("remove {trackedEntry}", trackedEntry);
+                if (trackable != null)
+                    tracked.Add(trackable);
+                else
                     toCleanup.Add(trackedEntry);
-                }
             }
 
-            Log.Info("AppState.Data.TrackedEntries before cleanup {v}", AppState.Data.TrackedEntries.Count);
+            TrackedSource.SetTrackables(tracked);
+
             AppState.Data.TrackedEntries.RemoveAll(toCleanup.Contains);
             AppState.SaveTrackedEntries(AppState.Data.TrackedEntries);
-            Log.Info("AppState.Data.TrackedEntries after cleanup {v}", AppState.Data.TrackedEntries.Count);
 
-            var groupedBounties =
-                from t in Tracked
-                orderby t.SortValue
-                group t by t.GroupByKey
-                into g
-                select g;
-
-            SetVisualState(Tracked.Count == 0 ? VisualState.Empty : VisualState.None);
-            TrackedBountiesCollection.Source = groupedBounties;
+            SetVisualState(tracked.Count == 0 ? VisualState.Empty : VisualState.None);
         }
 
         private async Task<TrackedEntry> UpgradeQuestStepTrackedEntry(TrackedEntry oldTrackedEntry, DestinyInventoryItemDefinition itemDefinition, DestinyProfileResponse profile)
@@ -372,7 +355,7 @@ namespace GhostOverlay
             {
                 case DynamicTrackableType.CrucibleMap:
                     Log.Info("  Dynamic trackable is a DynamicTrackableType.CrucibleMap");
-                    var crucibleMapTracker = await CrucibleMapTrackable.CreateFromProfile(profile);
+                    var crucibleMapTracker = await CrucibleMapTrackable.CreateFromProfile(profile, trackedEntry);
                     Log.Info("  crucibleMapTracker: {crucibleMapTracker}", crucibleMapTracker);
                     return crucibleMapTracker;
             }
@@ -380,7 +363,7 @@ namespace GhostOverlay
             return default;
         }
 
-        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyProfileResponse profile, Dictionary<long, Character> characters)
+        private async Task<Item> ItemFromTrackedEntry(TrackedEntry entry, DestinyProfileResponse profile, Dictionary<long, TrackableOwner> characters)
         {
             if (profile == null || entry == null) return default;
 
@@ -422,7 +405,7 @@ namespace GhostOverlay
 
             if (!characters.ContainsKey(entry.OwnerId))
             {
-                characters[entry.OwnerId] = new Character { CharacterComponent = profile.Characters.Data[characterId] };
+                characters[entry.OwnerId] = new TrackableOwner { CharacterComponent = profile.Characters.Data[characterId] };
                 await characters[entry.OwnerId].PopulateDefinition();
             }
 
@@ -431,7 +414,7 @@ namespace GhostOverlay
                 ItemHash = entry.Hash,
                 ItemInstanceId = entry.InstanceId,
                 Objectives = objectives,
-                OwnerCharacter = characters[entry.OwnerId],
+                Owner = characters[entry.OwnerId],
                 TrackedEntry = entry
             };
 
@@ -458,7 +441,9 @@ namespace GhostOverlay
                 }
             }
 
-            return newTrackedItem;
+            return newTrackedItem?.Objectives?.Count == 0
+                ? default
+                : newTrackedItem;
         }
 
 
@@ -478,6 +463,8 @@ namespace GhostOverlay
 
             foreach (var objectiveProgress in triumph.ObjectiveProgresses)
             {
+                if (objectiveProgress == null) continue;
+
                 var obj = new Objective { Progress = objectiveProgress };
                 await obj.PopulateDefinition();
                 triumph.Objectives.Add(obj);
@@ -536,9 +523,7 @@ namespace GhostOverlay
 
         private void UntrackItem_OnClick(object sender, RoutedEventArgs e)
         {
-            var button = sender as MenuFlyoutItem;
-
-            if (button.Tag is TrackedEntry trackedEntry)
+            if (sender is MenuFlyoutItem button && button.Tag is TrackedEntry trackedEntry)
             {
                 RemoveTrackedEntry(trackedEntry);
             }
@@ -549,18 +534,13 @@ namespace GhostOverlay
             AppState.Data.TrackedEntries = new List<TrackedEntry>();
         }
 
-        private void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
         private void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private int konamiPosition = 0;
-        private VirtualKey[] konamiKeys = { VirtualKey.Up, VirtualKey.Up, VirtualKey.Down, VirtualKey.Down, VirtualKey.Left, VirtualKey.Right, VirtualKey.Left, VirtualKey.Right, VirtualKey.B, VirtualKey.A, VirtualKey.Enter };
+        private readonly VirtualKey[] konamiKeys = { VirtualKey.Up, VirtualKey.Up, VirtualKey.Down, VirtualKey.Down, VirtualKey.Left, VirtualKey.Right, VirtualKey.Left, VirtualKey.Right, VirtualKey.B, VirtualKey.A, VirtualKey.Enter };
 
         private void Grid_KeyUp(object sender, KeyRoutedEventArgs e)
         {
@@ -587,26 +567,20 @@ namespace GhostOverlay
 
         private void ShowDescription_OnClick(object sender, RoutedEventArgs e)
         {
-            var button = sender as MenuFlyoutItem;
+            if (!(sender is MenuFlyoutItem button) || !(button.Tag is TrackedEntry trackedEntry)) return;
 
-            if (button.Tag is TrackedEntry trackedEntry)
-            {
-                var item = Tracked.FirstOrDefault(v => v.TrackedEntry == trackedEntry);
+            var item = TrackedSource.FindTrackable(trackedEntry.UniqueKey);
+            if (item == null) return;
 
-                if (item != null)
-                {
-                    trackedEntry.ShowDescription = !(trackedEntry.ShowDescription);
-                    item.NotifyPropertyChanged("ShowDescription");
-                    AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
-                }
-            }
+            trackedEntry.ShowDescription = !(trackedEntry.ShowDescription);
+            AppState.SaveTrackedEntries(AppState.Data.TrackedEntries); // we modified in place, so just serialise and save
         }
 
         private async void CaptureScreenshot_OnClick(object sender, RoutedEventArgs e)
         {
             await Task.Delay(2000);
 
-            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            var rtb = new RenderTargetBitmap();
             await rtb.RenderAsync(WidgetPage);
 
             var pixelBuffer = await rtb.GetPixelsAsync();

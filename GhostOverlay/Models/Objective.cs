@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using GhostSharper.Models;
@@ -6,12 +8,16 @@ using GhostSharper.Models;
 namespace GhostOverlay
 {
 
-    public class Objective
+    public class Objective : INotifyPropertyChanged
     {
+#pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
+
         public DestinyObjectiveDefinition Definition =
             new DestinyObjectiveDefinition();
 
-        public DestinyObjectiveProgress Progress;
+        public DestinyObjectiveProgress Progress { get; set; }
 
         public Visibility Visibility => (Progress == null || Progress.Progress == default || (Progress.Progress == 0 && Progress.CompletionValue == 0))
             ? Visibility.Collapsed
@@ -39,6 +45,12 @@ namespace GhostOverlay
             Definition = await Definitions.GetObjective(Progress.ObjectiveHash);
 
             return Definition;
+        }
+
+        public void UpdateTo(Objective newObjective)
+        {
+            Progress = newObjective.Progress;
+            Definition = newObjective.Definition;
         }
     }
 

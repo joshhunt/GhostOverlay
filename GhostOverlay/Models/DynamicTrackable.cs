@@ -14,8 +14,13 @@ namespace GhostOverlay.Models
 
     abstract class DynamicTrackable : ITrackable
     {
+        #pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 67
+
         public bool IsCompleted { get; set; }
         public DestinyDisplayPropertiesDefinition DisplayProperties { get; set; }
+        public TrackableOwner Owner { get; set; }
         public List<Objective> Objectives { get; set; }
         public string Title { get; set; }
         public Uri ImageUri => new Uri($"https://www.bungie.net{DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
@@ -24,13 +29,8 @@ namespace GhostOverlay.Models
 
         public abstract string SortValue { get; }
         public string Subtitle => "";
-        public abstract string GroupByKey { get; }
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        public virtual void NotifyPropertyChanged(string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public abstract void UpdateTo(ITrackable item);
     }
 
     class CrucibleMapTrackable : DynamicTrackable
@@ -49,9 +49,8 @@ namespace GhostOverlay.Models
         public bool isNotInActivity => !isInActivity;
         public Uri PGCRImageUri => CommonHelpers.BungieUri(CurrentActivityDefinition?.PgcrImage, CommonHelpers.FallbackPGCRImagePath);
 
-        public Character OwnerCharacter;
+        public new TrackableOwner Owner { get; set; }
 
-        public override string GroupByKey => OwnerCharacter?.ClassName ?? "Insights";
         public override string SortValue => isInActivity ? "AAA" : "XXXXXXXXXXXXXX";
 
         public async Task PopulateDefinitions()
@@ -60,7 +59,19 @@ namespace GhostOverlay.Models
             CurrentActivityModeDefinition = await Definitions.GetActivityMode(CurrentActivityModeHash);
         }
 
-        public static async Task<CrucibleMapTrackable> CreateFromProfile(DestinyProfileResponse profile)
+        public override void UpdateTo(ITrackable newTrackable)
+        {
+            if (!(newTrackable is CrucibleMapTrackable newCrucibleMapTrackable)) return;
+
+            CurrentActivityHash = newCrucibleMapTrackable.CurrentActivityHash;
+            CurrentActivityDefinition = newCrucibleMapTrackable.CurrentActivityDefinition;
+
+            CurrentActivityModeHash = newCrucibleMapTrackable.CurrentActivityModeHash;
+            CurrentActivityModeDefinition = newCrucibleMapTrackable.CurrentActivityModeDefinition;
+        }
+
+        public static async Task<CrucibleMapTrackable> CreateFromProfile(DestinyProfileResponse profile,
+            TrackedEntry trackedEntry)
         {
             string activeCharacterId = "";
             DateTime activityStart = DateTime.MinValue;
@@ -88,12 +99,12 @@ namespace GhostOverlay.Models
             {
                 CurrentActivityHash = currentActivitiesComponent.CurrentActivityHash,
                 CurrentActivityModeHash = currentActivitiesComponent.CurrentActivityModeHash,
+                TrackedEntry = trackedEntry,
             };
 
             if (profile.Characters.Data.ContainsKey(activeCharacterId))
             {
-                tracker.OwnerCharacter = new Character { CharacterComponent = profile.Characters.Data[activeCharacterId] };
-                await tracker.OwnerCharacter.PopulateDefinition();
+                tracker.Owner = await TrackableOwner.GetTrackableOwner(profile.Characters.Data[activeCharacterId]);
             }
             
             await tracker.PopulateDefinitions();

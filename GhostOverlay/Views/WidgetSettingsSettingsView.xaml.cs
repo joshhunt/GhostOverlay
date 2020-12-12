@@ -14,65 +14,19 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsSettingsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
+#pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
+#pragma warning restore 67
+
         private readonly WidgetStateChangeNotifier eventAggregator = new WidgetStateChangeNotifier();
         private readonly Logger Log = new Logger("WidgetSettingsSettingsView");
         private readonly RangeObservableCollection<CoreSetting> Languages = new RangeObservableCollection<CoreSetting>();
 
-        private string _displayName;
-        private string DisplayName
-        {
-            get => _displayName;
-            set
-            {
-                _displayName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _showDevOptions;
-        private bool ShowDevOptions
-        {
-            get => _showDevOptions;
-            set
-            {
-                _showDevOptions = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private CoreSetting _selectedLanguage;
-        private CoreSetting SelectedLanguage
-        {
-            get => _selectedLanguage;
-            set
-            {
-                _selectedLanguage = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _platformString;
-        private string PlatformString
-        {
-            get => _platformString;
-            set
-            {
-                _platformString = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string _definitionsDbName;
-        private string DefinitionsDbName
-        {
-            get => _definitionsDbName;
-            set
-            {
-                _definitionsDbName = value;
-                OnPropertyChanged();
-            }
-        }
+        private string DisplayName { get; set; }
+        private bool ShowDevOptions { get; set; }
+        private string PlatformString { get; set; }
+        private string DefinitionsDbName { get; set; }
+        private CoreSetting SelectedLanguage { get; set; }
 
         public WidgetSettingsSettingsView()
         {
@@ -183,11 +137,6 @@ namespace GhostOverlay
                 case -1: return "None";
                 default: return "Uknown";
             }
-        }
-
-        private void OnPropertyChanged([CallerMemberName] string name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

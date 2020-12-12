@@ -5,11 +5,13 @@ using GhostSharper.Models;
 
 namespace GhostOverlay.Models
 {
-    interface ITrackable : INotifyPropertyChanged
+    public interface ITrackable : INotifyPropertyChanged
     {
+
         bool IsCompleted { get; }
-        string GroupByKey { get; }
         DestinyDisplayPropertiesDefinition DisplayProperties { get; }
+        TrackableOwner Owner { get; set; }
+
         List<Objective> Objectives { get; set; }
         string Title { get; }
         Uri ImageUri { get; }
@@ -17,6 +19,7 @@ namespace GhostOverlay.Models
         string SortValue { get; }
         string Subtitle { get; }
         bool ShowDescription { get; }
-        void NotifyPropertyChanged(string fieldName);
+
+        void UpdateTo(ITrackable item);
     }
 }

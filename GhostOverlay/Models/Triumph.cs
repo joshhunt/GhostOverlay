@@ -11,6 +11,12 @@ namespace GhostOverlay.Models
 {
     public class Triumph : ITrackable
     {
+        #pragma warning disable 67
+        public event PropertyChangedEventHandler PropertyChanged;
+        #pragma warning restore 67
+
+        public static TrackableOwner StaticOwner = new TrackableOwner {DummyOwnerTitle = "Triumphs"};
+
         public TrackedEntry TrackedEntry { get; set; }
         public DestinyRecordDefinition Definition;
         public DestinyRecordComponent Record;
@@ -52,10 +58,13 @@ namespace GhostOverlay.Models
 
                 return intervalPoints + normalPoints;
             }
+        public TrackableOwner Owner
+        {
+            get => StaticOwner;
+            set => throw new Exception("Don't set Owner on Triumphs");
         }
 
         public bool IsCompleted => Objectives?.TrueForAll(v => v.Progress.Complete) ?? false;
-        public string GroupByKey => "Triumphs";
 
         public bool ShowDescription =>
             !IsCompleted && (TrackedEntry.ShowDescription || AppState.Data.ShowDescriptions.Value);
@@ -98,11 +107,30 @@ namespace GhostOverlay.Models
             return completedCharacterRecord ?? characterRecords.FirstOrDefault();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public virtual void NotifyPropertyChanged(string propertyName = null)
+        public void UpdateTo(ITrackable newTrackable)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (!(newTrackable is Triumph newTriumph)) return;
+
+            Definition = newTriumph.Definition;
+            Record = newTriumph.Record;
+
+            // If the amount of objectives stays the same, update them in place. Otherwise, outright replace them all.
+            // Note: This doesn't handle if the count stays the same, but one objective is removed and other is added,
+            // but I don't think that'll ever happen in real life
+            if (Objectives.Count == newTriumph.Objectives.Count)
+            {
+                Objectives.ForEach(existingObjective =>
+                {
+                    var newObjective = newTriumph.Objectives.Find(v =>
+                        v.Progress.ObjectiveHash == existingObjective.Progress.ObjectiveHash);
+
+                    existingObjective?.UpdateTo(newObjective);
+                });
+            }
+            else
+            {
+                Objectives = newTriumph.Objectives;
+            }
         }
     }
 }

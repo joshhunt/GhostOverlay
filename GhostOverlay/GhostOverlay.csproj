@@ -145,8 +145,10 @@
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ITrackable.cs" />
     <Compile Include="Models\Objective.cs" />
+    <Compile Include="Models\ObservableGroupedTrackableCollection.cs" />
     <Compile Include="Models\RemoteConfig.cs" />
     <Compile Include="Models\TimerViewModel.cs" />
+    <Compile Include="Models\TrackedEntry.cs" />
     <Compile Include="Models\Triumph.cs" />
     <Compile Include="Models\TrackedEntry.cs" />
     <Compile Include="Views\EqualHeightWrapPanel\Data.cs" />
@@ -278,6 +280,7 @@
     <Content Include="GameBarAssets\Icons\icon.targetsize-24.png" />
     <Content Include="GameBarAssets\Icons\icon.targetsize-32.png" />
     <Content Include="GameBarAssets\Icons\icon.targetsize-44.png" />
+    <Content Include="FodyWeavers.xml" />
     <PRIResource Include="Configuration.sample.resw">
       <SubType>Designer</SubType>
     </PRIResource>
@@ -351,6 +354,11 @@
     </PRIResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Fody">
+      <Version>6.2.4</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="GhostSharper">
       <Version>2.9.2</Version>
     </PackageReference>
@@ -380,6 +388,10 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="PropertyChanged.Fody">
+      <Version>3.2.9</Version>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="RestSharp">
       <Version>106.11.4</Version>
