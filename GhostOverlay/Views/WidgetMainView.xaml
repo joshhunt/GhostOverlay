@@ -29,7 +29,7 @@
                     <Grid Visibility="{x:Bind isInActivity}">
                         <Image>
                             <Image.Source>
-                                <BitmapImage UriSource="{x:Bind PGCRImageUri}"></BitmapImage>
+                                <BitmapImage UriSource="{x:Bind PGCRImageUri, Mode=OneWay}"></BitmapImage>
                             </Image.Source>
                         </Image>
 

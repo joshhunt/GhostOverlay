@@ -73,7 +73,7 @@ namespace GhostOverlay.Models
         public static async Task<CrucibleMapTrackable> CreateFromProfile(DestinyProfileResponse profile,
             TrackedEntry trackedEntry)
         {
-            string activeCharacterId = "";
+            var activeCharacterId = "";
             DateTime activityStart = DateTime.MinValue;
             DestinyCharacterActivitiesComponent currentActivitiesComponent = default;
 
