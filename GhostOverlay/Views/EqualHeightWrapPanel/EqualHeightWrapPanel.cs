@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -209,7 +210,7 @@ namespace GhostOverlay
                 var paddingEnd = new UvMeasure(Orientation, Padding.Right, Padding.Bottom);
                 var position = new UvMeasure(Orientation, Padding.Left, Padding.Top);
 
-                var measurements = new List<(UIElement, Rect)>();
+                var measurements = new List<(UIElement, double, Rect)>();
                 var maxHeightForRow = new Dictionary<double, double>();
 
                 double currentV = 0;
@@ -235,17 +236,14 @@ namespace GhostOverlay
                         desiredMeasure.U = parentMeasure.U - position.U;
                     }
 
-                    maxHeightForRow[position.V] = Math.Max(maxHeightForRow.GetValueOrDefault(position.V), desiredMeasure.V);
+                    var rowHeight = Math.Max(maxHeightForRow.GetValueOrDefault(position.V), desiredMeasure.V);
+                    maxHeightForRow[position.V] = rowHeight;
 
                     // place the item
-                    if (Orientation == Orientation.Horizontal)
-                    {
-                        measurements.Add((child, new Rect(position.U, position.V, desiredMeasure.U, desiredMeasure.V)));
-                    }
-                    else
-                    {
-                        measurements.Add((child, new Rect(position.V, position.U, desiredMeasure.V, desiredMeasure.U)));
-                    }
+                    // always horiztonal, in practice
+                    measurements.Add(Orientation == Orientation.Horizontal
+                        ? (child, position.V, new Rect(position.U, position.V, desiredMeasure.U, desiredMeasure.V))
+                        : (child, position.U, new Rect(position.V, position.U, desiredMeasure.V, desiredMeasure.U)));
 
                     // adjust the location for the next items
                     position.U += desiredMeasure.U + spacingMeasure.U;
@@ -262,8 +260,8 @@ namespace GhostOverlay
 
                 foreach (var x in measurements)
                 {
-                    var (child, rect) = x;
-                    rect.Height = maxHeightForRow[rect.Y];
+                    var (child, posV, rect) = x;
+                    rect.Height = maxHeightForRow[posV];
                     child.Arrange(rect);
                 }
             }
