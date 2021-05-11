@@ -1,7 +1,7 @@
-using System.ComponentModel;
 using GhostOverlay.Models;
 using GhostSharper.Models;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace GhostOverlay
 {
@@ -10,6 +10,7 @@ namespace GhostOverlay
         Item = 0,
         Record = 1,
         DynamicTrackable = 2,
+        SeasonalChallenge = 3,
     }
 
 
@@ -60,6 +61,15 @@ namespace GhostOverlay
             };
         }
 
+        public static TrackedEntry FromSeasonalChallenge(Triumph triumph)
+        {
+            return new TrackedEntry
+            {
+                Type = TrackedEntryType.SeasonalChallenge,
+                Hash = triumph.Hash
+            };
+        }
+
         public bool Matches(Item item)
         {
             return Type == TrackedEntryType.Item && Hash == item.ItemHash &&
@@ -74,7 +84,7 @@ namespace GhostOverlay
 
         public bool Matches(Triumph triumph)
         {
-            return Type == TrackedEntryType.Record && Hash == triumph.Hash;
+            return (Type == TrackedEntryType.Record || Type == TrackedEntryType.SeasonalChallenge) && Hash == triumph.Hash;
         }
 
         public override string ToString()

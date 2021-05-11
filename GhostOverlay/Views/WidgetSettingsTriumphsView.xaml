@@ -82,8 +82,8 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Margin="8">
             <TextBlock Text="{x:Bind SelectedTopLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
             <FontIcon Margin="6,5,8,0"  FontFamily="Segoe MDL2 Assets" Glyph="&#xE76C;" FontSize="13" HorizontalAlignment="Center"/>
-            <TextBlock Visibility="{x:Bind SkipSecondLevel, Converter={StaticResource BoolToInverseVisibility}}" Text="{x:Bind SelectedSecondLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
-            <FontIcon Visibility="{x:Bind SkipSecondLevel, Converter={StaticResource BoolToInverseVisibility}}" Margin="6,5,8,0" FontFamily="Segoe MDL2 Assets" Glyph="&#xE76C;" FontSize="13" HorizontalAlignment="Center"/>
+            <TextBlock Visibility="{x:Bind DontShowSecondLevel, Converter={StaticResource BoolToInverseVisibility}}" Text="{x:Bind SelectedSecondLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
+            <FontIcon Visibility="{x:Bind DontShowSecondLevel, Converter={StaticResource BoolToInverseVisibility}}" Margin="6,5,8,0" FontFamily="Segoe MDL2 Assets" Glyph="&#xE76C;" FontSize="13" HorizontalAlignment="Center"/>
             <TextBlock Text="{x:Bind SelectedThirdLevelNode.Definition.DisplayProperties.Name, Mode=OneWay}" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Center"/>
         </StackPanel>
 
@@ -101,7 +101,7 @@
 
                 <!-- "Second level" categories -->
                 <ListView
-                    Visibility="{x:Bind SkipSecondLevel, Converter={StaticResource BoolToInverseVisibility}}"
+                    Visibility="{x:Bind DontShowSecondLevel, Converter={StaticResource BoolToInverseVisibility}, Mode=OneWay}"
                     SelectedItem="{x:Bind SelectedSecondLevelNode, Mode=OneWay}"
                     ItemsSource="{x:Bind secondLevelNodes}"
                     IsItemClickEnabled="True"

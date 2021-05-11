@@ -15,7 +15,8 @@ namespace GhostOverlay.Models
         public event PropertyChangedEventHandler PropertyChanged;
         #pragma warning restore 67
 
-        public static TrackableOwner StaticOwner = new TrackableOwner {DummyOwnerTitle = "Triumphs"};
+        public static TrackableOwner StaticTriumphOwner = new TrackableOwner {DummyOwnerTitle = "Triumphs"};
+        public static TrackableOwner StaticSeasonalChallengesOwner = new TrackableOwner { DummyOwnerTitle = "Seasonal Challenges" };
 
         public TrackedEntry TrackedEntry { get; set; }
         public DestinyRecordDefinition Definition;
@@ -62,7 +63,7 @@ namespace GhostOverlay.Models
 
         public TrackableOwner Owner
         {
-            get => StaticOwner;
+            get => TrackedEntry.Type == TrackedEntryType.SeasonalChallenge ? StaticSeasonalChallengesOwner : StaticTriumphOwner;
             set => throw new Exception("Don't set Owner on Triumphs");
         }
 

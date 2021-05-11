@@ -141,7 +141,7 @@ namespace GhostOverlay
                 ActiveCharacter = AppState.Data.ActiveCharacter;
         }
 
-        private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private async void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.IsSettingsSelected)
             {
@@ -165,6 +165,13 @@ namespace GhostOverlay
 
                 case "Insights":
                     ContentFrame.Navigate(typeof(SettingsInsightsView), ContentFrame, args.RecommendedNavigationTransitionInfo);
+                    break;
+
+                case "SeasonalChallenges":
+                    var parentChallengesNode = await PresentationNode.FromHash(3443694067, AppState.Data.Profile, null);
+                    var seasonalChallengesNode =
+                        await PresentationNode.FromHash(3154437691, AppState.Data.Profile, parentChallengesNode);
+                    ContentFrame.Navigate(typeof(WidgetSettingsTriumphsView), seasonalChallengesNode, args.RecommendedNavigationTransitionInfo);
                     break;
             }
         }

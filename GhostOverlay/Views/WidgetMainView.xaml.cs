@@ -287,6 +287,7 @@ namespace GhostOverlay
                 switch (trackedEntry.Type)
                 {
                     case TrackedEntryType.Record:
+                    case TrackedEntryType.SeasonalChallenge:
                         trackable = await TriumphFromTrackedEntry(trackedEntry, profile);
                         break;
 

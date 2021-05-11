@@ -34,6 +34,9 @@ namespace GhostOverlay
         private PresentationNode SelectedSecondLevelNode { get; set; }
         private PresentationNode SelectedThirdLevelNode { get; set; }
 
+
+        private bool DontShowSecondLevel => SkipSecondLevel || secondLevelNodes.Count == 1;
+
         public WidgetSettingsTriumphsView()
         {
             InitializeComponent();
@@ -117,7 +120,10 @@ namespace GhostOverlay
                     Definition = await Definitions.GetPresentationNode(child.PresentationNodeHash)
                 };
 
-                secondLevelNodes.Add(childNode);
+                if (await PresentationNode.CountGrandchildren(childNode.Definition) > 0)
+                {
+                    secondLevelNodes.Add(childNode);
+                }
 
                 if ((SelectedSecondLevelNode?.PresentationNodeHash ?? 0) == child.PresentationNodeHash)
                 {

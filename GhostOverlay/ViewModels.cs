@@ -296,5 +296,20 @@ namespace GhostOverlay
  
             return newNode;
         }
+
+        public static async Task<int> CountGrandchildren(DestinyPresentationNodeDefinition nodeDef)
+        {
+            var count = (nodeDef?.Children?.Records?.Count) ?? 0;
+
+            if ((nodeDef?.Children?.PresentationNodes?.Count ?? 0) <= 0) return count;
+
+            foreach (var childNodeEntry in nodeDef.Children.PresentationNodes)
+            {
+                var childNode = await Definitions.GetPresentationNode(childNodeEntry.PresentationNodeHash);
+                count += await CountGrandchildren(childNode);
+            }
+
+            return count;
+        }
     }
 }

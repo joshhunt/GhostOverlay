@@ -123,10 +123,23 @@ namespace GhostOverlay.Views
 
                 foreach (var item in triumphs)
                 {
-                    if (item is Triumph triumph && AppState.Data.IsTracked(triumph))
+                    Log.Debug($"is `{item.Definition.DisplayProperties.Name}` a triumph??");
+                    if (item is Triumph triumph)
+                    {   
+                        Log.Debug("  - yes, it is tracked?");
+                        if (AppState.Data.IsTracked(triumph))
+                        {
+                            Log.Debug($" - Adding `{triumph.Definition.DisplayProperties.Name}` to Selected triumphs");
+                            TriumphsGrid.SelectedItems.Add(item);
+                        }
+                        else
+                        {
+                            Log.Debug(" - No, not tracked");
+                        }
+                    }
+                    else
                     {
-                        Log.Debug($" - Adding `{triumph.Definition.DisplayProperties.Name}` to Selected triumphs");
-                        TriumphsGrid.SelectedItems.Add(item);
+                        Log.Debug(" - Not a triumph");
                     }
                 }
 
@@ -148,7 +161,9 @@ namespace GhostOverlay.Views
                 {
                     Log.Info($"    adding tracked triumph {triumph.DisplayProperties.Name}");
                     wasChanged = true;
-                    var n = TrackedEntry.FromTriumph(triumph);
+                    var n = triumph.Definition.CompletionInfo.ToastStyle == DestinyRecordToastStyle.SeasonChallengeComplete
+                        ? TrackedEntry.FromSeasonalChallenge(triumph)
+                        : TrackedEntry.FromTriumph(triumph);
                     copyOf.Add(n);
                 }
 
