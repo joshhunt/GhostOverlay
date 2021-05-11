@@ -348,7 +348,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\NHaasGroteskTXPro-55Rg.ttf" />
-    <None Include="GhostOverlay_TemporaryKey.pfx" />
     <PRIResource Include="Configuration.resw">
       <SubType>Designer</SubType>
     </PRIResource>
