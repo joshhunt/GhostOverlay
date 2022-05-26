@@ -374,8 +374,8 @@ namespace GhostOverlay
 
         public async Task<CoreSettingsConfiguration> UpdateDestinySettings()
         {
+            Log.Info("Loading destiny settings");
             DestinySettings.Value = await AppState.Api.GetSettings();
-
             return DestinySettings.Value;
         }
 

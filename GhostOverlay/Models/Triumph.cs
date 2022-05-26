@@ -5,17 +5,34 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GhostSharper.Models;
-using Serilog;
 
 namespace GhostOverlay.Models
 {
+    public class Reward
+    {
+        public long ItemHash;
+        public DestinyInventoryItemDefinition ItemDefinition { get; set; }
+        public long Quantity = 1;
+
+        public Uri ImageUri => new Uri($"https://www.bungie.net{ItemDefinition?.DisplayProperties?.Icon ?? "/img/misc/missing_icon_d2.png"}");
+
+        public async Task<DestinyInventoryItemDefinition> PopulateDefinition()
+        {
+            ItemDefinition = await Definitions.GetInventoryItem(ItemHash);
+            return ItemDefinition;
+        }
+    }
+
     public class Triumph : ITrackable
     {
         #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;
-        #pragma warning restore 67
+#pragma warning restore 67
 
-        public static TrackableOwner StaticTriumphOwner = new TrackableOwner {DummyOwnerTitle = "Triumphs"};
+
+        private static readonly Logger Log = new Logger("Triumph");
+
+        public static TrackableOwner StaticTriumphOwner = new TrackableOwner { DummyOwnerTitle = "Triumphs" };
         public static TrackableOwner StaticSeasonalChallengesOwner = new TrackableOwner { DummyOwnerTitle = "Seasonal Challenges" };
 
         public TrackedEntry TrackedEntry { get; set; }
@@ -23,6 +40,7 @@ namespace GhostOverlay.Models
         public DestinyRecordComponent Record;
         public List<Objective> Objectives { get; set; }
         public long Hash = 0;
+        public List<Reward> Rewards = new List<Reward>();
         public DestinyDisplayPropertiesDefinition DisplayProperties =>
             Definition.DisplayProperties;
 
@@ -80,8 +98,40 @@ namespace GhostOverlay.Models
 
         public async Task<DestinyRecordDefinition> PopulateDefinition()
         {
+            Log.Info("Populating definition");
             Definition = await Definitions.GetRecord(Hash);
+            await PopulateRewards();
+            
             return Definition;
+        }
+
+        public async Task PopulateRewards()
+        {
+            Log.Info("Populating rewards");
+            Rewards.RemoveAll(JustReturnAll);
+            var rewardItems = Definition?.RewardItems ?? new List<DestinyItemQuantity>();
+            Log.Info("There are {length} rewards on the definition {hash}", rewardItems, Definition?.Hash);
+            Debug.WriteLine(Definition.RewardItems);
+
+            foreach (var rewardItem in rewardItems)
+            {
+                Log.Info("Looking at item reward {ItemHash}", rewardItem.ItemHash);
+
+                var reward = new Reward()
+                    {ItemHash = rewardItem.ItemHash, Quantity = rewardItem.Quantity};
+                await reward.PopulateDefinition();
+                if (reward.ItemDefinition != null)
+                {
+                    Rewards.Add(reward);
+                    Log.Info("added reward {Name}", reward.ItemDefinition.DisplayProperties.Name);
+                } 
+            }
+        }
+
+        // Search predicate returns true if a string ends in "saurus".
+        private static bool JustReturnAll(Reward s)
+        {
+            return true;
         }
 
         public static DestinyRecordComponent FindRecordInProfileOrDefault(string triumphHash, DestinyProfileResponse profile)

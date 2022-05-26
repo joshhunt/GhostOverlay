@@ -24,7 +24,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>8D762C33D1AB63533FF9650A977ECBF74D71009B</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>65D97EB7D5ECAD1198E1403B6941991E79FB5ECE</PackageCertificateThumbprint>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <PackageCertificateKeyFile />
   </PropertyGroup>
@@ -285,6 +285,7 @@
       <SubType>Designer</SubType>
     </PRIResource>
     <Content Include="Assets\destiny_symbols_pc_bl.otf" />
+    <None Include="GhostOverlay_TemporaryKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>

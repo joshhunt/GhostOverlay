@@ -13,6 +13,7 @@
                                       FalseValue="{ThemeResource SystemControlBackgroundBaseLowBrush}" />
     <converters:BoolToObjectConverter x:Key="VisibleWhenTrueConverter" TrueValue="Visible" FalseValue="Collapsed" />
     <converters:BoolToObjectConverter x:Key="VisibleWhenFalseConverter" TrueValue="Collapsed" FalseValue="Visible" />
+    <converters:DoubleToVisibilityConverter x:Key="GreaterThanOneVisibilityConverter" GreaterThan="1"/>
     <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
 
     <local:NumberFormatterConverter x:Key="NumberFormatterConverter" />
@@ -117,6 +118,37 @@
                     Opacity="1"
                     Canvas.Top="15" Canvas.Left="15" Points="0,17 17,17, 17,0" Fill="#ffC19954" />
             </Canvas>
+        </UserControl>
+    </DataTemplate>
+
+    <DataTemplate x:Key="RewardItemTemplate" x:DataType="models:Reward">
+        <UserControl>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image
+                    Grid.Row="0" Grid.Column="0"
+                    Width="24"
+                    Height="24"
+                    Margin="0 0 6 0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+
+                    <Image.Source>
+                        <BitmapImage UriSource="{x:Bind ImageUri, Mode=OneWay}" />
+                    </Image.Source>
+                </Image>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock FontSize="13" Text="{x:Bind ItemDefinition.DisplayProperties.Name, Mode=OneWay}" />
+                    <TextBlock FontSize="13" Visibility="{x:Bind Quantity, Mode=OneWay, Converter={StaticResource GreaterThanOneVisibilityConverter}}">
+                        <Run Text=" +" /><Run Text="{x:Bind Quantity}" />
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
         </UserControl>
     </DataTemplate>
 

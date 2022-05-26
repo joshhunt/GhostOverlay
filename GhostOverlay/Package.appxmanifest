@@ -10,7 +10,7 @@
 	<Identity
 		Name="WorldClassDevelopmentLtd.GhostOverlay"
 		Publisher="CN=F78EA302-9D46-44EB-A662-246312A8DD23"
-		Version="1.10.45.0" />
+		Version="1.11.50.0" />
 
 	<mp:PhoneIdentity PhoneProductId="06ba7bea-f1fd-45f0-9698-897d45276bf1"
 					  PhonePublisherId="00000000-0000-0000-0000-000000000000"/>

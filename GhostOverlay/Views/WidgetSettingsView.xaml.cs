@@ -20,7 +20,7 @@ namespace GhostOverlay
 {
     public sealed partial class WidgetSettingsView : Page, ISubscriber<WidgetPropertyChanged>, INotifyPropertyChanged
     {
-#pragma warning disable 67
+#pragma warning disable 67`
         public event PropertyChangedEventHandler PropertyChanged;
 #pragma warning restore 67
 
@@ -31,6 +31,8 @@ namespace GhostOverlay
         private readonly ObservableCollection<TrackableOwner> Characters = new ObservableCollection<TrackableOwner>();
 
         private TrackableOwner ActiveCharacter { get; set; }
+        private bool SeasonalChallengesVisible = false;
+        private PresentationNode SeasonalChallengePresentationNode { get; set; }
 
         public WidgetSettingsView()
         {
@@ -67,6 +69,7 @@ namespace GhostOverlay
 
             UpdateCharacterList();
             UpdateActiveCharacter();
+            UpdateSeasonalChallenges();
 
             Log.Info("OnNavigatedTo complete");
         }
@@ -93,6 +96,29 @@ namespace GhostOverlay
                 case WidgetPropertyChanged.ActiveCharacter:
                     UpdateActiveCharacter();
                     break;
+
+                case WidgetPropertyChanged.DestinySettings:
+                    UpdateSeasonalChallenges();
+                    break;
+            }
+        }
+
+        private async void UpdateSeasonalChallenges()
+        {   
+            var seasonalChallengesRootHash = Convert.ToInt64(AppState.Data.DestinySettings?.Value?.Destiny2CoreSettings
+                ?.SeasonalChallengesPresentationNodeHash);
+            Log.Info(" UpdateSeasonalChallengesseasonalChallengesRootHash {seasonalChallengesRootHash}", seasonalChallengesRootHash);
+
+            var parentChallengesNode = await PresentationNode.FromHash(seasonalChallengesRootHash, AppState.Data.Profile, null);
+            var firstChild = parentChallengesNode.Definition?.Children?.PresentationNodes?.FirstOrDefault();
+
+            var seasonalChallengesNode =
+                await PresentationNode.FromHash(Convert.ToInt64(firstChild?.PresentationNodeHash), AppState.Data.Profile, parentChallengesNode);
+
+            if (seasonalChallengesNode.Definition != null)
+            {
+                SeasonalChallengePresentationNode = seasonalChallengesNode;
+                SeasonalChallengesVisible = true;
             }
         }
 
@@ -141,7 +167,7 @@ namespace GhostOverlay
                 ActiveCharacter = AppState.Data.ActiveCharacter;
         }
 
-        private async void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        private void NavView_OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         {
             if (args.IsSettingsSelected)
             {
@@ -168,10 +194,7 @@ namespace GhostOverlay
                     break;
 
                 case "SeasonalChallenges":
-                    var parentChallengesNode = await PresentationNode.FromHash(3443694067, AppState.Data.Profile, null);
-                    var seasonalChallengesNode =
-                        await PresentationNode.FromHash(3154437691, AppState.Data.Profile, parentChallengesNode);
-                    ContentFrame.Navigate(typeof(WidgetSettingsTriumphsView), seasonalChallengesNode, args.RecommendedNavigationTransitionInfo);
+                    ContentFrame.Navigate(typeof(WidgetSettingsTriumphsView), SeasonalChallengePresentationNode, args.RecommendedNavigationTransitionInfo);
                     break;
             }
         }

@@ -7,11 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:converters="using:Microsoft.Toolkit.Uwp.UI.Converters"
     RequestedTheme="Dark"
     mc:Ignorable="d">
 
     <Page.Resources>
         <x:Double x:Key="NavigationViewTopPaneHeight">50</x:Double>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
         <Style TargetType="Button" x:Key="ButtonStyleLol">
             <Setter Property="Foreground" Value="{ThemeResource NavigationViewItemForeground}" />
@@ -42,7 +44,7 @@
         <muxc:NavigationView.MenuItems>
             <muxc:NavigationViewItem Content="Pursuits" Tag="Bounties" />
             <muxc:NavigationViewItem Content="Triumphs" Tag="Triumphs" />
-            <muxc:NavigationViewItem Content="Seasonal Challenges" Tag="SeasonalChallenges" />
+            <muxc:NavigationViewItem Visibility="{x:Bind SeasonalChallengesVisible, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Content="Seasonal Challenges" Tag="SeasonalChallenges" />
             <muxc:NavigationViewItem Content="Insights" Tag="Insights" />
         </muxc:NavigationView.MenuItems>
 

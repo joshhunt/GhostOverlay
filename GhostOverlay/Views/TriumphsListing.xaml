@@ -19,6 +19,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <converters:EmptyObjectToObjectConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+            <converters:DoubleToVisibilityConverter x:Key="GreaterThanZeroVisibilityConverter" GreaterThan="0"/>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -100,6 +101,18 @@
                             ItemTemplate="{StaticResource ObjectiveTemplate}"
                             ItemsSource="{x:Bind Objectives}"
                             SelectionMode="None" />
+
+                        <StackPanel Margin="0 12 0 0" Visibility="{x:Bind Rewards.Count, Converter={StaticResource GreaterThanZeroVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource BodyTextBlockStyle}" FontWeight="Medium" Text="Rewards" />
+
+                            <ListView
+                                IsHitTestVisible="False"
+                                IsItemClickEnabled="False"
+                                ItemContainerStyle="{StaticResource ObjectiveListViewStyle}"
+                                ItemTemplate="{StaticResource RewardItemTemplate}"
+                                ItemsSource="{x:Bind Rewards}"
+                                SelectionMode="None" />
+                        </StackPanel>
 
                         <TextBlock Visibility="{x:Bind Record, Converter={StaticResource CollectionVisibilityConverter}}" FontStyle="Italic">
                             Missing data

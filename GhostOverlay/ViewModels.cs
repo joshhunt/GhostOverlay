@@ -202,6 +202,8 @@ namespace GhostOverlay
         public string Name => Definition?.DisplayProperties?.Name ?? "No name";
         public bool SkipSecondLevel;
 
+        // public double ViewOpacity => Objective.Definition?.CompletionValue > 0 ? 1 : 0.3;
+
         public Objective Objective { get; set; }
         public bool IsCompleted => (Objective?.Progress?.Progress ?? 1) >= (Objective?.Progress?.CompletionValue ?? 0);
 
@@ -258,11 +260,17 @@ namespace GhostOverlay
                 Definition = await Definitions.GetPresentationNode(hash),
             };
 
+            if (newNode.Definition == null)
+            {
+                Log.Info("Unable to find definition for presentation node {hash}", hash);
+                return newNode;
+            }
+
             Log.Info("Looking at {hash} {name}", hash, newNode.Definition.DisplayProperties.Name);
 
             var profileNodeData = FindProfilePresentationNode(hash, profile);
 
-            if (profileNodeData != null && profileNodeData.Objective != null)
+            if (profileNodeData?.Objective != null)
             {
                 Log.Info("  {name}, found presentation node data", newNode.Definition.DisplayProperties.Name);
 

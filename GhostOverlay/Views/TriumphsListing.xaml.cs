@@ -79,15 +79,13 @@ namespace GhostOverlay.Views
 
             foreach (var childRecord in PresentationNodeDef.Children.Records)
             {
-                var recordDefinition = await Definitions.GetRecord(childRecord.RecordHash);
-
                 var triumph = new Triumph
                 {
-                    Definition = recordDefinition,
                     Hash = childRecord.RecordHash,
                     Objectives = new List<Objective>(),
                     Record = Triumph.FindRecordInProfileOrDefault(childRecord.RecordHash.ToString(), profile),
                 };
+                await triumph.PopulateDefinition();
                 
                 if (triumph.Record == null)
                 {

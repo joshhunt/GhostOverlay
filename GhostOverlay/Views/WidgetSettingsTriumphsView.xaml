@@ -20,6 +20,8 @@
             <converters:BoolToObjectConverter x:Key="BoolToInverseVisibility" TrueValue="Collapsed" FalseValue="Visible"/>
             <converters:BoolToObjectConverter x:Key="BoolToCompletedColor" TrueValue="#A05DA46A" FalseValue="#40FFFFFF" />
             <converters:EmptyObjectToObjectConverter x:Key="NullVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
+            <converters:DoubleToObjectConverter x:Key="NodeOpacityConverter" GreaterThan="0" TrueValue="1" FalseValue="0.4"  />
+            <converters:DoubleToObjectConverter x:Key="NodeBgConverter" GreaterThan="0" TrueValue="1" FalseValue="0.2"  />
 
             <DataTemplate x:Key="PresentationNodeTemplate" x:DataType="local:PresentationNode">
                 <Grid Width="400" Background="{ThemeResource SystemControlBackgroundListLowBrush}" Padding="12">
@@ -159,7 +161,10 @@
 
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="local:PresentationNode">
-                            <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <StackPanel
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                Opacity="{x:Bind Objective.Progress.CompletionValue, Mode=OneWay, Converter={StaticResource NodeOpacityConverter}}">
 
                                 <Grid Margin="0">
                                     <ProgressBar

@@ -34,6 +34,7 @@ namespace GhostOverlay
             AppState.Data.RestoreSettings();
             Task.Run(Definitions.Initialize);
             Task.Run(AppState.RemoteConfigInstance.LoadRemoteConfig);
+            Task.Run(AppState.Data.UpdateDestinySettings);
         }
 
         protected override void OnActivated(IActivatedEventArgs args)
